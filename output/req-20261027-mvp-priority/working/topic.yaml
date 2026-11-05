@@ -1,0 +1,11 @@
+detected_doc_type: "产品需求分析报告（MVP 定义 + 优先级分级）"
+target_length: 3500
+target_tone: "正式产品文档，第二人称决策导向，证据密集"
+core_points:
+  - 用三步方法论（真伪判定/范围/优先级）结构化输出
+  - 每条判定挂用户证据（问卷 A/B 表 + 访谈原文）与竞品证据
+  - P0/P1 聚焦，Roadmap 三阶段
+  - 收尾一句话结论（面试答辩口径）
+evidence_sources:
+  - "C:\\Users\\cxy32\\Desktop\\签约有数\\发现需求验证需求\\租房合同审查产品需求验证分析报告.docx（91份有效问卷+访谈）"
+  - "C:\\Users\\cxy32\\Desktop\\签前有数_竞品分析报告_v0.2.docx（联网调研竞品分析）"

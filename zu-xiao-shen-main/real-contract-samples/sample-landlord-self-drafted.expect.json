@@ -1,0 +1,18 @@
+{
+  "note": "示例：房东自拟合同，含高额逾期费、换锁收房、全维修转嫁、任意入户、管辖偏向、口头约定、解释权归甲方等多处坑。",
+  "expect": [
+    "lease-daily-late-fee-5-percent",
+    "lease-lockout-forfeiture",
+    "lease-early-exit-stacked-penalty",
+    "lease-all-maintenance-tenant",
+    "lease-landlord-entry-no-consent",
+    "lease-unfavorable-jurisdiction",
+    "lease-oral-overrides-written",
+    "lease-format-clause-waiver",
+    "lease-deposit-return-delay"
+  ],
+  "none": [
+    "lease-unilateral-rent-adjustment",
+    "lease-pet-forfeiture-no-cure"
+  ]
+}

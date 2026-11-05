@@ -1,0 +1,106 @@
+# Residential Lease Agreement
+
+RESIDENTIAL LEASE AGREEMENT
+
+This Residential Lease Agreement is a fictional, state-neutral U.S.-style sample prepared for software testing. It is not a legal form for any particular state and does not replace local legal review.
+
+1. PARTIES AND PREMISES
+
+This Agreement is between Jordan Ellis ("Landlord") and Maya Chen and Luis Romero, jointly and severally ("Tenant"). Landlord rents to Tenant the dwelling at 417 Willow Street, Unit 3B, Portland, Oregon 97205 (the "Premises"). The Premises may be used only as a private residence by Tenant and the following approved occupant: none. No commercial activity, short-term rental, or assignment is permitted without Landlord's prior written consent.
+
+2. TERM AND POSSESSION
+
+The term begins on December 1, 2026 and ends at 11:59 p.m. on November 30, 2027. Landlord will use reasonable efforts to deliver possession on the first day of the term. If possession is delayed for reasons outside Landlord's reasonable control, rent will be adjusted for the period Tenant cannot lawfully occupy the Premises, and the parties will coordinate a revised move-in date.
+
+3. RENT AND PAYMENT
+
+Base rent is $2,450.00 per month, due on the first calendar day of each month without demand. Tenant shall pay rent through the RentFlow portal or another method designated by Landlord in writing. A payment is credited when the payment processor confirms receipt, not when Tenant initiates the transfer. A $75.00 administrative charge may be assessed for a returned payment, to the extent permitted by applicable law.
+
+If any part of the Monthly Housing Charge remains unpaid after 5:00 p.m. on the third calendar day of the month, Landlord may assess a late charge of 5% of the unpaid Monthly Housing Charge and a daily charge of 0.05% of the unpaid amount until paid, subject to any statutory limit. "Monthly Housing Charge" means Base Rent plus recurring utility, parking, storage, technology, or other charges stated in this Agreement or later agreed in writing.
+
+4. SECURITY DEPOSIT
+
+Tenant shall pay a security deposit of $4,900.00. The security deposit is not last month's rent. Landlord may apply the deposit, after the tenancy ends, to unpaid rent or other sums due under this Agreement, physical damage beyond ordinary wear and tear, cleaning reasonably required to restore the Premises to the move-in condition, or costs reasonably incurred to remove unauthorized alterations. Landlord will provide an itemized statement and any remaining balance within the time required by applicable law.
+
+Tenant must provide a forwarding address before or at move-out. If Tenant does not provide one, Landlord may send the statement and balance to the last address known to Landlord, without waiving any legal delivery requirement. The deposit may be held in an account selected by Landlord and will not earn interest for Tenant unless required by applicable law.
+
+5. MOVE-IN CONDITION AND REPORTS
+
+Tenant shall inspect the Premises and return the signed move-in condition report within seven calendar days after receiving the keys. If Tenant does not return the report within that period, the unsigned report supplied by Landlord will be treated as the record of condition, except for latent defects and conditions that could not reasonably have been observed during a normal inspection.
+
+6. UTILITIES AND SERVICES
+
+Tenant is responsible for electricity, gas, water, sewer, trash, internet, and any service separately billed to the Premises, unless a written addendum states otherwise. If a utility is billed to Landlord for administrative convenience, Tenant shall reimburse Landlord within 10 days after the bill is posted to the portal. A portal statement may include a reasonable allocation for a shared service based on the allocation method disclosed in the utility addendum.
+
+7. MAINTENANCE AND REPAIRS
+
+Landlord shall maintain the building systems and supplied appliances as required by applicable law. Tenant shall keep the Premises reasonably clean, promptly report conditions requiring repair, and use fixtures and appliances in a reasonable manner. Tenant is responsible for the first $150.00 of each service call caused by Tenant's misuse, negligence, or failure to perform an ordinary cleaning task; this charge does not apply to a condition caused by ordinary wear, a building system, or a code-required repair.
+
+For a non-emergency repair, Tenant shall use the portal work-order process. If Tenant hires a contractor without giving Landlord a reasonable opportunity to respond, Landlord may decline reimbursement except where immediate action was reasonably necessary to prevent material damage or protect health or safety.
+
+8. ALTERATIONS, LOCKS, AND ACCESS
+
+Tenant shall not paint, install fixtures, change locks, or make an alteration without Landlord's prior written consent. Landlord and Landlord's agents may enter the Premises at reasonable times after reasonable notice for inspection, repairs, services, showings, or to verify compliance with this Agreement. In an emergency, notice is not required. Notice may be delivered through the portal, email, text message, or a written notice posted at the Premises.
+
+Tenant shall not unreasonably withhold access. If Tenant does not respond to an access notice within 12 hours, Landlord may enter at the noticed time when the entry is for a repair, safety inspection, or a scheduled showing, provided that entry is otherwise lawful.
+
+9. OCCUPANCY, GUESTS, AND PETS
+
+No person may reside at the Premises for more than 14 consecutive nights or 30 nights in any 90-day period without Landlord's written approval. A guest who exceeds either threshold may be treated as an additional occupant for purposes of building rules, insurance requirements, and lawful rent or utility adjustments. Guests remain the responsibility of Tenant.
+
+No animal is permitted without a signed pet addendum, except as required for an assistance animal under applicable law. Tenant shall not remove, disable, or interfere with smoke alarms, carbon monoxide alarms, or building access equipment.
+
+10. INSURANCE AND RISK OF LOSS
+
+Tenant is encouraged to maintain renter's insurance covering personal property and personal liability. Tenant is responsible for loss or damage caused by Tenant's negligence, intentional act, or failure to report a condition promptly. Nothing in this Agreement waives a duty that cannot lawfully be waived or makes Tenant responsible for a loss caused solely by Landlord's negligence.
+
+11. RULES AND COMMUNITY POLICIES
+
+Tenant shall comply with reasonable building, parking, recycling, and noise rules delivered to Tenant in writing. A later rule may regulate conduct, safety, or use of common areas but may not materially change rent, the term, or a core obligation unless Tenant agrees in a written amendment or applicable law permits the change.
+
+12. DEFAULT AND REMEDIES
+
+If Tenant fails to pay rent or materially violates this Agreement, Landlord may give any notice and opportunity to cure required by applicable law and may pursue lawful remedies. Landlord shall not use self-help eviction, lockout, utility shutoff, or removal of Tenant's property as a substitute for lawful process. Acceptance of a partial payment does not waive a claim unless Landlord confirms the waiver in writing.
+
+13. EARLY TERMINATION AND RE-LETTING
+
+Tenant may request an early termination in writing. Landlord may approve a termination date and charge a reasonable early termination amount stated in a signed agreement, subject to applicable law and Landlord's duty to mitigate damages. Tenant remains responsible for rent and other amounts that lawfully accrue until the agreed termination date or a new tenancy begins, whichever occurs first, less amounts received from a replacement tenant for the same period.
+
+14. RENEWAL AND HOLDOVER
+
+At least 45 days before the end of the term, either party may request a renewal discussion. No renewal is effective unless both parties sign a written renewal or a new agreement. If Tenant remains after the end of the term without a signed renewal, the tenancy will continue only as permitted by applicable law and the rent will be the last agreed rent plus any lawful adjustment stated in a written notice.
+
+15. MOVE-OUT
+
+Tenant shall return possession by the end of the term, remove personal property and trash, return all keys and access devices, and leave the Premises broom-clean. Tenant is not required to repair ordinary wear and tear. Any cleaning or repair charge must be reasonably related to restoring the Premises and supported by an itemized statement when required by law.
+
+16. NOTICES
+
+Notices under this Agreement shall be delivered to the addresses and email accounts listed below, or to a replacement address designated in writing. A portal message may supplement, but does not replace, a notice method required by applicable law. Tenant's notice of non-renewal or early termination must be delivered by email and certified mail unless the parties later sign a different written method that is legally effective.
+
+Landlord notice address: Jordan Ellis, 417 Willow Street, Unit 3B, Portland, OR 97205; jordan.ellis@example.test
+Tenant notice address: The Premises; maya.chen@example.test; luis.romero@example.test
+
+17. DISPUTE RESOLUTION AND GOVERNING LAW
+
+The law of the state where the Premises are located governs this Agreement. Before filing a non-emergency claim, the parties will make a good-faith attempt to exchange a written description of the issue and supporting documents. This informal step does not prevent either party from seeking emergency relief, filing a claim within a statutory deadline, or using a government housing or court process.
+
+18. ENTIRE AGREEMENT AND SEVERABILITY
+
+This Agreement and signed addenda are the entire agreement about the Premises. A portal receipt, maintenance ticket, or automatically generated statement is evidence of a transaction but does not amend this Agreement unless it expressly states that it is a signed amendment. If a provision is unenforceable, the remainder remains effective to the extent allowed by law.
+
+19. SIGNATURES
+
+By signing, the parties acknowledge that they have received a copy of this Agreement and any signed addenda, and that they had an opportunity to ask questions before signing.
+
+LANDLORD
+Name: Jordan Ellis
+Signature: ______________________________    Date: __________________
+
+TENANT
+Name: Maya Chen
+Signature: ______________________________    Date: __________________
+
+TENANT
+Name: Luis Romero
+Signature: ______________________________    Date: __________________

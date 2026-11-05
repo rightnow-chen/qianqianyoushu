@@ -1,0 +1,38 @@
+request_id: req-20261027-mvp-priority
+created_at: 2026-10-27T11:58:00+08:00
+updated_at: 2026-10-27T11:58:00+08:00
+current_stage: 3
+entry_type: full_pipeline
+stage_chain: [1, 2, 3]
+user_intent_summary: 基于需求验证报告(91份问卷+访谈)与竞品分析v0.2，按需求分析三步方法论(真伪判定/需求范围/优先级P0-P5)确定签前有数的MVP与需求优先级
+output_docx_path: G:\zu-xiao-shen-main\output\req-20261027-mvp-priority\stage3\签前有数MVP与需求优先级分析.docx
+output_docx_user_specified: false
+stages:
+  stage_0:
+    status: completed
+    completed_at: 2026-10-27T11:58:00+08:00
+    decision: full_pipeline (无既有文档+创作意图)
+    output_dir: G:\zu-xiao-shen-main\output\req-20261027-mvp-priority
+  stage_1:
+    status: completed
+    completed_at: 2026-10-27T12:05:00+08:00
+    output_path: stage1/final_draft.md
+    genre: general
+    expert_used: general-writer
+    route_tag: general_writing
+    critic_decision: null
+  stage_2:
+    status: completed
+    completed_at: 2026-10-27T12:18:00+08:00
+    route: html
+    html_sub: template
+    output_path: stage2/formatted-签前有数MVP与需求优先级分析.html
+    output_format: html
+    genre: business-report
+    skills_invoked: [design-token, doc-typeset, html-review]
+    html_review_attempts: 1
+    fallback: false
+  stage_3:
+    status: in_progress
+    started_at: 2026-10-27T12:18:00+08:00
+consistency_check: null

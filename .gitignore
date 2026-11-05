@@ -1,0 +1,20 @@
+# 依赖与虚拟环境
+node_modules/
+.venv-html-to-docx/
+__pycache__/
+*.pyc
+
+# 构建与缓存产物
+dist/
+.cache/
+.vite/
+
+# 环境变量与密钥
+.env
+.env.local
+*.local
+
+# 系统与工具
+.DS_Store
+Thumbs.db
+*.log

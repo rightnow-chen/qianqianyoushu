@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="docx-page-size" content="A4">
+  <title>签前有数 MVP 与需求优先级分析</title>
+  <style>
+  @page {
+    @bottom-center { content: counter(page); }
+  }
+  @page cover {
+    @bottom-center { content: none; }
+  }
+  section[role="cover"] { page: cover; }
+
+  :root {
+    /* design tokens: business-report / business-modern */
+    --typography-fontFamily-heading: "微软雅黑", "Microsoft YaHei", "PingFang SC";
+    --typography-fontFamily-body: "微软雅黑", "Microsoft YaHei", "PingFang SC";
+    --typography-fontSize-title: 28pt;
+    --typography-fontSize-subtitle: 18pt;
+    --typography-fontSize-h1: 20pt;
+    --typography-fontSize-coverTitle: 22pt;
+    --typography-fontSize-coverCategory: 14pt;
+    --typography-fontSize-h2: 11pt;
+    --typography-fontSize-h3: 10pt;
+    --typography-fontSize-body: 9pt;
+    --typography-fontSize-small: 8pt;
+    --typography-fontSize-tiny: 7pt;
+    --typography-lineHeight-body: 1.6;
+    --typography-fontWeight-heading: 600;
+    --typography-fontWeight-body: 400;
+    --typography-fontWeight-emphasis: 500;
+    --color-primary: #1565C0;
+    --color-secondary: #0288D1;
+    --color-accent: #00897B;
+    --color-text: #212121;
+    --color-textSecondary: #616161;
+    --color-heading: #1A237E;
+    --color-divider: #E0E0E0;
+    --color-background: #FFFFFF;
+    --color-surface: #F5F7FA;
+    --spacing-paragraph: 0.75em;
+    --spacing-paragraphAfter: 0.75em;
+    --spacing-sectionGap: 2.5em;
+    --spacing-cardPadding: 1.5em;
+    --layout-marginTop: 2.5cm;
+    --layout-marginBottom: 2.0cm;
+    --layout-marginLeft: 2.5cm;
+    --layout-marginRight: 2.5cm;
+
+    /* local aliases */
+    --fs-h1: var(--typography-fontSize-h1, 20pt);
+    --fs-h2: var(--typography-fontSize-h2, 11pt);
+    --fs-h3: var(--typography-fontSize-h3, 10pt);
+    --fs-body: var(--typography-fontSize-body, 9pt);
+    --fs-small: var(--typography-fontSize-small, 8pt);
+    --ff-heading: var(--typography-fontFamily-heading);
+    --ff-body: var(--typography-fontFamily-body);
+    --lh-body: var(--typography-lineHeight-body, 1.6);
+    --fw-bold: 700;
+    --color-muted: var(--color-textSecondary, #616161);
+    --color-border: var(--color-divider, #E0E0E0);
+    --color-bg: var(--color-background, #FFFFFF);
+    --color-highlight: var(--color-surface, #F5F7FA);
+    --color-summary-bg: var(--color-surface, #F5F7FA);
+    --color-summary-border: var(--color-primary);
+    --summary-border-width: 4px;
+    --radius-card: 8px;
+    --shadow-card: 0 2px 8px rgba(0,0,0,0.08);
+    --spacing-paragraph: var(--spacing-paragraph, 0.75em);
+    --spacing-section: var(--spacing-sectionGap, 2.5em);
+    --spacing-block: var(--spacing-cardPadding, 1.5em);
+    --margin-page: var(--layout-marginLeft, 2.5cm);
+    --page-content-width: 15.6cm;
+    /* 重点数据强调（商务红） */
+    --color-emphasis: #C62828;
+    --color-warning: #E65100;
+    --color-info: #01579B;
+    --color-success: #2E7D32;
+    --callout-info-bg: rgba(1, 87, 155, 0.06);
+    --callout-warning-bg: rgba(230, 81, 0, 0.06);
+    --spacing-tight: 0.3em;
+    --spacing-h2pad: 8px;
+    --spacing-tdpad-y: 0.5em;
+    --spacing-tdpad-x: 0.8em;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--ff-body); font-size: var(--fs-body); line-height: var(--lh-body); color: var(--color-text); background: var(--color-bg); max-width: var(--page-content-width); margin-left: auto; margin-right: auto; }
+
+  /* Cover */
+  .report-cover {
+    padding: var(--margin-page);
+    background: var(--color-highlight);
+  }
+  .cover-category { font-size: var(--typography-fontSize-coverCategory, 14pt); font-family: var(--ff-heading); font-weight: var(--fw-bold); color: var(--color-primary); letter-spacing: 0.08em; margin-bottom: var(--spacing-paragraph, 0.8em); text-align: left; }
+  .cover-title { font-size: var(--typography-fontSize-coverTitle, 22pt); font-family: var(--ff-heading); font-weight: var(--fw-bold); color: var(--color-primary); margin-bottom: var(--spacing-paragraph, 0.5em); text-align: left; line-height: 1.3; }
+  .cover-subtitle { font-size: var(--typography-fontSize-subtitle, 18pt); color: var(--color-muted); margin-bottom: var(--spacing-section); text-align: left; }
+  .cover-meta { font-size: var(--fs-small); color: var(--color-muted); text-align: left; }
+
+  /* TOC */
+  .doc-toc { padding: var(--spacing-block) var(--margin-page); background: var(--color-bg); border-bottom: 1px solid var(--color-border); }
+  .toc-title { font-weight: var(--fw-bold); margin-bottom: var(--spacing-paragraph, 0.5em); }
+  .toc-list, .toc-list ol, .toc-list ul { list-style: none; list-style-type: none; padding-left: var(--spacing-block, 1.5em); }
+  .toc-list li { margin-bottom: var(--spacing-tight, 0.3em); text-indent: 0; }
+  .toc-list a { color: var(--color-primary); text-decoration: none; }
+
+  /* Executive summary */
+  .executive-summary {
+    margin: var(--spacing-section) var(--margin-page);
+    padding: var(--spacing-section);
+    border-left: var(--summary-border-width) solid var(--color-summary-border);
+    background: var(--color-summary-bg);
+  }
+  .summary-header h2 { font-size: var(--fs-h2); font-family: var(--ff-heading); }
+  .summary-badge { font-size: var(--fs-small); color: var(--color-muted); font-style: italic; }
+  .summary-highlights { margin-bottom: var(--spacing-block); }
+
+  /* data-card table (docx-safe: table instead of flex) */
+  .summary-cards { width: 100%; border-collapse: separate; border-spacing: 6px 0; margin-bottom: var(--spacing-block); }
+  .summary-cards thead th { border: none; background: transparent; padding: 0; font-weight: var(--typography-fontWeight-body, 400); }
+  .summary-cards thead .card-cell { border-top: 3px solid var(--color-primary); background: var(--color-bg); padding: var(--spacing-tdpad-y, 0.5em) var(--spacing-tdpad-x, 0.8em) 0; }
+  .summary-cards tbody .card-cell { border-top: none; }
+  .summary-cards td { width: 25%; vertical-align: top; padding: 0; }
+  .summary-cards .card-cell { border-top: 3px solid var(--color-primary); background: var(--color-bg); padding: var(--spacing-block); }
+  .summary-cards .card-title { font-size: var(--fs-small); color: var(--color-muted); margin-bottom: var(--spacing-tight, 0.3em); }
+  .summary-cards .card-value { font-size: var(--fs-h2); font-weight: var(--fw-bold); line-height: 1.1; color: var(--color-text); }
+  .summary-cards .card-unit { font-size: var(--fs-small); color: var(--color-muted); }
+  .summary-cards .card-label { font-size: var(--fs-small); color: var(--color-muted); margin-top: var(--spacing-tight, 0.3em); }
+
+  /* Main body */
+  .report-body { padding: var(--spacing-section) var(--margin-page); }
+  .report-body h2 { font-size: var(--fs-h2); font-family: var(--ff-heading); font-weight: var(--fw-bold); margin-top: var(--spacing-section); margin-bottom: var(--spacing-paragraph); color: var(--color-heading); border-left: 4px solid var(--color-primary); padding-left: var(--spacing-h2pad, 8px); }
+  .report-body h3 { font-size: var(--fs-h3); font-family: var(--ff-heading); font-weight: var(--fw-bold); margin-top: var(--spacing-block); margin-bottom: var(--spacing-paragraph); color: var(--color-text); }
+  .report-body p { margin-bottom: var(--spacing-paragraph); }
+  .report-body table { width: 100%; border-collapse: collapse; margin-bottom: var(--spacing-block); font-size: var(--fs-small); }
+  .report-body th { background: var(--color-highlight); padding: var(--spacing-tdpad-y, 0.5em) var(--spacing-tdpad-x, 0.8em); border: 1px solid var(--color-border); text-align: left; font-weight: var(--fw-bold); }
+  .report-body td { padding: var(--spacing-tdpad-y, 0.5em) var(--spacing-tdpad-x, 0.8em); border: 1px solid var(--color-border); vertical-align: top; }
+  .report-body ul, .report-body ol { margin: 0 0 var(--spacing-block, 1.5em) var(--spacing-block, 1.5em); }
+  .report-body li { margin-bottom: var(--spacing-tight, 0.35em); }
+  .data-emphasis { color: var(--color-emphasis); font-weight: var(--fw-bold); }
+
+  /* callout */
+  .callout { padding: var(--spacing-block); margin: var(--spacing-paragraph) 0; border-left: 4px solid var(--color-info); background: var(--callout-info-bg); }
+  .callout-warning { border-left-color: var(--color-warning); background: var(--callout-warning-bg); }
+
+  /* Appendix */
+  .appendix { padding: var(--spacing-section) var(--margin-page); border-top: 1px solid var(--color-border); }
+  </style>
+</head>
+<body>
+  <section role="cover" class="report-cover">
+    <p class="cover-category">产品需求分析报告</p>
+    <h1 class="cover-title">签前有数 MVP 与需求优先级分析</h1>
+    <p class="cover-subtitle">基于需求验证与竞品分析的需求分析三步法决策</p>
+    <div class="cover-meta">
+      <p>签前有数项目组 | 2026年10月27日 | V1.0</p>
+      <p>证据输入：《租房合同审查产品需求验证分析报告》（91 份有效问卷 + 用户访谈）、《签前有数》竞品分析报告 v0.2</p>
+    </div>
+  </section>
+
+  <section role="body" class="report-body" data-page-restart="1">
+    <nav class="doc-toc" aria-label="文档目录">
+      <p class="toc-title">目录</p>
+      <ol class="toc-list">
+        <li><a href="#section-1">一、分析框架与数据边界</a></li>
+        <li><a href="#section-2">二、Step 1：分辨需求真伪</a></li>
+        <li><a href="#section-3">三、Step 2：确定需求范围</a></li>
+        <li><a href="#section-4">四、Step 3：需求优先级（P0-P5）</a></li>
+        <li><a href="#section-5">五、收尾结论</a></li>
+        <li><a href="#section-6">六、下一步验证事项</a></li>
+      </ol>
+    </nav>
+
+    <div class="executive-summary">
+      <div class="summary-header">
+        <h2>执行摘要</h2>
+        <span class="summary-badge">Executive Summary</span>
+      </div>
+      <table class="summary-cards">
+        <thead>
+          <tr>
+            <th><div class="card-cell"><p class="card-title">有效样本</p></div></th>
+            <th><div class="card-cell"><p class="card-title">合同问题覆盖</p></div></th>
+            <th><div class="card-cell"><p class="card-title">纸质/图片合同</p></div></th>
+            <th><div class="card-cell"><p class="card-title">竞品空白维度</p></div></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><div class="card-cell"><p class="card-value">91<span class="card-unit"> 份</span></p></div></td>
+            <td><div class="card-cell"><p class="card-value">58.2%</p></div></td>
+            <td><div class="card-cell"><p class="card-value">70.3%</p></div></td>
+            <td><div class="card-cell"><p class="card-value">3<span class="card-unit"> 项</span></p></div></td>
+          </tr>
+          <tr>
+            <td><div class="card-cell"><p class="card-label">问卷 + 用户访谈</p></div></td>
+            <td><div class="card-cell"><p class="card-label">A1，53/91 人</p></div></td>
+            <td><div class="card-cell"><p class="card-label">B1，OCR 为入口门槛</p></div></td>
+            <td><div class="card-cell"><p class="card-label">话术/待核实/一致性核对</p></div></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="summary-body">
+        <p>本报告以需求分析三步法（分辨真伪 → 确定范围 → 排定优先级）为框架，对 91 份有效问卷、用户访谈与竞品分析 v0.2 的证据进行结构化收敛，输出签前有数的 MVP 定义与 P0-P5 优先级。<strong>结论：1.0 版聚焦 P0（行业达标线：OCR 输入、风险识别、原文定位、修改建议、隐私合规）+ P1（差异化：分场景话术、待核实清单、合同内外一致性核对），P1 中"确定性分级"带准确性前置验证条件；身份核验、短租专项、商业化等列为 P4-P5 不做。</strong></p>
+      </div>
+    </div>
+
+    <main>
+      <h2 id="section-1">一、分析框架与数据边界</h2>
+      <p>本报告采用需求分析三步法组织决策：第一步分辨需求真伪（标准：真实痛点、高频使用、愿意付出成本；方法：痛点击穿溯源、用户分层、成本-收益验证、MVP 验证法）；第二步确定需求范围（最小 MVP → 独立模块闭环 → 迭代 Roadmap）；第三步按影响面、痛度、频次排定 P0-P5 优先级，1.0 版聚焦 P0 与 P1。</p>
+      <p><strong>数据边界说明</strong>：有效样本 91 份（原始回收 122 份，剔除 Q1 不合格 18 份、答题过快 13 份），部分子群体不足 15 人，比例推断需谨慎；访谈发现适合定性判断，不代表发生率。</p>
+      <div class="callout callout-warning">
+        <p><strong>数据勘误提示：</strong>A4 满意度均值原稿 3.25 存在分项人数（合计 36 人）与分母（40 人）不自洽问题，按 36 人实算约 <span class="data-emphasis">3.06</span>。本报告引用 AI 信任相关结论时均标注"待重算核实"，建议回原始问卷确认差额 4 人的情况后再引用。</p>
+      </div>
+
+      <h2 id="section-2">二、Step 1：分辨需求真伪</h2>
+      <p>判断标准：用户有没有真实痛点、高频使用、愿意付出成本（时间/付费）。以下用四个核心方法逐一判定：痛点击穿溯源、用户分层、成本-收益验证、MVP 验证法。</p>
+
+      <h3>（一）真需求（证据充分，进入 MVP）</h3>
+      <p><strong>1. 签约前识别高风险条款与合同外待核实事项。</strong>痛点击穿（5-Why）：用户说"帮我审合同"→ 追问为什么 →"没时间看"（用户 C"字太小没仔细看"、用户 E"签完没看，搬家太累了"、用户 M"难的是不给你时间的那种压迫感"）→ 为什么怕 → 押金被扣、额外费用（用户 B 提前退租被扣全部押金 <span class="data-emphasis">3000 元</span>）→ 真实需求不是"法律分析"，而是"在签约前几分钟内判断：这份合同能不能签，有坑的话怎么改、怎么说"。痛度：58.2% 遇到合同问题，<span class="data-emphasis">23.1% 损失 ≥2000 元</span>，且签约前几分钟是不可再生的决策窗口。方案替代性：问亲友（经验不适用）、小红书（个案）、通用大模型（无原文定位、无固定结构、术语错误）均有明显缺陷。</p>
+      <p><strong>2. 多格式输入 + OCR。</strong>B1 显示 <span class="data-emphasis">70.3%</span> 的用户手里是纸质或图片合同，OCR 不是体验增强而是入口门槛；用户 C 明确说"让我下载下来再上传到另一个平台，大概率懒得用"——输入摩擦必须压到最低。</p>
+      <p><strong>3. 修改建议 + 分场景沟通话术。</strong>用户 D："我要的不仅是标出风险，还要告诉我这个风险怎么改、改完发给房东怎么说"；用户 B："最需要的不是法律分析，而是普通人能看懂的风险标注 + 怎么用"。B2 显示 <span class="data-emphasis">34.1%</span> 愿意修改对方合同，行动意愿真实存在。竞品分析确认：国内竞品与通用大模型公开资料中均未见签约前分场景话术；谈判信见于海外产品（TheLeaseCheck / LeaseSnipe / LeaseChat），无中文分场景版本。真需求 + 差异化空白，双重成立。</p>
+      <p><strong>4. 待核实清单（合同主体 / 出租人身份 / 转租授权 / 口头承诺 / 合同外费用）。</strong>访谈证据：用户 A"中介口头说物业费房东交，但合同里没写"；用户 E"我怎么知道跟我签合同的人是不是有权出租的人"；用户 L"管理费、水电费涨价都是口头通知"。证据等级说明：问卷未测发生率，属定性访谈发现；但竞品同样空白，且只要命中一次即是重大损失场景。进入 MVP，上线后用埋点验证使用率。</p>
+      <p><strong>5. 隐私脱敏 + 不存储 + 责任边界声明（合规类必做）。</strong>用户 M："合同里有我的姓名、身份证号、住址，上传到一个不明平台我会担心隐私。"按 AI 产品避坑原则：合规类需求必须处理，不以商业回报衡量；同时 LeaseSnipe 案例证明"免注册 + 不存储"是建立信任的最短路径——合规与增长在此重合。</p>
+
+      <h3>（二）存疑需求（用 MVP 验证法处理）</h3>
+      <p><strong>确定性分级 + 转律师提示：</strong>A4 显示 44% 用过 AI，满意度均值待重算（约 3.06）——用户有使用基础但信任未充分建立。方向正确（多数竞品声明"非法律意见"但边界模糊），但前提是分级本身要准：标"确定"的条款若被专业人士推翻，信任崩塌比通用免责更糟。处理：保留在 P1，带前置条件——先用评测集验证"确定"标注的准确率，达标后再上线（V1.1）。</p>
+
+      <h3>（三）伪需求与暂不做（逐条给出判定方法）</h3>
+      <table>
+        <thead>
+          <tr><th>需求</th><th>判定方法</th><th>结论</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>出租人身份真伪核验</td><td>成本-收益验证</td><td>用户 E 称"刚需中的刚需"，痛点为真，但技术成本（政务/征信数据源）与合规成本远超当前可交付价值；降级为"待核实提醒"（提示核对，不判断真伪），V2.0 评估合作方案</td></tr>
+          <tr><td>短租/二房东/转租/隔断房专项</td><td>用户分层</td><td>非核心目标用户（应届生首次租房主流程）的高频需求，属低频特殊场景；留作后续专项验证方向</td></tr>
+          <tr><td>预算/房源匹配/地图通勤/验房/退租证据包</td><td>证据检查</td><td>本轮需求验证未覆盖，无任何用户证据；不符合"签约前几分钟"核心场景</td></tr>
+          <tr><td>线上签约流程内嵌</td><td>成本-收益验证</td><td>访谈支持（入口靠近签约动作），但需平台合作，当前资源不可达；暂缓</td></tr>
+          <tr><td>商业化/付费墙</td><td>MVP 验证法</td><td>付费意愿未验证；竞品价格调研（$9/份、4 元/页）显示单次审查撑不起商业化；MVP 阶段不设计收费点</td></tr>
+          <tr><td>0-100 评分体系照搬 TheLeaseCheck</td><td>成本-收益验证</td><td>需建中国租房本地规则库支撑评分，成本高且准确性未经横测；用三级严重度（高/中/低）替代</td></tr>
+          <tr><td>风险规则按问卷频次排序</td><td>证据复核</td><td>B4 三项（维修 25/退租 24/损坏 20）差距在 n=91 下无区分意义，且频次不等于严重度；降为规则优先级参考方法，与损失金额综合排序</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="section-3">三、Step 2：确定需求范围</h2>
+      <p>核心思路：先做最小 MVP，再做模块闭环，最后迭代升级，拒绝贪多求全。</p>
+
+      <h3>（一）最小 MVP 闭环（一条核心旅程）</h3>
+      <p>合同输入（拍照/图片/PDF/Word/粘贴，含 OCR）→ 风险摘要（按严重度排序，押金/提前退租/维修/水电附加费优先）→ 单条风险详情（原文定位 + 可能后果 + 修改建议 + 分场景话术）→ 待核实清单 → 修改后复查。用户全程只需要完成一件事：上传合同 → 在签约前拿到"能不能签、怎么改、怎么说、还要问什么"的结论。</p>
+
+      <h3>（二）独立模块闭环（每个功能有始有终，不断"断头路"）</h3>
+      <table>
+        <thead>
+          <tr><th>模块</th><th>闭环路径</th><th>验收标准</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>输入模块</td><td>拍照/上传/粘贴 → OCR → 文本确认</td><td>覆盖 70.3% 纸质/图片场景；OCR 失败可手动粘贴兜底；上传前提示脱敏</td></tr>
+          <tr><td>风险摘要模块</td><td>识别 → 严重度排序 → 定位原文</td><td>押金/退租/维修/附加费优先呈现；正常条款不标风险（埋雷合同 M8 专项测试误报）</td></tr>
+          <tr><td>行动模块</td><td>风险 → 修改建议 → 话术（礼貌版/协商版）</td><td>话术可直接复制发给房东/中介，无需二次加工</td></tr>
+          <tr><td>待核实模块</td><td>生成清单 → 逐项勾选 → 提示补写入合同</td><td>覆盖主体/身份/授权/口头承诺/合同外费用五类</td></tr>
+          <tr><td>复查模块</td><td>修改后重新评估 → 前后对比</td><td>确认修改是否消除风险，形成闭环</td></tr>
+        </tbody>
+      </table>
+
+      <h3>（三）主流 / 边缘 / 异常需求分层</h3>
+      <table>
+        <thead>
+          <tr><th>拆解维度</th><th>需求内容</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>主流流程需求（核心）</td><td>OCR 多格式输入；重点条款识别（押金/提前退租/维修/水电附加费）；风险按严重度排序；原文定位；后果解释；修改建议；分场景话术；待核实清单；修改后复查</td></tr>
+          <tr><td>边缘流程需求（辅助）</td><td>审查结果导出为文本/图片（便于发给亲友参谋）；首笔支出/入住成本汇总（可选）；预算登记（可选）</td></tr>
+          <tr><td>异常流程需求（兜底）</td><td>OCR 识别失败 → 提示手动粘贴文本；AI 不确定 → 明确标注"存疑"并建议咨询专业人士；正常条款误报 → 提供反馈入口；全局常驻隐私说明（脱敏上传 + 不存储）与非法律意见声明</td></tr>
+        </tbody>
+      </table>
+
+      <h3>（四）产品迭代 Roadmap</h3>
+      <table>
+        <thead>
+          <tr><th>版本</th><th>范围</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>V1.0（MVP）</td><td>核心闭环上线：输入 + 风险摘要 + 修改建议 + 话术 + 待核实清单 + 复查；隐私脱敏与免责声明作为默认能力内置</td></tr>
+          <tr><td>V1.1</td><td>确定性分级 + 转律师提示（前置：评测集验证"确定"标注准确率达标）；话术库按真实反馈扩充；接入政府示范文本作对照规则库；误报优化</td></tr>
+          <tr><td>V2.0</td><td>多合同管理、费用/成本汇总、城市级租客权利库（维修时限/押金退还等地方规则）；据数据决策是否推进身份核验合作与特殊场景（短租/二房东）专项</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="section-4">四、Step 3：需求优先级（P0-P5）</h2>
+      <p>按影响面、痛度（方案替代性）、频次三个维度评级。<strong>频次说明</strong>：租房签约属低频场景（约 1-2 年一次），但痛度极高（23.1% 损失 ≥2000 元）、时机不可错过（签约前几分钟是唯一窗口）、且现有方案替代性弱——按"痛度与替代性越强优先级越高"，P0 判定以痛度为主要依据。</p>
+      <table>
+        <thead>
+          <tr><th>等级</th><th>需求</th><th>判定依据</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>P0</td><td>多格式输入 + OCR</td><td>B1 70.3%；入口门槛，无此功能 7 成用户无法使用</td></tr>
+          <tr><td>P0</td><td>重点条款识别 + 严重度排序</td><td>A1 58.2%；访谈风险类型高度集中（押金/退租/维修/附加费）</td></tr>
+          <tr><td>P0</td><td>原文定位 + 后果解释</td><td>信任基础；用户 B"普通人能看懂"；竞品达标线</td></tr>
+          <tr><td>P0</td><td>修改建议（改写条款）</td><td>用户 D 直接表达；B2 34.1% 愿改合同</td></tr>
+          <tr><td>P0</td><td>隐私脱敏 + 不存储 + 责任边界声明</td><td>用户 M 明确担忧；AI 产品合规类必做</td></tr>
+          <tr><td>P1</td><td>分场景话术（礼貌版/协商版）</td><td>竞品空白 + 用户证据双重成立；差异化核心</td></tr>
+          <tr><td>P1</td><td>待核实清单</td><td>竞品空白 + 访谈证据；填补最大空白</td></tr>
+          <tr><td>P1</td><td>合同内外一致性核对（口头 vs 书面）</td><td>竞品空白 + 用户 A/L 证据；微创新候选首位</td></tr>
+          <tr><td>P1</td><td>修改后复查</td><td>MVP 闭环收尾必需；得理已有，属达标线</td></tr>
+          <tr><td>P1（带前置条件）</td><td>确定性分级 + 转律师提示</td><td>价值属 P1，但须先过准确性验证，未达标则顺延 V1.1</td></tr>
+          <tr><td>P2-P3</td><td>审查结果导出、费用汇总、预算登记、多合同对比、城市规则库</td><td>锦上添花，验证核心闭环后再做</td></tr>
+          <tr><td>P4-P5</td><td>身份真伪核验、短租/二房东专项、预算房源匹配、验房退租、线上签约内嵌、商业化</td><td>伪/暂缓需求：成本高、无证据或未验证</td></tr>
+        </tbody>
+      </table>
+      <p><strong>1.0 版聚焦 P0 + P1</strong>：P0 保证"能用"（行业达标线），P1 保证"不同"（竞品空白即差异化）。</p>
+
+      <h2 id="section-5">五、收尾结论</h2>
+      <div class="callout">
+        <p><strong>一句话结论：</strong>签前有数为刚毕业、第一次租房的年轻人解决"签约前看不懂合同、不知道坑在哪、不知道怎么改和怎么说"的痛点，做【合同 OCR 输入 + 风险摘要 + 原文定位 + 修改建议 + 分场景话术 + 待核实清单 + 修改后复查】的 P0-P1 核心功能，不做【身份真伪核验、短租/二房东专项、验房退租、房源匹配、商业化】等无证据或成本收益不成立的功能，靠【签约前中文分场景话术 + 合同内外一致性核对 + 合同外待核实清单】这三个公开资料未见成熟做法且自有用户证据的差异化能力，区别于通用大模型与通用合同审查工具。</p>
+      </div>
+      <h3>（一）差异化切入点对照</h3>
+      <table>
+        <thead>
+          <tr><th>切入点</th><th>应用</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>垂直场景深耕</td><td>只做租房单场景（对比得理/通义法睿的全品类法律审查），表达与规则全部为租房定制</td></tr>
+          <tr><td>用户分层设计</td><td>面向应届生首次租房：大白话 + 行动导向，不使用律师向功能（得理个人版教训）</td></tr>
+          <tr><td>体验终局</td><td>把竞品止步的"标风险"推进为"风险 → 修改 → 话术 → 待核实 → 复查"完整闭环</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="section-6">六、下一步验证事项</h2>
+      <ol>
+        <li>用埋雷合同 M1-M8 横测竞品与本产品，验证 3 项差异化是否真实成立；</li>
+        <li>脱敏真实合同可用性测试，观察话术复制率与待核实清单勾选率；</li>
+        <li>回原始问卷重算 A4 满意度均值（分项人数 36 vs 分母 40 不自洽）；</li>
+        <li>上线后跟踪留存与采纳率，验证低频场景下的"用完即走"是否成立。</li>
+      </ol>
+    </main>
+  </section>
+</body>
+</html>
