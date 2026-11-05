@@ -34,12 +34,25 @@ npm run dev:full        # 前端 + 本地 AI 代理（8787）
 
 ```bash
 cd app
-npm run build           # 构建通过 = 引用路径无断裂
-node tests/legal-basis.test.mjs
+npm run build                      # 构建通过 = 引用路径无断裂
+node tests/unit/legal-basis.test.mjs
+npx playwright test --list         # 确认 e2e 用例可见
 ```
+
+测试与脚本的分工：
+
+| 位置 | 用途 | 运行方式 |
+|---|---|---|
+| `app/tests/unit/` | 纯 Node 断言测试，不启浏览器 | `node tests/unit/xxx.test.mjs` |
+| `app/tests/e2e/` | Playwright 端到端用例 | `npm run test:e2e` |
+| `app/scripts/` | 基准评测、数据生成、真实合同跑批 | `npm run test:xxx` |
+| `app/scripts/verify/` | 一次性界面走查与截图 | `node scripts/verify/_flow1.mjs` |
+
+`scripts/verify/` 的截图统一输出到 `scripts/verify/out/`（已被 git 忽略），不会再污染工程根目录。
 
 ## 当前状态
 
 - 已完成：目录分层（P0 基线 + P1 搬运），构建与单元测试均通过。
+- 已完成 P2：12 个临时走查脚本收进 `app/scripts/verify/`（路径改为按项目根解析，截图落到 `out/`）；`app/tests/` 拆为 `unit/`（17 个）与 `e2e/`（5 个文件 29 条用例），`playwright.config.js` 与 13 条 npm 脚本同步更新。
 - 已归档：截图、原型构建快照、渲染产物全部移入 `archive/`，一份未删。
-- 待推进（P2，可选）：`app/` 根层 12 个临时 `_flow*.mjs` / `verify-*.mjs` 收进 `scripts/verify/`；`tests/` 拆分 e2e 与单测；`server/ai-proxy.mjs`（1431 行）按资源拆分。
+- 待推进（可选）：`server/ai-proxy.mjs`（1431 行）按资源拆分为 `server/routes/` 与 `server/services/`；`generated-reports/` 与 `real-contract-samples/` 可进一步并入 `app/tests/fixtures/`。

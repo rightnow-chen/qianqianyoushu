@@ -15,6 +15,7 @@ screenshots/
 .agents/
 .claude/
 tmp-*.png
+scripts/verify/out/
 .tmp-cloudrun-*/
 .tmp-*-ocr-result.json
 src/*.bak-*
