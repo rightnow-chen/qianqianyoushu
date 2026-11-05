@@ -54,7 +54,20 @@ check('安全限制：拒绝伪造 PDF、未知格式和超大文件', async () 
 })
 
 check('接口与页面：文档上传与图片 OCR 入口可用', async () => {
-  const serverSource = await readFile(new URL('../server/ai-proxy.mjs', import.meta.url), 'utf8')
+  // 网关已按路由拆分：把装配入口、横切中间件与路由源码拼起来做静态断言
+  const serverSources = await Promise.all([
+    'ai-proxy.mjs',
+    'lib/guards.mjs',
+    'routes/ai.mjs',
+    'routes/auth.mjs',
+    'routes/contract.mjs',
+    'routes/health.mjs',
+    'routes/miniapp-ai.mjs',
+    'routes/ocr.mjs',
+    'routes/rag.mjs',
+    'routes/subsidy.mjs',
+  ].map((file) => readFile(new URL(`../server/${file}`, import.meta.url), 'utf8')))
+  const serverSource = serverSources.join('\n')
   const pageSource = await readFile(new URL('../miniapp/src/pages/contract/index.jsx', import.meta.url), 'utf8')
   assert.match(serverSource, /\/api\/miniapp\/contract\/parse/)
   assert.match(serverSource, /\/api\/miniapp\/ocr\/image/)

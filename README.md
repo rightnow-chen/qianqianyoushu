@@ -50,9 +50,27 @@ npx playwright test --list         # 确认 e2e 用例可见
 
 `scripts/verify/` 的截图统一输出到 `scripts/verify/out/`（已被 git 忽略），不会再污染工程根目录。
 
+## 服务端结构
+
+`app/server/ai-proxy.mjs` 只做装配（83 行）：CORS、JSON 解析、挂路由、静态托管、监听。具体能力下沉为：
+
+| 位置 | 职责 |
+|---|---|
+| `server/config.mjs` | 环境变量、九家模型提供商预设与解析、路径常量 |
+| `server/lib/logger.mjs` | 白名单字段的结构化脱敏日志 |
+| `server/lib/guards.mjs` | 限流、本地额度、小程序鉴权、来源校验、上传解析 |
+| `server/lib/usage-store.mjs` | 小程序额度与幂等记录存储单例 |
+| `server/services/ai-completion.mjs` | 上游模型调用，含超时与客户端取消 |
+| `server/services/ocr.mjs` | 智谱视觉 → RapidOCR → Tesseract 三级兜底 |
+| `server/services/miniapp-chat.mjs` | 小程序问答与分段合同复核的编排 |
+| `server/routes/*.mjs` | 按资源拆分：health / auth / ai / miniapp-ai / rag / ocr / contract / subsidy |
+
+依赖方向单向：`config → lib → services → routes → ai-proxy`，无循环引用。
+
 ## 当前状态
 
 - 已完成：目录分层（P0 基线 + P1 搬运），构建与单元测试均通过。
 - 已完成 P2：12 个临时走查脚本收进 `app/scripts/verify/`（路径改为按项目根解析，截图落到 `out/`）；`app/tests/` 拆为 `unit/`（17 个）与 `e2e/`（5 个文件 29 条用例），`playwright.config.js` 与 13 条 npm 脚本同步更新。
 - 已归档：截图、原型构建快照、渲染产物全部移入 `archive/`，一份未删。
-- 待推进（可选）：`server/ai-proxy.mjs`（1431 行）按资源拆分为 `server/routes/` 与 `server/services/`；`generated-reports/` 与 `real-contract-samples/` 可进一步并入 `app/tests/fixtures/`。
+- 已完成 P3：`server/ai-proxy.mjs` 由 1431 行拆为 83 行装配入口 + `config / lib / services / routes` 四层（共 15 个模块），对外导出保持兼容。
+- 待推进（可选）：`app/generated-reports/` 与 `app/real-contract-samples/` 可并入 `app/tests/fixtures/`；`src/App.jsx` 有一处既有的未使用变量告警待清理。

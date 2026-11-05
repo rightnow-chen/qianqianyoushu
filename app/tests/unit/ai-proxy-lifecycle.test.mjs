@@ -3,7 +3,7 @@ import { spawn } from 'node:child_process'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
 const child = spawn(process.execPath, ['server/ai-proxy.mjs'], {
   cwd: root,
   env: { ...process.env, AI_PROXY_PORT: '0' },
