@@ -16,7 +16,9 @@
 | `deliverables/test-kits/` | 两套租房合同测试包（含标准答案与 zip） | 做效果验证 |
 | `deliverables/decks/` | 面试答辩手册 | 面试 |
 | `deliverables/samples/` | 海外合同样本 | 对比参考 |
-| `archive/` | 历史渲染产物、构建快照、截图 | 只在需要回溯时看 |
+| `archive/render/` | 历史文档渲染产物与 QA 页面 | 排查排版问题 |
+| `archive/screenshots/` | 24 张迭代过程截图 | 回看旧版界面 |
+| `archive/builds/` | 原型构建快照（zip + 解压目录） | 需要对照旧版本时 |
 
 ## 运行代码
 
@@ -39,4 +41,5 @@ node tests/legal-basis.test.mjs
 ## 当前状态
 
 - 已完成：目录分层（P0 基线 + P1 搬运），构建与单元测试均通过。
-- 未做（按需再推进）：`app/` 根层 24 张截图与 12 个临时 `_flow*.mjs` 移入 `archive/`；`tests/` 拆分 e2e 与单测；`server/ai-proxy.mjs`（1431 行）按资源拆分。
+- 已归档：截图、原型构建快照、渲染产物全部移入 `archive/`，一份未删。
+- 待推进（P2，可选）：`app/` 根层 12 个临时 `_flow*.mjs` / `verify-*.mjs` 收进 `scripts/verify/`；`tests/` 拆分 e2e 与单测；`server/ai-proxy.mjs`（1431 行）按资源拆分。
