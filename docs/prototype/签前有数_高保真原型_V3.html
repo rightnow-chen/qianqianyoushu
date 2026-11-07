@@ -1,0 +1,2311 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-page-node-id="cit1hU9fU018weMlJBadIU">
+<head data-page-node-id="imzyV5qhgDEcMM5mseTspR">
+<meta charset="utf-8" data-page-node-id="kdePScJQhiEUZGBZlYFZXA">
+<meta name="viewport" content="width=device-width, initial-scale=1" data-page-node-id="viQMt7wCQYtyQCKdKTdrmX">
+<title>签前有数 · 房屋租赁合同 AI 审查</title>
+<meta name="description" content="签前有数：签约前 3 分钟看懂房屋租赁合同，逐条给出修改建议与可直接发给房东的话术。" data-page-node-id="nepwKxSbwiNIxoaKPFGrNB">
+<style>
+:root{
+  --blue:#1A5FFF; --blue-d:#1249CC; --blue-bg:#EAF0FF; --blue-bg2:#F4F8FF;
+  --ink:#1B2430; --ink2:#485466; --ink3:#78849A; --ink4:#9AA4B2;
+  --line:#E4E9F0; --line2:#EDF1F6; --bg:#F5F7FA; --card:#fff;
+  --red:#D93B3B; --red-bg:#FDF1F0; --amber:#C07A12; --amber-bg:#FDF7EA;
+  --gray:#6B7686; --gray-bg:#F2F4F7; --green:#0F8A61; --green-bg:#EAF8F1;
+  --paper:#FFFDF8; --paperline:#E8E2D3;
+  --serif:"Songti SC","SimSun","Source Han Serif SC",serif;
+  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei","Source Han Sans SC","Segoe UI",sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:var(--sans);font-size:13px;color:var(--ink);background:var(--bg);
+  -webkit-font-smoothing:antialiased;line-height:1.55;font-feature-settings:"tnum"}
+button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit;font-size:inherit}
+a{color:var(--blue);text-decoration:none}
+input,textarea,select{font-family:inherit;font-size:inherit;color:inherit}
+::selection{background:#CFE0FF}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-thumb{background:#D3DAE4;border-radius:8px}
+::-webkit-scrollbar-track{background:transparent}
+
+/* ---------- atoms ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:32px;padding:0 13px;
+  border:1px solid var(--line);border-radius:6px;background:#fff;color:var(--ink2);font-size:12.5px;
+  transition:background .15s,border-color .15s,color .15s;white-space:nowrap}
+.btn:hover{border-color:#C9D3E2;color:var(--ink);background:#FBFCFE}
+.btn.primary{background:var(--blue);border-color:var(--blue);color:#fff;font-weight:500}
+.btn.primary:hover{background:var(--blue-d);border-color:var(--blue-d)}
+.btn.ghost{border-color:transparent;background:transparent;color:var(--ink3)}
+.btn.ghost:hover{background:var(--gray-bg);color:var(--ink2)}
+.btn.sm{height:28px;padding:0 10px;font-size:12px;border-radius:5px}
+.btn.xs{height:24px;padding:0 8px;font-size:11.5px;border-radius:4px}
+.btn.lg{height:40px;padding:0 20px;font-size:13.5px;border-radius:7px}
+.btn svg{width:14px;height:14px;flex:none}
+
+.tag{display:inline-flex;align-items:center;gap:4px;height:20px;padding:0 7px;border-radius:4px;
+  font-size:11.5px;font-weight:500;white-space:nowrap}
+.tag.must{background:var(--red-bg);color:var(--red)}
+.tag.check{background:var(--amber-bg);color:var(--amber)}
+.tag.note{background:var(--gray-bg);color:var(--gray)}
+.tag.blue{background:var(--blue-bg);color:var(--blue)}
+.tag.dim{background:var(--gray-bg);color:var(--ink3);font-weight:400}
+.tag.line{background:#fff;border:1px solid var(--line);color:var(--ink3);font-weight:400}
+
+.sp{flex:1}
+.mono{font-variant-numeric:tabular-nums}
+.sechd{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink3);margin-bottom:8px}
+.sechd b{font-size:12.5px;color:var(--ink);font-weight:600}
+.sechd::after{content:"";flex:1;height:1px;background:var(--line2)}
+
+/* ---------- topbar ---------- */
+.tb{height:48px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;
+  padding:0 20px;gap:14px;position:sticky;top:0;z-index:60}
+.brand{display:flex;align-items:center;gap:9px}
+.logo{width:26px;height:26px;border-radius:6px;background:var(--blue);color:#fff;display:flex;
+  align-items:center;justify-content:center;font-size:13px;font-weight:700;letter-spacing:-1px}
+.bname{font-size:14.5px;font-weight:600;letter-spacing:.2px}
+.bsub{font-size:11.5px;color:var(--ink4);border-left:1px solid var(--line);padding-left:10px;margin-left:2px}
+.tbr{margin-left:auto;display:flex;align-items:center;gap:2px}
+.tlink{font-size:12px;color:var(--ink3);padding:6px 9px;border-radius:5px}
+.tlink:hover{background:var(--gray-bg);color:var(--ink)}
+.tdiv{width:1px;height:14px;background:var(--line);margin:0 4px}
+
+.steps{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--ink4)}
+.step{display:flex;align-items:center;gap:6px;padding:4px 8px 4px 4px;border-radius:20px}
+.step i{width:16px;height:16px;border-radius:50%;border:1px solid #D6DDE7;display:flex;align-items:center;
+  justify-content:center;font-size:10px;font-style:normal;color:var(--ink4);background:#fff}
+.step.done{color:var(--ink3)}
+.step.done i{background:var(--blue-bg);border-color:transparent;color:var(--blue)}
+.step.cur{background:var(--blue-bg);color:var(--blue);font-weight:500}
+.step.cur i{background:var(--blue);border-color:var(--blue);color:#fff}
+.sarrow{color:#CBD3DE;font-size:10px}
+
+/* ---------- screens ---------- */
+.screen{display:none}
+.screen.on{display:block}
+
+/* ---------- landing ---------- */
+.land{min-height:calc(100vh - 48px);display:flex;align-items:center;justify-content:center;padding:30px 24px;
+  background:linear-gradient(180deg,#FAFBFD 0%,#F5F7FA 100%);position:relative;overflow:hidden}
+.land::before{content:"";position:absolute;inset:0;background-image:
+  linear-gradient(rgba(26,95,255,.028) 1px,transparent 1px),linear-gradient(90deg,rgba(26,95,255,.028) 1px,transparent 1px);
+  background-size:56px 56px;pointer-events:none;
+  mask-image:radial-gradient(ellipse 70% 60% at 50% 40%,#000 30%,transparent 100%)}
+.land::after{content:"房屋租赁合同";position:absolute;right:-10px;top:60px;font-family:var(--serif);
+  font-size:104px;color:rgba(27,36,48,.018);writing-mode:vertical-rl;letter-spacing:16px;pointer-events:none}
+.lbox{width:100%;max-width:1040px;position:relative;z-index:1}
+.eyebrow{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--blue);letter-spacing:.4px;margin-bottom:12px}
+.eyebrow::before{content:"";width:18px;height:2px;background:var(--blue);border-radius:2px}
+.h1{font-size:34px;line-height:1.42;font-weight:600;letter-spacing:-.2px;margin:0 0 10px}
+.h1 em{font-style:normal;color:var(--blue);background:linear-gradient(180deg,transparent 62%,rgba(26,95,255,.13) 62%);padding:0 1px}
+.sub{font-size:13px;color:var(--ink3);line-height:1.7}
+.sub b{color:var(--ink2);font-weight:500}
+
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:24px 0 14px}
+.fact{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--line);
+  border-radius:7px;padding:11px 13px}
+.fic{width:28px;height:28px;border-radius:6px;background:var(--blue-bg2);color:var(--blue);
+  display:flex;align-items:center;justify-content:center;flex:none}
+.fic svg{width:15px;height:15px}
+.ft1{font-size:12.5px;font-weight:600;line-height:1.4}
+.ft2{font-size:11.5px;color:var(--ink4);line-height:1.4}
+
+.drop{border:1.5px dashed #C6D2E4;border-radius:9px;background:#fff;padding:22px 20px 18px;text-align:center;
+  transition:border-color .18s,background .18s,box-shadow .18s;position:relative}
+.drop:hover{border-color:#9DB8E8;background:#FCFDFF}
+.drop.over{border-color:var(--blue);background:var(--blue-bg2);box-shadow:0 0 0 4px rgba(26,95,255,.07)}
+.dic{width:38px;height:38px;border-radius:9px;background:var(--blue-bg2);color:var(--blue);
+  display:flex;align-items:center;justify-content:center;margin:0 auto 10px}
+.dic svg{width:19px;height:19px}
+.dt{font-size:14px;font-weight:600;margin-bottom:3px}
+.ds{font-size:11.5px;color:var(--ink4)}
+.dbtns{display:flex;gap:8px;justify-content:center;margin:12px 0 9px}
+.dalt{font-size:11.5px;color:var(--ink4)}
+.dalt a{color:var(--blue);border-bottom:1px solid rgba(26,95,255,.28);padding-bottom:1px}
+
+.safebar{display:flex;align-items:center;justify-content:center;gap:18px;margin-top:10px;
+  height:32px;background:#fff;border:1px solid var(--line2);border-radius:6px;font-size:11.5px;color:var(--ink3)}
+.safebar span{display:flex;align-items:center;gap:5px}
+.safebar svg{width:12px;height:12px;color:var(--green)}
+.lfoot{margin-top:14px;text-align:center;font-size:11px;color:#A6AEBA;line-height:1.9}
+
+.cover{display:flex;align-items:center;justify-content:center;gap:7px;margin-top:11px;font-size:11.5px;color:#98A2B2;flex-wrap:wrap}
+.cover b{font-weight:500;color:#78849A}
+.cover span{color:#B7BEC9}
+
+/* ---------- task pages (upload / confirm / analyzing) ---------- */
+.task{min-height:calc(100vh - 48px);padding:16px 24px 20px}
+.tinner{max-width:1120px;margin:0 auto}
+.crumb{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink4);margin-bottom:12px}
+.crumb b{color:var(--ink);font-weight:600;font-size:13px}
+.crumb .dot{width:3px;height:3px;border-radius:50%;background:#C9D2DE}
+.panel{background:#fff;border:1px solid var(--line);border-radius:9px}
+.phd{display:flex;align-items:center;gap:8px;padding:11px 14px;border-bottom:1px solid var(--line2)}
+.phd .t{font-size:13px;font-weight:600}
+.phd .s{font-size:11.5px;color:var(--ink4)}
+.pbd{padding:13px 14px}
+.grid2{display:grid;grid-template-columns:1fr 400px;gap:14px;align-items:start}
+
+.fcard{display:flex;align-items:center;gap:10px;background:var(--blue-bg2);border:1px solid #DCE7FA;
+  border-radius:7px;padding:9px 11px}
+.fic2{width:32px;height:32px;border-radius:6px;background:#fff;border:1px solid #DCE7FA;color:var(--blue);
+  display:flex;align-items:center;justify-content:center;flex:none;font-size:9px;font-weight:700}
+.fname{font-size:12.5px;font-weight:600;display:flex;align-items:center;gap:6px}
+.fmeta{font-size:11px;color:var(--ink4);margin-top:1px}
+.thumbs{display:flex;gap:8px;flex-wrap:wrap}
+.thumb{width:82px}
+.thb{height:96px;border:1px solid var(--line);border-radius:4px;background:#fff;position:relative;
+  display:flex;align-items:flex-end;justify-content:center;overflow:hidden}
+.thb::before{content:"";position:absolute;left:9px;right:9px;top:10px;bottom:24px;background:repeating-linear-gradient(#E9EDF3 0 2.5px,transparent 2.5px 8.5px)}
+.thb.bad{border-color:#EBC79A;background:#FFFBF3}
+.thb .pg{font-size:10px;color:var(--ink4);background:#fff;border-top:1px solid var(--line2);width:100%;
+  text-align:center;padding:2px 0}
+.thb .flag{position:absolute;top:4px;right:4px;font-size:9px;padding:1px 4px;border-radius:3px;
+  background:var(--amber-bg);color:var(--amber);font-weight:600}
+.thb .ok{position:absolute;top:4px;right:4px;width:13px;height:13px;border-radius:50%;background:var(--green-bg);
+  color:var(--green);display:flex;align-items:center;justify-content:center;font-size:8px}
+.tcap{font-size:10.5px;color:var(--ink4);text-align:center;margin-top:4px}
+
+.kitem{display:flex;gap:9px;padding:9px 0;border-bottom:1px dashed var(--line2)}
+.kitem:last-child{border-bottom:0}
+.kic{width:16px;height:16px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;
+  font-size:9px;margin-top:1px}
+.kic.ok{background:var(--green-bg);color:var(--green)}
+.kic.warn{background:var(--amber-bg);color:var(--amber)}
+.kit{font-size:12.5px;font-weight:500;display:flex;align-items:center;gap:6px}
+.kis{font-size:11.5px;color:var(--ink4);margin-top:2px;line-height:1.6}
+.kinline{height:3px;background:var(--line2);border-radius:3px;margin-top:5px;overflow:hidden}
+.kinline i{display:block;height:100%;background:var(--amber);border-radius:3px}
+
+.fieldrow{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.fld{display:flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:6px;
+  padding:5px 8px;background:#fff;font-size:12px}
+.fld .k{color:var(--ink4);font-size:11.5px}
+.fld .v{font-weight:500;color:var(--ink)}
+.fld input{border:0;outline:0;width:66px;font-weight:500;background:transparent;padding:0}
+.fld select{border:0;outline:0;background:transparent;font-weight:500;cursor:pointer}
+
+.hint{font-size:11.5px;color:var(--ink4);line-height:1.65}
+
+.ocrbox{border:1px solid var(--line);border-radius:7px;overflow:hidden}
+.ocrhd{display:flex;align-items:center;gap:8px;padding:7px 10px;background:#FAFBFD;border-bottom:1px solid var(--line2);font-size:11.5px;color:var(--ink3)}
+.ocrtext{padding:10px 12px;font-family:var(--serif);font-size:12.5px;line-height:1.95;max-height:196px;overflow:auto;outline:0}
+.ocrtext .bad{background:#FFEFD6;border-bottom:1px dashed var(--amber);color:#8A5A0B;padding:0 1px}
+.ocrtip{font-size:11px;color:var(--ink4);padding:6px 12px;border-top:1px dashed var(--line2);background:#FCFDFE}
+
+.tfoot{display:flex;align-items:center;gap:10px;margin-top:14px}
+.tfoot .hint{flex:1}
+
+.cprev{background:var(--card);border:1px solid var(--line);border-radius:9px;padding:14px;display:flex;
+  flex-direction:column;gap:10px}
+.minipaper{background:var(--paper);border:1px solid var(--paperline);padding:16px 18px;font-family:var(--serif);
+  font-size:11px;line-height:1.95;color:#313B49;max-height:420px;overflow:auto}
+.minipaper .t{text-align:center;font-size:14px;font-weight:700;letter-spacing:3px;margin-bottom:10px}
+.minipaper .sn2{background:rgba(217,59,59,.09);border-bottom:1px solid rgba(217,59,59,.4);padding:0 1px}
+
+.an{display:grid;grid-template-columns:1fr 360px;gap:14px;align-items:start}
+.ascan{background:#fff;border:1px solid var(--line);border-radius:9px;padding:18px 20px;position:relative;overflow:hidden}
+.ascan::after{content:"";position:absolute;left:0;right:0;height:70px;
+  background:linear-gradient(180deg,rgba(26,95,255,0),rgba(26,95,255,.09));animation:scan 2.6s ease-in-out infinite}
+@keyframes scan{0%{top:-70px}100%{top:100%}}
+.al{height:5px;border-radius:3px;background:#EDF1F6;margin:9px 0}
+.al.t{width:44%;height:7px;background:#E3E9F2}
+.al.m{width:86%}.al.s{width:62%}
+.aprog{height:4px;background:var(--line2);border-radius:4px;overflow:hidden;margin:10px 0 12px}
+.aprog i{display:block;height:100%;background:var(--blue);border-radius:4px;transition:width .5s ease;width:8%}
+.astep{display:flex;gap:9px;padding:7px 0;opacity:.45;transition:opacity .3s}
+.astep.on{opacity:1}
+.astep.done{opacity:.9}
+.astep .n{width:17px;height:17px;border-radius:50%;border:1px solid #D6DDE7;font-size:10px;display:flex;
+  align-items:center;justify-content:center;flex:none;color:var(--ink4);background:#fff;margin-top:1px}
+.astep.on .n{background:var(--blue);border-color:var(--blue);color:#fff}
+.astep.done .n{background:var(--green-bg);border-color:transparent;color:var(--green)}
+.astep .t{font-size:12.5px;font-weight:500}
+.astep .s{font-size:11.5px;color:var(--ink4)}
+
+/* ---------- work ---------- */
+.work{height:calc(100vh - 48px);display:flex;flex-direction:column;overflow:hidden}
+
+/* doc header: filename + merged base info (one row) */
+.dh{height:42px;display:flex;align-items:center;gap:10px;padding:0 14px;background:#fff;
+  border-bottom:1px solid var(--line);flex:none}
+.dh .fn{display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;max-width:280px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dh .fi{width:16px;height:16px;border-radius:3px;background:var(--red-bg);color:var(--red);font-size:8px;
+  font-weight:700;display:flex;align-items:center;justify-content:center;flex:none}
+.metarow{display:flex;align-items:center;gap:0;font-size:11.5px;color:var(--ink3);overflow:hidden;flex:1;min-width:0}
+.metarow span{white-space:nowrap;padding:0 8px;border-right:1px solid var(--line2)}
+.metarow span:first-child{padding-left:0}
+.metarow span:last-child{border-right:0}
+.metarow b{font-weight:500;color:var(--ink2)}
+.dh .acts{display:flex;align-items:center;gap:6px;flex:none}
+
+/* tabs */
+.tabs{height:40px;display:flex;align-items:center;gap:2px;padding:0 14px;background:#fff;
+  border-bottom:1px solid var(--line);flex:none;position:relative}
+.tab{height:40px;display:flex;align-items:center;gap:6px;padding:0 12px;font-size:12.5px;color:var(--ink3);
+  border-bottom:2px solid transparent;transition:color .15s}
+.tab:hover{color:var(--ink)}
+.tab.on{color:var(--blue);border-bottom-color:var(--blue);font-weight:500}
+.tab .n{font-size:10.5px;min-width:16px;height:16px;padding:0 4px;border-radius:8px;background:var(--gray-bg);
+  color:var(--ink3);display:inline-flex;align-items:center;justify-content:center;font-weight:500}
+.tab.on .n{background:var(--blue-bg);color:var(--blue)}
+.tab .n.must{background:var(--red-bg);color:var(--red)}
+.tab .n.zero{background:var(--green-bg);color:var(--green)}
+.tabsep{width:1px;height:14px;background:var(--line);margin:0 6px}
+.tabs .right{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--ink3)}
+
+/* body split */
+.wbody{flex:1;display:flex;min-height:0;background:var(--bg)}
+.docpane{width:46%;min-width:380px;display:flex;flex-direction:column;background:#EFF2F6;
+  border-right:1px solid var(--line)}
+.dtools{height:32px;display:flex;align-items:center;gap:2px;padding:0 10px;background:#fff;
+  border-bottom:1px solid var(--line);flex:none;font-size:11.5px;color:var(--ink3)}
+.dtools .m{padding:3px 7px;border-radius:4px;cursor:default}
+.dtools .m.on{background:var(--blue-bg2);color:var(--blue)}
+.dtools .m:hover{background:var(--gray-bg)}
+.dtools .sep{width:1px;height:12px;background:var(--line);margin:0 5px}
+.dtools .r{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:11px;color:var(--ink4)}
+.docmain{flex:1;display:flex;min-height:0}
+.drail{width:36px;flex:none;background:#fff;border-right:1px solid var(--line);padding:8px 0;
+  display:flex;flex-direction:column;gap:6px;align-items:center;overflow:auto}
+.pgth{width:24px;height:32px;border:1px solid var(--line);border-radius:2px;background:#fff;display:flex;
+  align-items:center;justify-content:center;font-size:9px;color:var(--ink4);cursor:pointer}
+.pgth.on{border-color:var(--blue);box-shadow:0 0 0 1px var(--blue);color:var(--blue)}
+.dscroll{flex:1;overflow:auto;padding:14px 16px 24px}
+.paper{width:100%;background:var(--paper);box-shadow:0 1px 3px rgba(24,36,54,.08);padding:24px 26px;
+  font-family:var(--serif);font-size:12.5px;line-height:2.02;color:#2C3542;max-width:560px;margin:0 auto}
+.paper.sans{font-family:var(--sans);font-size:12px;line-height:1.9}
+.pghd{text-align:right;font-size:10.5px;color:#98A0AC;margin-bottom:14px}
+.chtitle{text-align:center;font-size:19px;letter-spacing:6px;font-weight:700;margin:0 0 18px}
+.cparty{display:flex;justify-content:space-between;font-size:12px;margin:3px 0}
+.cparty .idt{color:#6B7484}
+.cp{margin:8px 0;text-indent:2em}
+.cl{font-size:12.5px;font-weight:700;margin:16px 0 4px;letter-spacing:.5px}
+.ci{display:flex;gap:5px;margin:5px 0}
+.ci i{font-style:normal;color:#7A8494;flex:none;width:12px}
+.ci .ctx{flex:1}
+.pgft{text-align:center;font-size:10px;color:#A8AFBA;margin-top:20px;letter-spacing:1px}
+.sn{cursor:pointer;border-radius:2px;padding:0 1px;transition:background .15s}
+.sn:hover{background:rgba(26,95,255,.07)}
+.sn.lv-must{background:rgba(217,59,59,.09);border-bottom:1px solid rgba(217,59,59,.45)}
+.sn.lv-check{background:rgba(192,122,18,.1);border-bottom:1px solid rgba(192,122,18,.45)}
+.sn.lv-note{background:rgba(107,118,134,.1);border-bottom:1px solid rgba(107,118,134,.35)}
+.sn.on{background:rgba(26,95,255,.16);box-shadow:0 0 0 2px rgba(26,95,255,.14)}
+.sn .mark{font-size:8.5px;font-family:var(--sans);color:#fff;background:currentColor;border-radius:2px;
+  padding:0 2px;margin-left:2px;vertical-align:2px;position:relative;top:-1px}
+.sn.lv-must .mark{background:var(--red)}
+.sn.lv-check .mark{background:var(--amber)}
+.sn.lv-note .mark{background:var(--gray)}
+
+/* right pane */
+.wsp{flex:1;display:flex;flex-direction:column;min-width:0;background:var(--bg)}
+.pane{display:none;padding:12px 14px 58px;overflow:auto;flex:1}
+.pane.on{display:block}
+
+/* T1 verdict */
+.verdict{background:#fff;border:1px solid var(--line);border-radius:9px;padding:13px 15px;position:relative;overflow:hidden}
+.verdict::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--blue)}
+.vlab{font-size:11px;color:var(--ink4);display:flex;align-items:center;gap:6px;margin-bottom:5px}
+.vt{font-size:19px;font-weight:600;letter-spacing:-.2px;margin-bottom:5px;padding-right:72px}
+.vd{font-size:12.5px;color:var(--ink2);line-height:1.75;padding-right:70px}
+.vd b{color:var(--red);font-weight:600}
+.vd i{font-style:normal;color:var(--ink);font-weight:600}
+.stamp{position:absolute;right:14px;top:12px;width:58px;height:58px;border:1.5px solid rgba(217,59,59,.5);
+  border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  color:rgba(217,59,59,.75);font-size:9px;line-height:1.3;transform:rotate(-11deg);letter-spacing:.5px;
+  font-family:var(--serif)}
+.stamp b{font-size:11px}
+
+.loss{background:#fff;border:1px solid var(--line);border-radius:9px;margin-top:10px;display:flex;overflow:hidden}
+.loss .lmain{padding:10px 14px;border-right:1px solid var(--line2);min-width:150px}
+.loss .lbl{font-size:11px;color:var(--ink4);margin-bottom:2px}
+.loss .num{font-size:23px;font-weight:600;color:var(--red);letter-spacing:-.5px;font-variant-numeric:tabular-nums}
+.loss .num small{font-size:12px;font-weight:400;margin-right:1px}
+.loss .brk{flex:1;display:flex}
+.loss .bi{flex:1;padding:10px 12px;border-right:1px solid var(--line2)}
+.loss .bi:last-child{border-right:0}
+.loss .bt{font-size:11px;color:var(--ink4)}
+.loss .bv{font-size:13px;font-weight:600;color:var(--ink);margin:1px 0}
+.loss .bn{font-size:10.5px;color:var(--ink4)}
+
+.sum3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
+.sumcol{background:#fff;border:1px solid var(--line);border-radius:9px;overflow:hidden}
+.sumhd{display:flex;align-items:center;gap:6px;padding:8px 11px;border-bottom:1px solid var(--line2);font-size:12px;font-weight:600}
+.sumhd i{width:6px;height:6px;border-radius:50%;flex:none}
+.sumcol.must .sumhd i{background:var(--red)}.sumcol.check .sumhd i{background:var(--amber)}.sumcol.note .sumhd i{background:var(--gray)}
+.sumhd .c{margin-left:auto;font-size:11px;color:var(--ink4);font-weight:400}
+.sumli{display:flex;gap:6px;padding:6px 11px;font-size:11.5px;color:var(--ink2);cursor:pointer;line-height:1.5;
+  border-bottom:1px solid #F6F8FB}
+.sumli:last-child{border-bottom:0}
+.sumli:hover{background:var(--blue-bg2);color:var(--blue)}
+.sumli .d{color:var(--ink4);flex:none;font-size:10px;margin-top:2px}
+.sumli .l{margin-left:auto;color:#AEB6C2;font-size:10.5px;flex:none}
+.peek{background:#fff;border:1px solid var(--line);border-radius:9px;margin-top:10px;padding:10px 13px;
+  display:flex;align-items:center;gap:10px}
+.peek .pi{width:26px;height:26px;border-radius:6px;background:var(--blue-bg2);color:var(--blue);display:flex;
+  align-items:center;justify-content:center;flex:none}
+.peek .pt{font-size:12.5px;font-weight:500}
+.peek .ps{font-size:11.5px;color:var(--ink4)}
+
+/* T2 risk stats + list */
+.stats{display:flex;gap:6px;margin-bottom:9px}
+.stat{flex:1;display:flex;align-items:center;gap:6px;padding:6px 9px;border-radius:6px;font-size:12px;
+  border:1px solid transparent;background:#fff;color:var(--ink2);cursor:pointer;transition:.15s}
+.stat:hover{border-color:var(--line)}
+.stat.on{border-color:currentColor;box-shadow:0 0 0 2px rgba(26,95,255,.06)}
+.stat i{width:7px;height:7px;border-radius:2px;flex:none}
+.stat b{font-weight:600;font-variant-numeric:tabular-nums}
+.stat.s-must{color:var(--red);background:var(--red-bg)}
+.stat.s-check{color:var(--amber);background:var(--amber-bg)}
+.stat.s-note{color:var(--gray);background:var(--gray-bg)}
+.stat.s-ok{color:var(--green);background:var(--green-bg)}
+.stat.s-all{color:var(--blue);background:var(--blue-bg)}
+.stat.s-must i{background:var(--red)}.stat.s-check i{background:var(--amber)}
+.stat.s-note i{background:var(--gray)}.stat.s-ok i{background:var(--green)}.stat.s-all i{background:var(--blue)}
+.stat.dim{opacity:.5}
+
+.filterbar{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:11.5px;color:var(--ink4)}
+.filterbar .sp{flex:1}
+.sortsel{display:flex;align-items:center;gap:4px;border:1px solid var(--line);border-radius:5px;
+  padding:3px 7px;background:#fff;color:var(--ink3);cursor:pointer;font-size:11.5px}
+.sortsel:hover{border-color:#C9D3E2}
+
+.risk{background:#fff;border:1px solid var(--line);border-radius:7px;margin-bottom:6px;
+  transition:border-color .15s,box-shadow .15s;position:relative;overflow:hidden}
+.risk:hover{border-color:#CBD7E8}
+.risk.on{border-color:var(--blue);box-shadow:0 1px 6px rgba(26,95,255,.09)}
+.risk.done{opacity:.62}
+.rh{display:flex;align-items:center;gap:8px;padding:10px 11px;cursor:pointer;min-height:42px}
+.rh .dot{width:5px;height:5px;border-radius:50%;flex:none}
+.risk.lv-must .rh .dot{background:var(--red)}
+.risk.lv-check .rh .dot{background:var(--amber)}
+.risk.lv-note .rh .dot{background:var(--gray)}
+.rh .ti{font-size:12.5px;font-weight:500;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rh .amt{font-size:12.5px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.rh .amt.down{color:var(--red)}
+.rh .amt.up{color:var(--amber)}
+.rh .amt.zero{color:var(--ink4);font-weight:500}
+.rh .chev{width:14px;height:14px;color:#A9B2C0;flex:none;transition:transform .2s}
+.risk.open .rh .chev{transform:rotate(180deg)}
+.rh .doneflag{font-size:10.5px;color:var(--green);background:var(--green-bg);border-radius:3px;padding:1px 5px}
+.rmeta{font-size:10.5px;color:var(--ink4);padding:7px 0 0;display:flex;gap:0;align-items:center;overflow:hidden}
+.rmeta span{white-space:nowrap;padding:0 6px;border-right:1px solid var(--line2)}
+.rmeta span:first-child{padding-left:0}
+.rmeta span:last-child{border-right:0}
+.rbody{display:none;padding:0 11px 10px;border-top:1px solid var(--line2);margin-top:2px}
+.risk.open .rbody{display:block}
+.rsec{display:flex;gap:9px;padding:9px 0;border-bottom:1px dashed var(--line2)}
+.rsec:last-of-type{border-bottom:0;padding-bottom:4px}
+.rsec .lab{width:52px;flex:none;font-size:11px;color:var(--ink4);padding-top:1px;letter-spacing:.5px}
+.rsec .c{flex:1;font-size:12px;line-height:1.72;color:var(--ink2);min-width:0}
+.rsec .c.strong{color:var(--ink);font-weight:500}
+.rsec .c.paperq{font-size:12px;line-height:1.78;background:#FBFBF7;border-left:2px solid var(--paperline);
+  padding:6px 9px;color:#39424F;position:relative}
+.rsec .c.sugg{background:var(--blue-bg2);border-left:2px solid var(--blue);padding:6px 9px}
+.rsec .mini{font-size:10.5px;color:var(--ink4);margin-top:5px;display:flex;align-items:center;gap:8px}
+.rsec .mini a{font-size:10.5px}
+.locbtn{font-size:10.5px;color:var(--blue);border:1px solid #CFE0FF;background:var(--blue-bg2);
+  border-radius:4px;padding:1px 6px;display:inline-flex;align-items:center;gap:3px}
+.locbtn:hover{background:var(--blue-bg)}
+.rfoot{display:flex;align-items:center;gap:6px;padding-top:8px;border-top:1px solid var(--line2);margin-top:6px}
+.rfoot .x{font-size:11px;color:var(--ink4);margin-left:auto}
+.empty{text-align:center;color:var(--ink4);font-size:12px;padding:40px 0}
+
+/* T3 fix */
+.fixh{background:#fff;border:1px solid var(--line);border-radius:8px;padding:9px 12px;display:flex;align-items:center;gap:8px}
+.fixh .t{font-size:13px;font-weight:600;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.navs{display:flex;align-items:center;gap:4px}
+.diff2{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:9px}
+.dcol{background:#fff;border:1px solid var(--line);border-radius:8px;overflow:hidden;display:flex;flex-direction:column}
+.dhd{display:flex;align-items:center;gap:6px;padding:7px 11px;border-bottom:1px solid var(--line2);
+  font-size:11.5px;color:var(--ink3);background:#FAFBFD}
+.dhd .sw{width:6px;height:6px;border-radius:1px}
+.dbody{padding:10px 12px;font-family:var(--serif);font-size:12.5px;line-height:2;color:#39424F;flex:1;min-height:96px}
+.d-del{background:#FBE3E1;color:#A32A2A;text-decoration:line-through;text-decoration-color:rgba(163,42,42,.5);padding:0 1px;border-radius:2px}
+.d-ins{background:#DCF2E7;color:#0B6B49;padding:0 1px;border-radius:2px}
+.why{background:#fff;border:1px solid var(--line);border-left:2px solid var(--amber);border-radius:0 8px 8px 0;
+  padding:9px 12px;margin-top:9px;font-size:12px;color:var(--ink2);line-height:1.75}
+.why b{color:var(--amber);font-weight:600}
+.editbox{background:#fff;border:1px solid var(--line);border-radius:8px;margin-top:9px;overflow:hidden}
+.ehd{display:flex;align-items:center;gap:8px;padding:7px 11px;border-bottom:1px solid var(--line2);
+  font-size:11.5px;color:var(--ink3);background:#FAFBFD}
+.ebd{padding:9px 11px}
+.ebd textarea{width:100%;border:1px solid var(--line);border-radius:6px;padding:8px 9px;
+  font-size:12px;line-height:1.88;color:#2C3542;outline:0;resize:vertical;min-height:64px;background:#FDFDFB}
+.ebd textarea:focus{border-color:var(--blue);background:#fff}
+.efoot{display:flex;align-items:center;gap:6px;margin-top:7px}
+.queue{margin-top:4px}
+.qh{font-size:11.5px;color:var(--ink4);margin:10px 0 6px}
+.qh.ok{color:var(--green)}
+.qrow{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:6px;
+  padding:8px 11px;margin-bottom:6px;cursor:pointer;font-size:12px}
+.qrow:hover{border-color:#BFD4FF;background:#FBFCFE}
+.qrow .qt{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink2)}
+.qrow .qa{color:var(--red);font-weight:500;font-size:11.5px;white-space:nowrap}
+.related{margin-top:10px}
+
+/* T4 say */
+.tonebar{display:flex;align-items:center;gap:8px;margin-bottom:9px}
+.seg{display:inline-flex;background:#EEF1F6;border-radius:6px;padding:2px}
+.seg button{font-size:12px;color:var(--ink3);padding:4px 11px;border-radius:4px}
+.seg button.on{background:#fff;color:var(--ink);font-weight:500;box-shadow:0 1px 2px rgba(24,36,54,.08)}
+.msg{background:#fff;border:1px solid var(--line);border-radius:9px;overflow:hidden}
+.msghd{display:flex;align-items:center;gap:8px;padding:9px 12px;border-bottom:1px solid var(--line2);font-size:11.5px;color:var(--ink3)}
+.msghd .tgt{font-size:12px;color:var(--ink);font-weight:500}
+.bubble{background:#F1F6FF;border:1px solid #DDE9FD;border-radius:8px;padding:11px 13px;font-size:12.5px;
+  line-height:1.95;color:#26303D;position:relative;white-space:pre-wrap}
+.bubble{word-break:break-word;outline:0}
+.bubble:focus{box-shadow:0 0 0 2px rgba(26,95,255,.16);border-color:#BFD4FF}
+.bubble::after{content:"";position:absolute;left:14px;bottom:-5px;width:8px;height:8px;background:#F1F6FF;
+  border-right:1px solid #DDE9FD;border-bottom:1px solid #DDE9FD;transform:rotate(45deg)}
+.msgft{display:flex;align-items:center;gap:7px;padding:9px 12px;border-top:1px solid var(--line2)}
+.obj{background:#fff;border:1px solid var(--line);border-radius:8px;margin-top:9px;overflow:hidden}
+.objq{display:flex;align-items:center;gap:8px;padding:8px 11px;font-size:12px;color:var(--ink2);cursor:pointer}
+.objq .qq{width:18px;height:18px;border-radius:4px;background:var(--gray-bg);color:var(--ink3);font-size:10px;
+  display:flex;align-items:center;justify-content:center;flex:none}
+.objq .arw{margin-left:auto;color:#A9B2C0;font-size:10px;transition:transform .2s}
+.obj.open .objq .arw{transform:rotate(180deg)}
+.obja{display:none;padding:0 11px 10px 37px;font-size:12px;line-height:1.75;color:var(--ink2)}
+.obj.open .obja{display:block}
+.obja .lab{font-size:10.5px;color:var(--blue);margin-bottom:2px}
+.v02box{margin-top:9px;border:1px dashed #D5DCE7;border-radius:8px;padding:9px 12px;background:#FAFBFD;opacity:.72}
+.v02box .vh{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--ink3);margin-bottom:5px}
+.fakein{height:30px;border:1px solid var(--line);border-radius:6px;background:#fff;display:flex;align-items:center;
+  padding:0 9px;font-size:11.5px;color:#AEB6C2}
+
+/* T5 check */
+.chkh{background:#fff;border:1px solid var(--line);border-radius:8px;padding:11px 13px;display:flex;align-items:center;gap:12px}
+.ring{width:44px;height:44px;flex:none;position:relative}
+.ring svg{transform:rotate(-90deg)}
+.ring .rt{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:600;color:var(--blue)}
+.chkh .h{font-size:13px;font-weight:600}
+.chkh .s{font-size:11.5px;color:var(--ink4)}
+.ck{display:flex;gap:9px;padding:8px 11px;border-bottom:1px solid #F5F7FB;cursor:pointer;background:#fff}
+.ck:first-child{border-radius:8px 8px 0 0}
+.ck:hover{background:var(--blue-bg2)}
+.cbox{width:15px;height:15px;border-radius:4px;border:1.5px solid #CBD4E1;flex:none;margin-top:2px;
+  display:flex;align-items:center;justify-content:center;background:#fff}
+.cbox svg{width:9px;height:9px;color:#fff;opacity:0}
+.ck.on .cbox{background:var(--green);border-color:var(--green)}
+.ck.on .cbox svg{opacity:1}
+.ck .q{font-size:12px;line-height:1.55}
+.ck.on .q{color:var(--ink3);text-decoration:line-through;text-decoration-color:#C9D2DE}
+.ck .st{font-size:10.5px;color:var(--ink4);margin-top:1px}
+.ck.dis{opacity:.5;cursor:default}
+.ck.dis:hover{background:#fff}
+
+/* action bar */
+.abar{height:42px;background:#fff;border-top:1px solid var(--line);display:flex;align-items:center;
+  gap:10px;padding:0 14px;flex:none;font-size:11.5px;color:var(--ink3)}
+.abcounts{display:flex;align-items:center;gap:10px;flex:none}
+.abcounts .c{white-space:nowrap}
+.abcounts .c{display:flex;align-items:center;gap:4px}
+.abcounts .c i{width:5px;height:5px;border-radius:50%}
+.abcounts .c.must i{background:var(--red)}.abcounts .c.check i{background:var(--amber)}.abcounts .c.note i{background:var(--gray)}
+.abprog{display:flex;align-items:center;gap:7px;white-space:nowrap}
+.abprog>span:first-child{white-space:nowrap}
+.abprog .bar{width:78px;height:4px;border-radius:4px;background:var(--line2);overflow:hidden}
+.abprog .bar i{display:block;height:100%;background:var(--green);width:0;transition:width .3s}
+.abar .disc{color:#AEB6C2;font-size:10.5px;white-space:nowrap}
+@media (max-width:1400px){.abar .disc{display:none}}
+@media (max-width:1320px){.abar .abcounts{display:none}}
+.abar .sp{flex:1}
+
+/* drawer */
+.scrim{position:fixed;inset:0;background:rgba(20,28,40,.32);opacity:0;pointer-events:none;transition:opacity .2s;z-index:90}
+.scrim.on{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:392px;background:#fff;z-index:91;
+  transform:translateX(100%);transition:transform .26s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;
+  box-shadow:-4px 0 20px rgba(20,28,40,.1)}
+.drawer.on{transform:none}
+.dhd{display:flex;align-items:center;padding:13px 15px;border-bottom:1px solid var(--line)}
+.dhd .t{font-size:14px;font-weight:600}
+.dbd{flex:1;overflow:auto;padding:12px 15px}
+.dopt{display:flex;gap:10px;padding:11px;border:1px solid var(--line);border-radius:8px;margin-bottom:9px;cursor:pointer}
+.dopt:hover{border-color:var(--blue);background:var(--blue-bg2)}
+.dopt .oi{width:30px;height:30px;border-radius:6px;background:var(--blue-bg2);color:var(--blue);display:flex;
+  align-items:center;justify-content:center;flex:none}
+.dopt .ot{font-size:12.5px;font-weight:600;display:flex;align-items:center;gap:6px}
+.dopt .od{font-size:11.5px;color:var(--ink4);line-height:1.6;margin-top:1px}
+.dft{padding:11px 15px;border-top:1px solid var(--line2);font-size:11px;color:var(--ink4);line-height:1.7}
+
+/* modal */
+.modal{position:fixed;inset:0;background:rgba(20,28,40,.36);z-index:100;display:none;align-items:center;justify-content:center;padding:24px}
+.modal.on{display:flex}
+.mbox{background:#fff;border-radius:11px;width:760px;max-width:100%;max-height:86vh;display:flex;flex-direction:column;
+  box-shadow:0 16px 48px rgba(20,28,40,.2);overflow:hidden}
+.mhd{display:flex;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line);flex:none}
+.mhd .t{font-size:14px;font-weight:600}
+.mhd .s{font-size:11.5px;color:var(--ink4);margin-left:8px}
+.mbd{padding:14px 16px;overflow:auto;font-size:12.5px;color:var(--ink2);line-height:1.85}
+.mbd h4{font-size:12.5px;color:var(--ink);margin:12px 0 4px}
+.mbd h4:first-child{margin-top:0}
+.mbd p{margin:0 0 6px}
+.devframe{width:390px;height:700px;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#fff}
+.devframe iframe{width:100%;height:100%;border:0}
+.devwrap{background:#F7F9FC;padding:14px;display:flex;justify-content:center}
+
+/* popover */
+.pop{position:fixed;width:300px;background:#fff;border:1px solid var(--line);border-radius:9px;
+  box-shadow:0 8px 28px rgba(20,28,40,.16);z-index:120;display:none;overflow:hidden}
+.pop.on{display:block}
+.ph{display:flex;align-items:center;gap:6px;padding:8px 11px;border-bottom:1px solid var(--line2);font-size:11.5px;color:var(--ink3)}
+.ph b{color:var(--ink);font-size:12px;font-weight:600}
+.qi{display:flex;align-items:center;gap:7px;padding:8px 11px;font-size:12px;color:var(--ink2);cursor:pointer;
+  border-bottom:1px solid #F6F8FB}
+.qi:hover{background:var(--blue-bg2);color:var(--blue)}
+.qi svg{width:12px;height:12px;color:var(--blue);flex:none}
+.ans{display:none;padding:10px 11px;font-size:12px;line-height:1.8;color:var(--ink2)}
+.ans.on{display:block}
+.ans .src{margin-top:6px;font-size:10.5px;color:var(--ink4);border-top:1px dashed var(--line2);padding-top:5px}
+
+/* toast */
+.toast{position:fixed;left:50%;bottom:34px;transform:translate(-50%,14px);background:#1E2836;color:#fff;
+  font-size:12.5px;padding:9px 15px;border-radius:7px;opacity:0;pointer-events:none;transition:.22s;z-index:130;
+  box-shadow:0 8px 24px rgba(20,28,40,.22);display:flex;align-items:center;gap:7px}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+
+/* export dropdown */
+.menu{position:absolute;right:0;top:calc(100% + 6px);width:270px;background:#fff;border:1px solid var(--line);
+  border-radius:8px;box-shadow:0 8px 24px rgba(20,28,40,.13);padding:4px;display:none;z-index:80}
+.menu.on{display:block}
+.mi{display:flex;align-items:center;gap:8px;padding:8px 9px;border-radius:5px;font-size:12.5px;color:var(--ink2);cursor:pointer}
+.mi:hover{background:var(--blue-bg2);color:var(--blue)}
+.mi .k{margin-left:auto;font-size:10.5px;color:var(--ink4)}
+code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11.5px;background:#EEF1F6;padding:1px 4px;border-radius:3px}
+
+/* ===== 顶栏居中进度条 ===== */
+.tb{position:relative}
+.stepbar{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;align-items:center}
+.sb{display:flex;align-items:center;gap:6px}
+.sbdot{width:15px;height:15px;border-radius:50%;border:1.5px solid #D3DAE4;background:#fff;
+  display:flex;align-items:center;justify-content:center;font-size:9px;line-height:1;color:#A8B1BE;flex:none}
+.sblb{font-size:11.5px;color:#8B95A3;white-space:nowrap}
+.sbline{width:52px;height:2px;background:#E4E9F1;margin:0 11px;border-radius:1px}
+.sb:last-child .sbline{display:none}
+.sbdone .sbdot{background:var(--blue-bg);border-color:transparent;color:var(--blue)}
+.sbdone .sblb{color:var(--ink3)}
+.sbdone .sbline{background:#BFD4FF}
+.sbcur .sbdot{background:var(--blue);border-color:var(--blue);color:#fff}
+.sbcur .sblb{color:var(--blue);font-weight:500}
+
+/* ===== 右栏页签 ===== */
+.dtools{height:40px}
+.wsp .tabs{height:40px;padding:0 14px;border-radius:0}
+
+/* ===== T3 修改（对齐通义法睿的风险点结构） ===== */
+.fx{background:#fff;border:1px solid var(--line);border-radius:9px;overflow:hidden}
+.fxhd{display:flex;align-items:center;gap:7px;padding:9px 13px;border-bottom:1px solid var(--line2);background:#FAFBFD}
+.fxno{font-size:11.5px;font-weight:600;color:var(--ink);background:var(--gray-bg);border-radius:4px;padding:2px 7px;white-space:nowrap}
+.fxno b{color:var(--blue);margin-left:2px}
+.fxloc{margin-left:auto;font-size:11px;color:var(--ink4);white-space:nowrap}
+.fxsec{padding:11px 14px;border-bottom:1px solid var(--line2)}
+.fxsec .lab{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--ink4);margin-bottom:7px}
+.fxsec .lab .sp{flex:1}
+.labtag{font-size:10px;padding:1px 5px;border-radius:3px;font-weight:500}
+.labtag.del{background:var(--red-bg);color:var(--red)}
+.labtag.ins{background:var(--green-bg);color:var(--green)}
+.fxt{font-size:14px;font-weight:600;line-height:1.55;color:var(--ink);letter-spacing:-.1px}
+.fxwhy{margin-top:6px;font-size:12px;color:var(--ink2);line-height:1.8}
+.fxwhy b{color:var(--amber);font-weight:600}
+.lawrow{display:flex;align-items:center;gap:7px;margin-top:9px;padding-top:8px;border-top:1px dashed #E6EAF1;font-size:11px;color:var(--ink4)}
+.lawrow .lk{color:#A6AFBC}
+.lawrow b{font-weight:500;color:var(--ink2);font-size:11.5px}
+.lawrow .sp{flex:1}
+.lawopen{font-size:11px;color:var(--blue);background:none;border:0;cursor:pointer;padding:0}
+.lawopen:hover{text-decoration:underline}
+.quote{font-size:12px;line-height:1.88;color:#39424F;background:#FBFCFE;
+  border:1px solid var(--line2);border-radius:6px;padding:9px 11px}
+.quote.new{background:#F7FBF8;border-color:#DBEBE0}
+.fxft{display:flex;align-items:center;gap:8px;padding:10px 14px;background:#FAFBFD;border-top:1px solid var(--line2)}
+.fx.accepted .fxft{background:#F4FBF7}
+.dum{display:inline-flex;align-items:center;gap:5px;height:29px;padding:0 11px;border:1px solid #CFDAE8;
+  border-radius:6px;background:#F7F9FC;font-size:12px;color:var(--ink2);cursor:pointer;font-weight:500}
+.dum svg{width:12px;height:12px;color:#B4BDC9}
+.dum:hover{border-color:#BFD4FF;color:var(--blue)}
+.dum:hover svg{color:var(--blue)}
+.dum.on{background:var(--green-bg);border-color:#BFE3CE;color:var(--green);font-weight:500}
+.dum.on svg{color:var(--green)}
+.edwrap{display:none;margin-top:8px}
+.edwrap.on{display:block}
+.edwrap textarea{width:100%;border:1px solid var(--blue);border-radius:6px;padding:9px 10px;font-family:var(--serif);
+  font-size:12.5px;line-height:1.95;color:#2C3542;outline:0;resize:vertical;min-height:78px;background:#fff}
+.edft{display:flex;align-items:center;gap:7px;margin-top:7px}
+.edok,.edno{width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;
+  font-size:13px;border:1px solid var(--line);cursor:pointer}
+.edok{color:var(--green);border-color:#BFE3CE;background:var(--green-bg)}
+.edno{color:var(--ink3);background:#fff}
+.edok:hover{background:#D6F0E2}
+.edhint{font-size:11px;color:var(--ink4)}
+.shake{animation:shk .3s}
+@keyframes shk{0%,100%{transform:translateX(0)}25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
+
+/* ===== T4 话术：风险条 + 对话式应答 ===== */
+.bind{font-size:11.5px;color:var(--ink4);white-space:nowrap}
+.bind b{color:var(--ink2);font-weight:500}
+.rail{display:flex;gap:5px;overflow-x:auto;padding:1px 0 3px;margin-bottom:9px;scrollbar-width:none}
+.rail::-webkit-scrollbar{display:none}
+.rchip{flex:none;display:flex;align-items:center;gap:5px;height:26px;padding:0 9px;border:1px solid var(--line);
+  border-radius:13px;background:#fff;font-size:11.5px;color:var(--ink3);cursor:pointer;white-space:nowrap}
+.rchip i{width:5px;height:5px;border-radius:50%;flex:none}
+.rchip:hover{border-color:#BFD4FF;color:var(--ink2)}
+.rchip.on{border-color:var(--blue);background:var(--blue-bg2);color:var(--blue);font-weight:500}
+.objhd{display:flex;align-items:center;gap:7px;margin:14px 0 8px;font-size:12px;color:var(--ink3)}
+.objhd span{font-size:11px;color:var(--ink4)}
+.objchips{display:flex;flex-wrap:wrap;gap:6px}
+.ochip{border:1px solid var(--line);background:#fff;border-radius:14px;padding:5px 11px;font-size:11.5px;
+  color:var(--ink2);cursor:pointer;text-align:left;line-height:1.5}
+.ochip:hover{border-color:#BFD4FF}
+.ochip.on{border-color:var(--blue);background:var(--blue-bg2);color:var(--blue)}
+.thread{background:#F4F6F9;border:1px solid var(--line);border-radius:9px;padding:11px 12px;margin-top:9px;
+  display:flex;flex-direction:column;gap:9px}
+.tmsg{display:flex;gap:7px;align-items:flex-start}
+.tmsg .av{width:22px;height:22px;border-radius:5px;background:#E4E9F1;color:#6B7789;font-size:10px;
+  display:flex;align-items:center;justify-content:center;flex:none}
+.tmsg .bb{background:#fff;border:1px solid #E4E9F0;border-radius:3px 8px 8px 8px;padding:8px 11px;
+  font-size:12px;line-height:1.8;color:var(--ink2);max-width:84%}
+.tmsg.me{flex-direction:row-reverse}
+.tmsg .bb{min-width:0}
+.tmsg.me .av{background:#DFF3E3;color:#1AAD19}
+.tmsg.me .bb{background:#DCF8C6;border-color:#CDEEB5;border-radius:8px 3px 8px 8px;color:#1F2A20}
+.tsay{font-size:10px;color:#0F9A46;margin-bottom:2px;font-weight:500}
+
+/* responsive */
+@media (max-width:1180px){
+  .docpane{width:40%}
+  .metarow span:nth-child(n+5){display:none}
+}
+@media (max-width:980px){
+  .grid2{grid-template-columns:1fr}
+  .an{grid-template-columns:1fr}
+  .h1{font-size:28px}
+  .work{height:auto}
+  .docpane{display:none}
+  .stepbar{display:none}
+  .bsub{display:none}
+  .pane{padding:10px}
+  .tabs{overflow-x:auto;padding:0 8px}
+  .abar{position:sticky;bottom:0}
+  .loss{flex-wrap:wrap}
+  .loss .lmain{width:100%;border-right:0;border-bottom:1px solid var(--line2)}
+  .sum3{grid-template-columns:1fr}
+  .diff2{grid-template-columns:1fr}
+  .facts{grid-template-columns:1fr}
+  .dh .metarow{display:none}
+  .dh{gap:6px;padding:0 10px}
+  .dh .fn{max-width:132px}
+  .tab{flex:none;white-space:nowrap;padding:0 9px}
+  .tab .sp{display:none}
+  .tabs .right{display:none}
+  .stats{overflow-x:auto;padding-bottom:2px}
+  .stat{flex:none;white-space:nowrap}
+  .abar{height:auto;min-height:46px;padding:7px 10px;gap:8px;flex-wrap:nowrap}
+  .abar .abcounts{display:none}
+  .abar .disc{display:none}
+  .abar .abprog{flex:1;min-width:0}
+  .abar .btn{flex:none}
+  .tbr .tlink{display:none}
+  .tbr #btnMobile{display:inline-flex}
+  .loss .bi{padding:8px 10px}
+  .verdict .stamp{width:48px;height:48px;font-size:8px}
+  .vt{padding-right:56px;font-size:17px}
+  .vd{padding-right:0}
+  .fixh .t{white-space:normal;font-size:12.5px;line-height:1.4;max-height:34px;overflow:hidden}
+  .fixh{flex-wrap:wrap;row-gap:4px}
+  .diff2 .dbody{min-height:80px}
+  .tfoot{flex-wrap:wrap}
+  .tfoot .hint{order:3;flex-basis:100%}
+  .chkh{flex-wrap:wrap;row-gap:8px}
+  .chkh .btn{margin-left:auto}
+}
+body[data-m="1"] .tb{padding:0 12px}
+body[data-m="1"] .dh .metarow{display:none}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;transition-duration:.001ms!important}
+}
+</style>
+</head>
+<body data-screen="landing" data-page-node-id="diVccpsS4QqA3RIM2y8JNp">
+
+<!-- ============ topbar ============ -->
+<header class="tb">
+  <div class="brand">
+    <div class="logo">签</div>
+    <div>
+      <div class="bname">签前有数</div>
+    </div>
+    <div class="bsub">房屋租赁合同 · AI 审查</div>
+  </div>
+
+  <div class="stepbar" id="topSteps"></div>
+
+  <div class="tbr">
+    <button class="tlink" data-toast="原型演示：身份证号、手机号、银行卡号在端上打码，原文不落库">隐私说明</button>
+  </div>
+</header>
+
+<!-- ============ P0 landing ============ -->
+<section class="screen on" id="landing">
+  <div class="land">
+    <div class="lbox">
+      <div class="eyebrow">签约之前 · 先看清楚</div>
+      <h1 class="h1">别盲目签约。<br>签之前，先看清这份合同<em>会坑你多少钱</em>。</h1>
+      <div class="sub">上传房东或中介发来的合同，<b>3 分钟</b>告诉你哪几条必须改、能改成什么，以及怎么跟他开口。不用注册，不保存原文。</div>
+
+      <div class="facts">
+        <div class="fact">
+          <div class="fic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v18M17 7H9.5a3 3 0 000 6h5a3 3 0 010 6H6"/></svg></div>
+          <div>
+            <div class="ft1">完全免费</div>
+            <div class="ft2">没有次数限制</div>
+          </div>
+        </div>
+        <div class="fact">
+          <div class="fic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l7 3v5c0 4.5-3 7.7-7 9-4-1.3-7-4.5-7-9V6l7-3z"/><path d="M9.2 12l2 2 3.6-3.8"/></svg></div>
+          <div>
+            <div class="ft1">上传即脱敏</div>
+            <div class="ft2">证件号自动打码</div>
+          </div>
+        </div>
+        <div class="fact">
+          <div class="fic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg></div>
+          <div>
+            <div class="ft1">3 分钟出结果</div>
+            <div class="ft2">9 条逐句标注</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="drop" id="dz">
+        <div class="dic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5"/><path d="M4 16v2.5A1.5 1.5 0 005.5 20h13a1.5 1.5 0 001.5-1.5V16"/></svg></div>
+        <div class="dt">把合同文件拖到这里</div>
+        <div class="ds">支持 PDF / Word / 图片 · 单份不超过 20 页 · 扫描件会自动 OCR</div>
+        <div class="dbtns">
+          <button class="btn primary" id="btnPick">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7.5A2.5 2.5 0 016.5 5h3l1.8 2.2h6.2A2.5 2.5 0 0120 9.7v7.8a2.5 2.5 0 01-2.5 2.5h-11A2.5 2.5 0 014 17.5v-10z"/></svg>
+            选择文件
+          </button>
+          <button class="btn" data-go="upload" data-toast="演示：调用手机后置摄像头逐页拍摄，拍完自动质检">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="6.5" width="18" height="13" rx="2.5"/><circle cx="12" cy="13" r="3.6"/><path d="M8.5 6.5l1.2-2h4.6l1.2 2"/></svg>
+            拍照上传
+          </button>
+        </div>
+        <div class="dalt">微信里收到的合同，也可以直接 <a href="#" data-go="confirm">粘贴文字</a>　·　<a href="#" data-go="work" id="btnDemo">用示例合同试一下 →</a></div>
+        <input type="file" id="fileInput" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" style="display:none">
+      </div>
+
+      <div class="safebar">
+        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12.5l4 4L19 7"/></svg>身份证号自动打码</span>
+        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12.5l4 4L19 7"/></svg>手机号、银行卡号不进模型</span>
+        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12.5l4 4L19 7"/></svg>关闭页面即清除</span>
+      </div>
+
+      <div class="lfoot">
+        没有电子版也可以拍照 —— 但照片越清楚识别越准，拍到反光、缺角会要求重拍。<br>
+        本结果由 AI 生成，不构成法律意见，可能存在遗漏 · 是否签约由你决定
+      </div>
+      <div class="cover"><b>覆盖 9 类条款</b><span>押金 · 退租 · 维修 · 涨租 · 水电 · 检查 · 转租 · 宠物 · 附件</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ P1 upload ============ -->
+<section class="screen" id="upload">
+  <div class="task">
+    <div class="tinner">
+      <div class="crumb"><span>新建审查</span><span class="dot"></span><b>上传与质检</b><span class="dot"></span><span>确认信息</span><span class="dot"></span><span>看结果</span></div>
+
+      <div class="grid2">
+        <div class="panel">
+          <div class="phd"><span class="t">文件与页面</span><span class="s">共 4 页 · 21 处文字层缺失</span><span class="sp"></span><span class="tag blue" id="upTag">识别中</span></div>
+          <div class="pbd">
+            <div class="fcard">
+              <div class="fic2">PDF</div>
+              <div style="flex:1;min-width:0">
+                <div class="fname">朝阳区_租房合同.pdf</div>
+                <div class="fmeta">2.1 MB · 4 页 · 手机拍摄转 PDF · 无文字层</div>
+              </div>
+              <button class="btn sm">替换</button>
+            </div>
+
+            <div style="margin-top:12px;font-size:12px;color:var(--ink3);display:flex;align-items:center;gap:6px">
+              逐页识别状态<span class="sp"></span><span style="font-size:11px;color:var(--ink4)">点缩略图可补拍单页</span>
+            </div>
+            <div class="thumbs" style="margin-top:8px">
+              <div class="thumb">
+                <div class="thb"><span class="ok">✓</span><span class="pg">第 1 页</span></div>
+                <div class="tcap">文字层完整</div>
+              </div>
+              <div class="thumb">
+                <div class="thb bad"><span class="flag">重拍</span><span class="pg">第 2 页</span></div>
+                <div class="tcap" style="color:var(--amber)">右下角反光</div>
+              </div>
+              <div class="thumb">
+                <div class="thb"><span class="ok">✓</span><span class="pg">第 3 页</span></div>
+                <div class="tcap">OCR 96%</div>
+              </div>
+              <div class="thumb">
+                <div class="thb"><span class="ok">✓</span><span class="pg">第 4 页</span></div>
+                <div class="tcap">OCR 98%</div>
+              </div>
+              <div class="thumb">
+                <div class="thb" style="border-style:dashed;background:#FBFCFE;align-items:center">
+                  <span style="font-size:18px;color:#B9C2D0">+</span>
+                </div>
+                <div class="tcap">补拍 / 加页</div>
+              </div>
+            </div>
+
+            <div style="margin-top:12px;padding:8px 10px;background:var(--amber-bg);border:1px solid #F0DFBF;border-radius:6px;font-size:11.5px;color:#8A5A0B;line-height:1.7">
+              第 2 页第 4 条（押金）有 21 个字没识别出来，这一条恰好是风险最集中的地方 —— 建议先补拍这一页，再继续。
+            </div>
+          </div>
+          <div class="phd" style="border-top:1px solid var(--line2)"><span class="t">三个补救办法</span><span class="s">换一种拍法，比反复重试更省时间</span></div>
+          <div class="pbd" style="display:flex;gap:7px;flex-wrap:wrap">
+            <button class="btn sm" data-toast="演示：进入第 2 页单页补拍，只替换这一页">① 只补拍第 2 页</button>
+            <button class="btn sm" data-toast="演示：重新上传一份更清晰的 PDF">② 换一份文件</button>
+            <button class="btn sm" data-go="confirm">③ 手动粘贴这一条</button>
+          </div>
+        </div>
+
+        <div>
+          <div class="panel">
+            <div class="phd"><span class="t">检查结果</span><span class="sp"></span><span class="tag check">1 项需重拍</span></div>
+            <div class="pbd" style="padding-top:4px">
+              <div class="kitem">
+                <div class="kic ok">✓</div>
+                <div style="flex:1">
+                  <div class="kit">文件完整性</div>
+                  <div class="kis">4 页连续，无缺页；文件未加密</div>
+                </div>
+              </div>
+              <div class="kitem">
+                <div class="kic ok">✓</div>
+                <div style="flex:1">
+                  <div class="kit">合同类型</div>
+                  <div class="kis">识别为「房屋租赁合同」，将按 9 类条款审查</div>
+                </div>
+              </div>
+              <div class="kitem">
+                <div class="kic warn">!</div>
+                <div style="flex:1">
+                  <div class="kit">文字识别率 <span class="tag check">第 2 页 61%</span></div>
+                  <div class="kis">反光区域集中在押金条款，其余 3 页 96% 以上</div>
+                  <div class="kinline"><i style="width:61%"></i></div>
+                </div>
+              </div>
+              <div class="kitem">
+                <div class="kic ok">✓</div>
+                <div style="flex:1">
+                  <div class="kit">隐私脱敏</div>
+                  <div class="kis">2 个身份证号、2 个手机号已打码，不进模型</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel" style="margin-top:12px">
+            <div class="phd"><span class="t">在这里核对修正</span><span class="sp"></span><span class="tag line">第 4 条 · 押金</span></div>
+            <div class="pbd">
+              <div class="ocrbox">
+                <div class="ocrhd"><span>识别结果 · 可直接改</span><span class="sp" style="flex:1"></span><span style="color:var(--amber)">低置信度 2 处</span></div>
+                <div class="ocrtext" contenteditable="true" style="max-height:96px">2. 退租时需扣除全屋保洁费，<span class="bad">标 准 由 甲 方 核 定</span>。</div>
+                <div class="ocrtip">改完这里，第 2 页不重拍也可以继续 —— 这一条会以你改后的文字为准。</div>
+              </div>
+              <div class="hint" style="margin-top:8px">拍的时候把手机放平、别开闪光灯、纸面别翘起来，这三件事能解决 80% 的重拍。</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tfoot">
+        <button class="btn" data-go="landing">← 换一个文件</button>
+        <span class="hint">第 2 页识别不全也可以继续，押金条款会被标为「需人工核对」，但建议先补拍。</span>
+        <button class="btn primary" data-go="confirm">继续，确认基础信息 →</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ P2 confirm ============ -->
+<section class="screen" id="confirm">
+  <div class="task">
+    <div class="tinner">
+      <div class="crumb"><span>新建审查</span><span class="dot"></span><span>上传与质检</span><span class="dot"></span><b>确认基础信息</b><span class="dot"></span><span>看结果</span></div>
+
+      <div class="grid2" style="grid-template-columns:1fr 470px">
+        <div class="cprev">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-size:12.5px;font-weight:600">原文预览</span>
+            <span class="tag line">第 1 页 / 4</span>
+            <span class="sp"></span>
+            <div class="seg" id="cfTabs">
+              <button class="on" data-ct="paper">原文</button>
+              <button data-ct="text">识别全文</button>
+            </div>
+          </div>
+
+          <div id="cfPaper">
+            <div class="minipaper">
+              <div class="t">房屋租赁合同</div>
+              <div style="text-align:right;font-size:10px;color:#98A0AC">合同编号：CY-2026-1102</div>
+              <p style="margin:8px 0">出租人（甲方）：李××　　身份证号：1101**********1234</p>
+              <p style="margin:8px 0">承租人（乙方）：王××　　身份证号：1101**********5678</p>
+              <p style="margin:8px 0;text-indent:2em">根据《中华人民共和国民法典》及有关法律、法规的规定，甲乙双方在平等、自愿、协商一致的基础上，就房屋租赁的有关事宜达成如下协议：</p>
+              <p style="margin:10px 0 2px;font-weight:700">第一条　房屋基本情况</p>
+              <p style="margin:4px 0;text-indent:2em">甲方将坐落于北京市朝阳区建国路 88 号院 3 号楼 2 单元 1102 室的房屋出租给乙方居住使用，建筑面积 62 平方米。</p>
+              <p style="margin:10px 0 2px;font-weight:700">第二条　租赁期限</p>
+              <p style="margin:4px 0;text-indent:2em">租赁期限自 2026 年 12 月 1 日起至 2027 年 11 月 30 日止，共计 12 个月。</p>
+              <p style="margin:10px 0 2px;font-weight:700">第三条　租金及支付方式</p>
+              <p style="margin:4px 0;text-indent:2em">1. 房屋月租金为人民币 4,500 元（大写：肆仟伍佰元整）。</p>
+              <p style="margin:4px 0;text-indent:2em">2. 租金支付方式为押三付一，乙方应于每月 5 日前支付当月租金。</p>
+              <p style="margin:4px 0;text-indent:2em">3. <span class="sn2">乙方逾期支付租金的，每逾期一日，应按月租金的 1% 支付滞纳金。</span></p>
+              <p style="margin:4px 0;text-indent:2em">4. 租赁期内，甲方有权根据市场行情上调租金，每年上调幅度最高不超过 8%。</p>
+            </div>
+          </div>
+
+          <div id="cfText" style="display:none">
+            <div class="ocrbox">
+              <div class="ocrhd">
+                <span>识别全文 · 可直接修改</span>
+                <span class="sp" style="flex:1"></span>
+                <span style="color:var(--amber)">3 处待核对</span>
+              </div>
+              <div class="ocrtext" contenteditable="true">甲方将坐落于北京市朝阳区建国路 88 号院 3 号楼 2 单元 1102 室的房屋出租给乙方居住使用，建筑面积 62 平方米，房屋权属证书号为京（2019）朝阳区不动产权第 <span class="bad">3 0</span>×××× 号。
+
+租赁期限自 <span class="bad">2026</span> 年 12 月 1 日起至 2027 年 11 月 30 日止，共计 12 个月。
+
+房屋月租金为人民币 <span class="bad">4,5OO</span> 元（大写：肆仟伍佰元整）。</div>
+              <div class="ocrtip">黄色处是低置信度字符，改一下就能继续 —— 比重新上传一份快。</div>
+            </div>
+          </div>
+
+          <div class="hint">只做「审查范围」的确认，不问押金多少、房东是谁 —— 这些从合同里读，读错了在右侧改。</div>
+        </div>
+
+        <div>
+          <div class="panel">
+            <div class="phd"><span class="t">基础信息</span><span class="s">已从合同自动读取</span></div>
+            <div class="pbd">
+              <div class="fieldrow">
+                <span class="fld"><span class="k">类型</span><select><option>房屋租赁合同</option><option>公寓租赁合同</option><option>合租协议</option></select></span>
+                <span class="fld"><span class="k">城市</span><select><option>北京 · 朝阳</option><option>北京 · 海淀</option><option>上海 · 浦东</option></select></span>
+                <span class="fld pick"><span class="k">月租</span><input value="4,500"><span style="color:var(--ink4);font-size:11px">元</span></span>
+                <span class="fld"><span class="k">租期</span><input value="12" style="width:34px"><span style="color:var(--ink4);font-size:11px">个月</span></span>
+                <span class="fld"><span class="k">押金</span><input value="13,500" style="width:60px"></span>
+                <span class="fld"><span class="k">审查尺度</span><select><option>严格 · 逐句</option><option>标准</option></select></span>
+              </div>
+              <div class="hint" style="margin-top:8px">城市只用来提示地区差异（如北京押金监管、水电价），不作为结论依据。</div>
+            </div>
+          </div>
+
+          <div class="panel" style="margin-top:12px">
+            <div class="phd"><span class="t">这次会检查什么</span><span class="sp"></span><span class="tag line">9 类 · 逐句</span></div>
+            <div class="pbd" style="padding-top:8px">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 10px;font-size:12px;color:var(--ink2)">
+                <span>· 押金与退还条件</span><span>· 提前退租与违约金</span>
+                <span>· 维修责任划分</span><span>· 租金与涨租机制</span>
+                <span>· 水电燃气计价</span><span>· 房屋检查与进入</span>
+                <span>· 转租与合租</span><span>· 宠物与使用限制</span>
+                <span>· 附件与设施清单</span><span style="color:var(--ink4)">（合同外事项单列，不混进风险）</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel" style="margin-top:12px;border-color:#DCE7FA;background:var(--blue-bg2)">
+            <div class="pbd" style="padding:10px 13px;font-size:11.5px;color:var(--ink2);line-height:1.75">
+              <b style="color:var(--blue)">不用选模板、不用挑规则。</b>审查范围按合同类型自动挂载，你只要确认读到的信息对不对 —— 参数越多，第一次用的人越容易放弃。
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tfoot">
+        <button class="btn" data-go="upload">← 上一步</button>
+        <span class="hint">点击开始后约 30 秒出结果，可以先用「看已完成的部分」。</span>
+        <button class="btn primary" data-go="analyzing">开始审查 →</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ P3 analyzing ============ -->
+<section class="screen" id="analyzing">
+  <div class="task" style="padding-top:34px">
+    <div class="tinner">
+      <div class="crumb"><span>新建审查</span><span class="dot"></span><b>正在审查</b><span class="dot"></span><span>看结果</span></div>
+
+      <div class="an">
+        <div class="ascan" id="ascan">
+          <div style="text-align:center;font-family:var(--serif);font-size:15px;letter-spacing:5px;font-weight:700;margin-bottom:16px">房屋租赁合同</div>
+          <div class="al t"></div><div class="al m"></div><div class="al s"></div>
+          <div class="al t" style="margin-top:18px"></div>
+          <div class="al m"></div><div class="al"></div><div class="al s"></div>
+          <div class="al t" style="margin-top:18px"></div>
+          <div class="al m"></div><div class="al s"></div><div class="al"></div>
+          <div class="al t" style="margin-top:18px"></div>
+          <div class="al"></div><div class="al m"></div><div class="al s"></div>
+          <div class="al t" style="margin-top:18px"></div>
+          <div class="al m"></div><div class="al"></div>
+          <div style="margin-top:22px;font-size:11px;color:var(--ink4);text-align:center">正在逐句切分 · 已读 3 / 4 页</div>
+        </div>
+
+        <div class="panel">
+          <div class="pbd">
+            <div style="display:flex;align-items:baseline;gap:8px">
+              <span style="font-size:13.5px;font-weight:600">审查进行中</span>
+              <span style="font-size:11.5px;color:var(--ink4);margin-left:auto" id="aPct">8%</span>
+            </div>
+            <div class="aprog"><i id="aBar"></i></div>
+
+            <div class="astep" data-a="0">
+              <div class="n">1</div>
+              <div><div class="t">读取原文 · 切分条款</div><div class="s">4 页，识别 10 条 / 38 句</div></div>
+            </div>
+            <div class="astep" data-a="1">
+              <div class="n">2</div>
+              <div><div class="t">按 9 类条款逐句比对</div><div class="s">押金、退租、维修、涨租…</div></div>
+            </div>
+            <div class="astep" data-a="2">
+              <div class="n">3</div>
+              <div><div class="t">生成修改建议与话术</div><div class="s" id="aStep3">正在读取第 1 页…</div></div>
+            </div>
+            <div class="astep" data-a="3">
+              <div class="n">4</div>
+              <div><div class="t">单列合同外待核实事项</div><div class="s">产权、转租、费用、设施…</div></div>
+            </div>
+
+            <div style="margin-top:12px;padding:9px 11px;background:var(--blue-bg2);border:1px solid #DCE7FA;border-radius:6px;font-size:11.5px;color:var(--ink2);line-height:1.7">
+              等的时候可以做点别的：<a href="#" data-go="work">先看已完成的部分 →</a>
+            </div>
+            <div class="hint" style="margin-top:9px">平均 28 秒；20 页以上会拆成多段逐段审查，不会卡住。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ P4 workspace ============ -->
+<section class="screen" id="work">
+  <div class="work">
+
+    <!-- doc header: filename + 基础信息合并一栏 -->
+    <div class="dh">
+      <div class="fn"><span class="fi">PDF</span>朝阳区_租房合同.pdf</div>
+      <div class="metarow">
+        <span>房屋租赁合同</span>
+        <span>北京 · 朝阳</span>
+        <span>月租 <b>¥4,500</b></span>
+        <span>租期 <b>12 个月</b></span>
+        <span>押金 <b>¥13,500</b></span>
+        <span>审查尺度 <b>严格</b></span>
+        <span>9 条风险 · 6 项待核实</span>
+      </div>
+      <div class="acts">
+        <button class="btn sm" data-go="upload">重新上传</button>
+        <div style="position:relative">
+          <button class="btn sm primary" id="btnExport">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4v11m0 0l-4-4m4 4l4-4M5 19h14"/></svg>
+            导出
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" style="width:10px;height:10px"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="menu" id="exportMenu">
+            <div class="mi" data-export="report"><span>导出审查报告</span><span class="k">PDF · 含脱敏原文</span></div>
+            <div class="mi" data-export="revised"><span>导出合同原文（修订版）</span><span class="k">docx · V0.2</span></div>
+            <div class="mi" data-export="annotated"><span>导出合同原文（批注版）</span><span class="k">docx · 带批注</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="wbody">
+      <!-- left: contract -->
+      <aside class="docpane">
+        <div class="dtools">
+          <span class="m on">开始</span>
+          <span class="m">插入</span>
+          <span class="m">页面</span>
+          <span class="sep"></span>
+          <span class="m" data-toast="演示：对选中句子加批注，导出时进 Word 批注版">批注 <b style="color:var(--blue)">9</b></span>
+          <span class="m" data-toast="演示：跳转到对应条款">定位</span>
+          <span class="r"><span>第 <b id="pgNow">1</b> / 4 页</span><span>·</span><span>100%</span></span>
+        </div>
+
+        <div class="docmain">
+          <div class="drail" id="pagerail">
+            <div class="pgth on" data-pg="1">1</div>
+            <div class="pgth" data-pg="2">2</div>
+            <div class="pgth" data-pg="3">3</div>
+            <div class="pgth" data-pg="4">4</div>
+          </div>
+
+          <div class="dscroll" id="docscroll">
+            <article class="paper" id="paper">
+
+              <div class="page" data-p="1">
+                <div class="pghd">合同编号：CY-2026-1102</div>
+                <h1 class="chtitle">房屋租赁合同</h1>
+                <div class="cparty"><span>出租人（甲方）：李××</span><span class="idt">身份证号：1101**********1234</span></div>
+                <div class="cparty"><span>承租人（乙方）：王××</span><span class="idt">身份证号：1101**********5678</span></div>
+                <p class="cp">根据《中华人民共和国民法典》及有关法律、法规的规定，甲乙双方在平等、自愿、协商一致的基础上，就房屋租赁的有关事宜达成如下协议：</p>
+                <h2 class="cl">第一条　房屋基本情况</h2>
+                <p class="cp">甲方将坐落于北京市朝阳区建国路 88 号院 3 号楼 2 单元 1102 室的房屋出租给乙方居住使用，建筑面积 62 平方米，房屋权属证书号为京（2019）朝阳区不动产权第 00×××× 号。</p>
+                <h2 class="cl">第二条　租赁期限</h2>
+                <p class="cp">租赁期限自 2026 年 12 月 1 日起至 2027 年 11 月 30 日止，共计 12 个月。租赁期满，乙方需继续承租的，应提前 30 日向甲方提出，经甲方同意后重新签订合同。</p>
+                <h2 class="cl">第三条　租金及支付方式</h2>
+                <p class="ci"><i>1.</i><span class="ctx">房屋月租金为人民币 4,500 元（大写：肆仟伍佰元整）。</span></p>
+                <p class="ci"><i>2.</i><span class="ctx">租金支付方式为押三付一，乙方应于每月 5 日前支付当月租金。</span></p>
+                <p class="ci"><i>3.</i><span class="ctx">乙方逾期支付租金的，每逾期一日，应按月租金的 1% 支付滞纳金。</span></p>
+                <p class="ci"><i>4.</i><span class="ctx"><span class="sn lv-check" data-s="r5">租赁期内，甲方有权根据市场行情上调租金，每年上调幅度最高不超过 8%。<span class="mark">5</span></span></span></p>
+                <div class="pgft">— 第 1 页 / 共 4 页 —</div>
+              </div>
+
+              <div class="page" data-p="2">
+                <h2 class="cl">第四条　押金</h2>
+                <p class="ci"><i>1.</i><span class="ctx">乙方应于签订本合同时向甲方支付押金人民币 13,500 元（大写：壹万叁仟伍佰元整）。</span></p>
+                <p class="ci"><i>2.</i><span class="ctx"><span class="sn lv-must" data-s="r1">退租时需扣除全屋保洁费，标准由甲方核定。<span class="mark">1</span></span></span></p>
+                <p class="ci"><i>3.</i><span class="ctx">租赁期满，乙方结清相关费用并将房屋恢复原状后，甲方应于<span class="sn lv-note" data-s="r8"> 60 日内无息退还押金<span class="mark">8</span></span>。</span></p>
+                <p class="ci"><i>4.</i><span class="ctx">押金不足以抵扣乙方应付费用的，乙方应在 3 日内补足。</span></p>
+                <h2 class="cl">第五条　维修责任</h2>
+                <p class="ci"><i>1.</i><span class="ctx"><span class="sn lv-must" data-s="r4">租赁期间房屋及附属设施的维修、更换费用，除房屋主体结构外，均由乙方承担。<span class="mark">4</span></span></span></p>
+                <p class="ci"><i>2.</i><span class="ctx">因乙方使用不当造成房屋或设施损坏的，乙方应负责修复或赔偿。</span></p>
+                <p class="ci"><i>3.</i><span class="ctx">甲方应保证房屋及附属设施在交付时处于可正常使用状态。</span></p>
+                <div class="pgft">— 第 2 页 / 共 4 页 —</div>
+              </div>
+
+              <div class="page" data-p="3">
+                <h2 class="cl">第六条　提前退租</h2>
+                <p class="ci"><i>1.</i><span class="ctx"><span class="sn lv-must" data-s="r2">乙方提前退租的，押金不予退还，并应向甲方支付相当于两个月租金的违约金。<span class="mark">2</span></span></span></p>
+                <p class="ci"><i>2.</i><span class="ctx">甲方提前收回房屋的，应提前 30 日通知乙方，并退还剩余租金及押金。</span></p>
+                <h2 class="cl">第七条　其他约定</h2>
+                <p class="ci"><i>1.</i><span class="ctx"><span class="sn lv-note" data-s="r6">甲方有权随时进入房屋进行检查，无需事先通知乙方。<span class="mark">6</span></span></span></p>
+                <p class="ci"><i>2.</i><span class="ctx">乙方不得擅自改变房屋结构或<span class="sn lv-note" data-s="r7">转租、转借给他人使用；确需转租的，应经甲方书面同意<span class="mark">7</span></span>。</span></p>
+                <p class="ci"><i>3.</i><span class="ctx">乙方不得在房屋内饲养宠物，不得从事经营性活动。</span></p>
+                <h2 class="cl">第八条　费用承担</h2>
+                <p class="ci"><i>1.</i><span class="ctx">租赁期间的水、电、燃气费用由乙方承担。</span></p>
+                <p class="ci"><i>2.</i><span class="ctx">物业管理费、取暖费由甲方承担。</span></p>
+                <p class="ci"><i>3.</i><span class="ctx"><span class="sn lv-check" data-s="r3">水、电费用按商用水电标准结算，乙方按甲方提供的账单支付。<span class="mark">3</span></span></span></p>
+                <p class="ci"><i>4.</i><span class="ctx">有线电视、宽带费用由乙方自行开通并承担。</span></p>
+                <div class="pgft">— 第 3 页 / 共 4 页 —</div>
+              </div>
+
+              <div class="page" data-p="4">
+                <h2 class="cl">第九条　争议解决</h2>
+                <p class="cp">本合同在履行过程中发生争议的，双方应协商解决；协商不成的，任何一方可向房屋所在地人民法院提起诉讼。</p>
+                <h2 class="cl">第十条　其他</h2>
+                <p class="ci"><i>1.</i><span class="ctx">本合同一式两份，甲乙双方各执一份，自双方签字（盖章）之日起生效。</span></p>
+                <p class="ci"><i>2.</i><span class="ctx">附件为本合同不可分割的组成部分，与本合同具有同等法律效力。</span></p>
+                <p class="ci"><i>3.</i><span class="ctx">本合同未尽事宜，双方可另行签订补充协议。</span></p>
+                <p class="ci"><i>4.</i><span class="ctx"><span class="sn lv-note" data-s="r9">附件一：房屋设施清单（未附）。<span class="mark">9</span></span></span></p>
+                <p class="ci"><i>5.</i><span class="ctx">附件二：房屋权属证明复印件、甲乙双方身份证复印件。</span></p>
+                <div style="margin-top:26px;display:flex;justify-content:space-between;font-size:12px;color:#5C6674">
+                  <div>甲方（签字）：<span style="display:inline-block;width:80px;border-bottom:1px solid #D8D0BE"></span></div>
+                  <div>乙方（签字）：<span style="display:inline-block;width:80px;border-bottom:1px solid #D8D0BE"></span></div>
+                </div>
+                <div style="margin-top:14px;font-size:11.5px;color:#6B7484">日期：2026 年 11 月　　日</div>
+                <div class="pgft">— 第 4 页 / 共 4 页 —</div>
+              </div>
+
+            </article>
+          </div>
+        </div>
+      </aside>
+
+      <!-- right: workspace -->
+      <main class="wsp">
+
+        <div class="tabs" id="tabs">
+          <button class="tab on" data-t="ov">概览</button>
+          <button class="tab" data-t="risk">风险<span class="n must" id="cntRisk">9</span></button>
+          <button class="tab" data-t="fix">修改<span class="n" id="cntFix">3</span></button>
+          <button class="tab" data-t="say">话术</button>
+          <button class="tab" data-t="check">待核实<span class="n" id="cntCheck">6</span></button>
+        </div>
+
+        <!-- T1 概览 -->
+        <div class="pane on" data-pane="ov">
+          <div class="verdict">
+            <div class="stamp">AI 初审<b>已核 9 条</b></div>
+            <div class="vlab">审查结论</div>
+            <div class="vt">关键问题确认后再决定</div>
+            <div class="vd">9 条风险中 <b>3 条必须在签约前改掉</b>，其中押金条款可能让你多损失 <b>¥5,400</b>；另有 6 件合同外的事要当面问清。改完这 3 条，这份合同可以签。</div>
+          </div>
+
+          <div class="loss">
+            <div class="lmain">
+              <div class="lbl">最坏情况合计损失</div>
+              <div class="num"><small>¥</small>17,400</div>
+            </div>
+            <div class="brk">
+              <div class="bi"><div class="bt">押金扣款</div><div class="bv">¥5,400</div><div class="bn">第 4 条 · 保洁费</div></div>
+              <div class="bi"><div class="bt">退租违约金</div><div class="bv">¥9,000</div><div class="bn">第 6 条 · 2 个月租金</div></div>
+              <div class="bi"><div class="bt">维修费用</div><div class="bv">¥3,000</div><div class="bn">第 5 条 · 自然损坏</div></div>
+            </div>
+          </div>
+
+          <div class="sum3">
+            <div class="sumcol must">
+              <div class="sumhd"><i></i>必须改<span class="c">3 条</span></div>
+              <div class="sumli" data-act="tofix" data-id="r1"><span class="d">1</span><span>押金：退租扣全屋保洁费</span><span class="l">第4条</span></div>
+              <div class="sumli" data-act="tofix" data-id="r2"><span class="d">2</span><span>退租违约金 = 2 个月租金</span><span class="l">第6条</span></div>
+              <div class="sumli" data-act="tofix" data-id="r4"><span class="d">3</span><span>自然损坏也由你维修</span><span class="l">第5条</span></div>
+            </div>
+            <div class="sumcol check">
+              <div class="sumhd"><i></i>建议确认<span class="c">2 条</span></div>
+              <div class="sumli" data-act="tofix" data-id="r3"><span class="d">4</span><span>水电按商用价结算</span><span class="l">第8条</span></div>
+              <div class="sumli" data-act="tofix" data-id="r5"><span class="d">5</span><span>租期内可涨租 8%</span><span class="l">第3条</span></div>
+            </div>
+            <div class="sumcol note">
+              <div class="sumhd"><i></i>仅提醒<span class="c">4 条</span></div>
+              <div class="sumli" data-act="tofix" data-id="r6"><span class="d">6</span><span>可随时进门检查</span><span class="l">第7条</span></div>
+              <div class="sumli" data-act="tofix" data-id="r7"><span class="d">7</span><span>转租需书面同意</span><span class="l">第7条</span></div>
+              <div class="sumli" data-act="tofix" data-id="r8"><span class="d">8</span><span>押金 60 日退还</span><span class="l">第4条</span></div>
+              <div class="sumli" data-act="tofix" data-id="r9"><span class="d">9</span><span>设施清单未附</span><span class="l">第10条</span></div>
+            </div>
+          </div>
+
+          <div class="peek">
+            <div class="pi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M12 3l7 3v5c0 4.5-3 7.7-7 9-4-1.3-7-4.5-7-9V6l7-3z"/><path d="M12 9v4m0 3v.5"/></svg></div>
+            <div style="flex:1">
+              <div class="pt">还有 8 件合同外的事要当面问清</div>
+              <div class="ps">产权人是谁、是否转租、物业费谁交 —— 这些写不进条款，但决定你会不会被赶走</div>
+            </div>
+            <button class="btn sm" data-tab="check">看清单 →</button>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:8px;margin-top:10px">
+            <button class="btn primary" data-tab="risk">开始逐条看（9 条 · 约 3 分钟）</button>
+            <button class="btn" data-tab="say">不想逐条看，直接拿话术去问</button>
+            <span class="sp"></span>
+            <span class="hint">先看必须改的 3 条，其余可跳过</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;margin-top:10px;font-size:10.5px;color:#AEB6C2;flex-wrap:wrap">
+            <span>已检查 38 句</span><span>·</span><span>法条库 2024-12：民法典 / 电力法 / 北京市住房租赁条例</span><span>·</span><span>参考 1,204 份北京朝阳区同类合同</span>
+          </div>
+        </div>
+
+        <!-- T2 风险 -->
+        <div class="pane" data-pane="risk">
+          <div class="stats" id="stats"></div>
+          <div class="filterbar">
+            <span id="riskCount">共 9 条，按严重程度排序</span>
+            <span class="sp"></span>
+            <button class="sortsel" id="sorter">严重程度
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" style="width:10px;height:10px"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+          </div>
+          <div id="riskList"></div>
+        </div>
+
+        <!-- T3 修改 -->
+        <div class="pane" data-pane="fix">
+          <div class="fx" id="fx">
+            <div class="fxhd">
+              <span class="fxno">风险点 <b id="fixNo">1</b></span>
+              <span class="tag must" id="fixLevel">必须改</span>
+              <span class="sp" style="flex:1"></span>
+              <span class="fxloc" id="fixLoc">第 4 条 · 第 2 句 · 第 2 页</span>
+              <div class="navs">
+                <button class="btn xs" id="fixPrev" title="上一条">↑</button>
+                <button class="btn xs" id="fixNext" title="下一条">↓</button>
+              </div>
+            </div>
+
+            <div class="fxsec">
+              <div class="lab">风险结论</div>
+              <div class="fxt" id="fixTitle">押金：退租时扣除「全屋保洁费」</div>
+              <div class="fxwhy" id="fixWhy"></div>
+              <div class="lawrow">
+                <span class="lk">法律依据</span>
+                <b id="fixLaw">《民法典》第七百一十条</b>
+                <span id="fixLawMeta">2021 施行 · 北京</span>
+                <span class="sp"></span>
+                <button class="lawopen" data-toast="演示：跳转国家法律法规数据库，定位到该条原文">法条原文 ↗</button>
+              </div>
+            </div>
+
+            <div class="fxsec">
+              <div class="lab">合同原文<span class="labtag del">待删除</span><span class="sp"></span>
+                <button class="locbtn" id="fixLocate" data-locate="r1">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:11px;height:11px"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5L21 21"/></svg>
+                  定位至原文
+                </button>
+              </div>
+              <div class="quote old" id="diffOld"></div>
+            </div>
+
+            <div class="fxsec">
+              <div class="lab">建议改为<span class="labtag ins">新增</span><span class="sp"></span>
+                <button class="btn xs" id="btnEditFix">编辑</button>
+              </div>
+              <div class="quote new" id="diffNew"></div>
+              <div class="edwrap" id="edWrap">
+                <textarea id="fixEdit" spellcheck="false"></textarea>
+                <div class="edft">
+                  <button class="edok" id="btnSaveFix" title="保存">✓</button>
+                  <button class="edno" id="btnCancelFix" title="取消">✗</button>
+                  <span class="edhint">改完先点 ✓ 保存，再接受修订</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="fxft">
+              <button class="dum" data-act="done" data-id="r1" id="fixDone">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8"><path d="M5 12.5l4.5 4.5L19 7"/></svg>
+                <span>标记已处理</span>
+              </button>
+              <span class="sp" style="flex:1"></span>
+              <button class="btn sm" id="btnAnnot">添加批注</button>
+              <button class="btn primary" id="btnAccept" data-id="r1">接受建议并添加修订</button>
+            </div>
+          </div>
+
+          <div class="related" id="related"></div>
+          <div class="queue" id="fixQueue"></div>
+        </div>
+
+        <!-- T4 话术 -->
+        <div class="pane" data-pane="say">
+          <div class="tonebar">
+            <div class="seg" id="toneTabs">
+              <button class="on" data-tone="polite">礼貌版</button>
+              <button data-tone="firm">协商版</button>
+            </div>
+            <span class="sp" style="flex:1"></span>
+            <span class="bind">绑定 <b id="sayTarget">第 4 条 押金 · ¥5,400</b></span>
+          </div>
+
+          <div class="rail" id="sayRail"></div>
+
+          <div class="msg">
+            <div class="msghd">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="width:14px;height:14px;color:#1AAD19"><path d="M4 11.5C4 7.6 7.6 4.5 12 4.5s8 3.1 8 7-3.6 7-8 7c-.9 0-1.8-.1-2.6-.4L5 19.5l1-3.3C4.8 14.9 4 13.3 4 11.5z"/></svg>
+              <span class="tgt">微信里直接发给房东</span>
+            </div>
+            <div style="padding:12px 13px">
+              <div class="bubble" id="sayBody" contenteditable="true" spellcheck="false"></div>
+            </div>
+            <div class="msgft">
+              <button class="btn sm primary" data-act="copysay">复制这段话</button>
+              <span class="sp" style="flex:1"></span>
+              <button class="btn sm ghost" data-tab="fix">这条怎么改 →</button>
+            </div>
+          </div>
+
+          <div class="objhd">房东可能会这么回<span>点一句，看你该怎么接</span></div>
+          <div class="objchips" id="objChips"></div>
+          <div class="thread" id="objThread"></div>
+
+          <div class="v02box">
+            <div class="vh"><span class="tag dim">V0.2</span>贴房东的原话，让 AI 帮你回一句</div>
+            <div class="fakein">「这个我们一直都是这么签的，你要是不放心就别租了」</div>
+            <div style="font-size:11px;color:var(--ink4);margin-top:6px;line-height:1.6">多轮对话是真需求，但自由输入会冲掉「结论必须回指原文」这条底线 —— 先做预置短句，不做自由问答。</div>
+          </div>
+        </div>
+
+        <!-- T5 待核实 -->
+        <div class="pane" data-pane="check">
+          <div class="chkh">
+            <div class="ring">
+              <svg width="44" height="44" viewBox="0 0 44 44">
+                <circle cx="22" cy="22" r="19" fill="none" stroke="#EDF1F6" stroke-width="4"></circle>
+                <circle id="ringArc" cx="22" cy="22" r="19" fill="none" stroke="#1A5FFF" stroke-width="4"
+                  stroke-linecap="round" stroke-dasharray="119.38" stroke-dashoffset="119.38"></circle>
+              </svg>
+              <div class="rt" id="ringTxt">2/8</div>
+            </div>
+            <div style="flex:1">
+              <div class="h">合同外还要问清的 8 件事</div>
+              <div class="s">这些写不进条款，但决定你会不会被赶走、押金能不能拿回来</div>
+            </div>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:6px;margin:10px 0 8px;font-size:11.5px;color:var(--ink4)">
+            <span style="width:5px;height:5px;border-radius:50%;background:var(--green)"></span>已确认 2 项
+            <span style="width:5px;height:5px;border-radius:50%;background:#CBD4E1;margin-left:8px"></span>待确认 6 项
+          </div>
+
+          <div class="panel" style="overflow:hidden">
+            <div id="checkList"></div>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:8px;margin-top:10px">
+            <button class="btn sm primary" data-act="copycheck">复制成一条微信消息</button>
+            <span class="hint">一次问完，比来回追问八次更容易得到答复</span>
+          </div>
+        </div>
+
+        <!-- bottom bar -->
+        <div class="abar">
+          <div class="abcounts">
+            <span class="c must"><i></i>必须改 <b id="abMust">3</b></span>
+            <span class="c check"><i></i>建议确认 <b>2</b></span>
+            <span class="c note"><i></i>仅提醒 <b>4</b></span>
+          </div>
+          <div class="abprog"><span id="doneTxt">已处理 0 / 9</span><span class="bar"><i id="doneBar"></i></span></div>
+          <span class="sp"></span>
+          <span class="disc">AI 生成，可能存在遗漏 · 是否签约由你决定 · 不保存原文</span>
+          <button class="btn sm primary" id="abBtn">开始逐条看</button>
+        </div>
+      </main>
+    </div>
+  </div>
+</section>
+
+<!-- drawer -->
+<div class="scrim" id="scrim"></div>
+<div class="drawer" id="drawer">
+  <div class="dhd"><span class="t">导出</span><span class="sp" style="flex:1"></span><button class="btn xs ghost" id="drawerClose">关闭</button></div>
+  <div class="dbd">
+    <div class="dopt" data-toast="演示：正在生成完整报告 PDF（含脱敏原文 + 页码 + 法条出处）">
+      <div class="oi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="width:15px;height:15px"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 12h6M9 16h6"/></svg></div>
+      <div><div class="ot">完整报告 PDF</div><div class="od">结论 + 9 条风险 + 修改建议 + 话术 + 待核实清单，含脱敏原文与页码</div></div>
+    </div>
+    <div class="dopt" data-toast="演示：修订版合同需逐条替换并保留格式，V0.2 开放">
+      <div class="oi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="width:15px;height:15px"><path d="M4 5h10M4 9h7M4 13h12M4 17h6"/><path d="M17 12l3 3-4 4h-3v-3z"/></svg></div>
+      <div><div class="ot">修订版合同 <span class="tag dim">V0.2</span></div><div class="od">把建议直接替换进原文，保留字体字号，附一页改动清单</div></div>
+    </div>
+    <div class="dopt" data-toast="演示：生成带 Word 批注的合同，可发给房东逐条回应">
+      <div class="oi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="width:15px;height:15px"><path d="M20 12a7 7 0 01-7 7H8l-4 3V12a7 7 0 017-7h2a7 7 0 017 7z"/></svg></div>
+      <div><div class="ot">批注版合同</div><div class="od">每条风险在原文对应句子旁加批注，适合发给中介或房东逐条回应</div></div>
+    </div>
+    <div class="dopt" data-toast="演示：已复制 3 条必须改的建议，可直接粘进微信">
+      <div class="oi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="width:15px;height:15px"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 00-2-2H6a2 2 0 00-2 2v8a2 2 0 002 2h2"/></svg></div>
+      <div><div class="ot">只复制文字</div><div class="od">3 条修改建议 + 3 段话术，纯文本，微信里直接粘</div></div>
+    </div>
+    <div class="df">导出的报告不含你的姓名、身份证号、手机号；原文默认不留存。</div>
+  </div>
+</div>
+
+<!-- note modal -->
+<div class="modal" id="noteModal">
+  <div class="mbox">
+    <div class="mhd"><span class="t">设计说明</span><span class="s">五个决定这份原型的判断</span><span class="sp" style="flex:1"></span><button class="btn xs ghost" data-close="noteModal">关闭</button></div>
+    <div class="mbd">
+      <h4>1. 左证据，右动作</h4>
+      <p>左侧永远是合同原文，右侧永远是「你该做什么」。任何风险卡被选中，左侧自动滚到那一句；点左侧任意句子，右侧弹出预设追问。<b>结论不能脱离原文存在</b>，这是产品的可解释性底线。</p>
+      <h4>2. 三级计数替代 0–100 分</h4>
+      <p>5 家竞品里 3 家用总分，但都被自身批注质疑「分数高不代表没问题」。这里只给「必须改 3 / 建议确认 2 / 仅提醒 4」，因为用户要的是「先改哪几条」。</p>
+      <h4>3. 改动做到句子级 diff</h4>
+      <p>竞品多数只给整段替换或条款标题级定位。这里删红增绿是字符级算出来的 LCS 差异，每条附一句「为什么改」，让用户能判断 AI 说得对不对。</p>
+      <h4>4. 话术绑定条款与金额</h4>
+      <p>输出不是「建议协商」，而是可以直接复制的一段话：绑定第几条、多少钱、两档语气、以及房东拒绝时的三种接法。</p>
+      <h4>5. 明确不做什么</h4>
+      <p>不做总分、不做账号、不做身份核验、不做强制勾选、不做「建议签 / 不建议签」。是否签约由用户决定。</p>
+      <div style="margin-top:12px;padding:9px 11px;background:var(--blue-bg2);border-radius:6px;font-size:11.5px;color:var(--ink2);display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <span>地址栏支持 <code>#work?tab=fix&amp;active=r2</code> 直达；任意页面按 <b>?</b> 键打开本说明。</span>
+        <span style="flex:1"></span>
+        <button class="btn sm" id="btnMobile2">打开 390px 移动端</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- mobile modal -->
+<div class="modal" id="mobileModal">
+  <div class="mbox" style="width:auto;background:#F7F9FC">
+    <div class="mhd" style="background:#fff"><span class="t">手机预览</span><span class="s">390 × 700 · 单栏</span><span class="sp" style="flex:1"></span><button class="btn xs ghost" data-close="mobileModal">关闭</button></div>
+    <div class="devwrap"><div class="devframe"><iframe id="devFrame" title="移动端预览" src="about:blank"></iframe></div></div>
+  </div>
+</div>
+
+<!-- popover -->
+<div class="pop" id="pop">
+  <div class="ph"><b>这一条还要看什么</b><span class="sp" style="flex:1"></span><button class="btn xs ghost" id="popClose">×</button></div>
+  <div id="popList">
+    <div class="qi" data-q="0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v5m0 3v.5"/><circle cx="12" cy="12" r="9"/></svg>这条的后果到底有多大</div>
+    <div class="qi" data-q="1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12h11m0 0l-3-3m3 3l-3 3"/><path d="M19 5v14"/></svg>那这句该改成什么</div>
+    <div class="qi" data-q="2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12a7 7 0 01-7 7H8l-4 3V12a7 7 0 017-7h2a7 7 0 017 7z"/></svg>房东不同意怎么办</div>
+  </div>
+  <div class="ans" id="popAns"></div>
+</div>
+
+<div class="toast" id="toast"><span id="toastTxt"></span></div>
+
+<script>
+(function(){
+"use strict";
+var $=function(s,r){return (r||document).querySelector(s)};
+var $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))};
+var esc=function(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')};
+
+var RISKS = [
+{
+  id:'r1', level:'must', sev:'高', cat:'押金',
+  title:'押金：退租时扣除「全屋保洁费」',
+  amt:'−¥5,400', amtCls:'',
+  loc:'第 4 条 · 第 2 句', page:2, conf:'确定',
+  cons:'押金 3 个月共 ¥13,500，此条下任何退租都可先扣一笔保洁费，且金额没有标准、没有上限。',
+  law:'《民法典》第七百一十条', lawMeta:'2021 施行 · 北京 · 全国性法律',
+  orig:'退租时需扣除全屋保洁费，标准由甲方核定。',
+  sugg:'退租时房屋保持交付时状态即可，正常使用产生的自然损耗不扣除费用；如另有保洁需求，费用不超过 300 元且需双方现场确认。',
+  why:'原句「标准由甲方核定」没有上限也没有第三方，等于押金可被任意扣除；按民法典第七百一十条，自然损耗本就不该由承租人承担。',
+  polite:'房东您好，合同我仔细看过了，整体没问题。有一点想跟您商量：第 4 条写退租时要扣全屋保洁费、标准由甲方核定，这个金额我心里没底。能不能改成「按实际发生结算，最多 300 元，退租时双方现场确认」？其他条款我都按您说的来。',
+  firm:'房东您好，第 4 条保洁费「标准由甲方核定」这句我确实没法签——没有上限也没有依据，等于押金能不能拿回来全看事后一句话。我的建议是两种：一是删掉这句，二是写明上限 300 元、退租时双方确认。您选一个，我们今天就能签。',
+  obj:[
+    {q:'我们这一片都这样，别人都没意见',a:'理解，您这边一直是这规矩。我不是为难您，是这条写「标准由甲方核定」没有上限，我确实不敢签。能不能改成「按实际损坏结算，双方现场确认」？'},
+    {q:'不接受就算了，房子不愁租',a:'那我先按您说的签，能不能在合同后面手写一句「保洁费不超过 300 元，退租时双方确认」？对您也没损失。'},
+    {q:'保洁费是行规，都要收的',a:'行规我认，那我们把数字写清楚就行——三百还是五百，写明白了您收得也顺，我也不至于退租时被扣光。'}
+  ]
+},
+{
+  id:'r2', level:'must', sev:'高', cat:'提前退租',
+  title:'提前退租：违约金 = 2 个月租金',
+  amt:'−¥9,000', amtCls:'',
+  loc:'第 6 条 · 第 1 句', page:3, conf:'需确认',
+  cons:'工作变动需提前退租时，除押金不退外还要再付两个月租金，两项合计约 ¥22,500。',
+  law:'《民法典》第五百八十五条', lawMeta:'2021 施行 · 北京 · 全国性法律',
+  orig:'乙方提前退租的，押金不予退还，并应向甲方支付相当于两个月租金的违约金。',
+  sugg:'乙方提前退租的，应提前 30 日书面通知甲方，并支付相当于一个月租金的违约金；已预付但未居住部分的租金及押金应予退还。',
+  why:'「押金不退 + 两个月租金」是双重处罚，房东的实际损失通常远低于此。按民法典 585 条，超过实际损失 30% 的部分可以请求法院调减——但打官司的成本远高于签约前改这一句。',
+  polite:'房东您好，第 6 条提前退租的部分，我想补充一句：如果我提前 30 天跟您说，押金和没住的那部分租金能不能退给我？违约金按一个月租金算，这样对您也有个保障。我工作刚定下来，怕万一有变动。',
+  firm:'第 6 条现在是「押金不退 + 两个月租金」，等于一次退租要付三份钱。按民法典 585 条，违约金高于实际损失 30% 的部分法院是可以调的，真走到那一步对双方都麻烦。我建议改成：提前 30 天通知，违约金一个月租金，剩余租金和押金照退。',
+  obj:[
+    {q:'合同都是这么写的，你签不签都一样',a:'我理解这是标准版本。那能不能只加一句「提前 30 天通知可协商退租」？不改金额，只是留个口子。'},
+    {q:'万一你跑了，我找谁去',a:'所以违约金我认，一个月租金作为补偿是合理的。押金退还是我自己的钱，这个得写清楚。'},
+    {q:'那你先签一年，别中途退',a:'我确实是按一年规划租的。只是工作变动这种事说不准，写清楚对双方都省事。'}
+  ]
+},
+{
+  id:'r3', level:'check', sev:'中', cat:'水电费用',
+  title:'水电：按「商用水电标准」结算',
+  amt:'+¥180/月', amtCls:'up',
+  loc:'第 8 条 · 第 3 句', page:3, conf:'AI 推断',
+  cons:'民用与商用差价约 0.3–0.5 元/度，按每月多付 ¥180 计，一年多支出约 ¥2,160；条款没写单价，属于推断，需要当场确认。',
+  law:'《电力法》第四十四条', lawMeta:'2018 修正 · 北京 · 全国性法律',
+  orig:'水、电费用按商用水电标准结算，乙方按甲方提供的账单支付。',
+  sugg:'水、电、燃气费用按北京市居民生活用水、用电、用气价格据实结算，乙方凭缴费凭证或表计读数支付，甲方不得加价。',
+  why:'商用价与民用价一年差约 2,000 元，且「按甲方账单支付」意味着你无法核对单价。住宅出租按民用价结算本身就是常规做法。',
+  polite:'房东您好，第 8 条写水电按商用标准结算，但我看这是住宅，一般是民用价。能不能改成按民用价据实结算，或者您把单价写进合同里？',
+  firm:'第 8 条「按商用水电标准结算、按甲方账单支付」，单价没写、账单也看不到，我没办法核对。要么改成民用价据实结算，要么把单价和抄表方式写进合同，两者选一个都行。',
+  obj:[
+    {q:'这栋楼就是商用性质的',a:'那麻烦把水电单子给我看一下，或者把单价写进合同。按实际单价付我没问题，只是不想糊里糊涂。'},
+    {q:'我每个月都这么收的',a:'理解您一直这么做。那我们把单价写清楚，我按单子付，您也省得每个月解释。'}
+  ]
+},
+{
+  id:'r4', level:'must', sev:'高', cat:'维修责任',
+  title:'维修责任：自然损坏也由你承担',
+  amt:'−¥3,000', amtCls:'',
+  loc:'第 5 条 · 第 1 句', page:2, conf:'确定',
+  cons:'空调、热水器等大件一旦自然损坏，更换费用全部由你承担，单次可能数千元。',
+  law:'《民法典》第七百一十二条', lawMeta:'2021 施行 · 北京 · 全国性法律',
+  orig:'租赁期间房屋及附属设施的维修、更换费用，除房屋主体结构外，均由乙方承担。',
+  sugg:'租赁期间，房屋主体结构及附属设施的自然损坏由甲方负责维修并承担费用；因乙方使用不当造成的损坏由乙方承担。',
+  why:'把「自然损坏」也推给租客，等于让租客承担房东的资产折旧。民法典 712 条默认维修义务在出租人，这条属于用约定加重你的责任。',
+  polite:'房东您好，第 5 条写除了主体结构都由我承担维修，这个范围有点大。像空调、热水器自然老化坏掉，让我换新的我确实承担不起。能不能改成「自然损坏由您负责，我用坏的我来修」？',
+  firm:'第 5 条把自然损坏的维修责任也给了我，等于我要承担房屋折旧。按民法典 712 条，维修义务本来在出租人。建议改成：自然损坏由甲方维修，使用不当由乙方承担，这样对双方都清楚。',
+  obj:[
+    {q:'以前的租客都是自己修',a:'小修小补我自己来没问题，我说的是空调、热水器这种大件。自然老化换新的，这个真不该我出。'},
+    {q:'我人在外地，不方便修',a:'那可以约定：我修之前先拍照给您确认，费用凭票结算。这样您不用跑，我也不用垫大钱。'}
+  ]
+},
+{
+  id:'r5', level:'check', sev:'中', cat:'租金调整',
+  title:'涨租：每年可上浮 8%',
+  amt:'+¥4,320/年', amtCls:'up',
+  loc:'第 3 条 · 第 4 句', page:1, conf:'需确认',
+  cons:'若按 8% 上限连续上调，第二年月租将变成 ¥4,860，一年多的支出约 ¥4,320。',
+  law:'合同自由约定', lawMeta:'无强制性规定 · 关键在是否有实际上调机制',
+  orig:'租赁期内，甲方有权根据市场行情上调租金，每年上调幅度最高不超过 8%。',
+  sugg:'租赁期内租金标准固定为每月 4,500 元，甲方不得单方上调；续租时租金由双方另行协商确定。',
+  why:'12 个月的租期内允许单方调价，等于价格不确定。即使有 8% 上限，「根据市场行情」也没有可核对的依据。',
+  polite:'房东您好，第 3 条写租期内可以上调租金 8%，我这边是按一年固定预算做的。能不能改成租期内不变，到期续租的时候我们再商量？',
+  firm:'第 3 条第 4 句允许租期内单方涨租 8%，但「根据市场行情」没有可核对的依据。一年期合同通常租金固定，建议改成租期内不调整、续租另议。',
+  obj:[
+    {q:'现在房租都在涨，我这是让利了',a:'所以这个价格我是认的。只是希望一年内固定，到期您要调我们再谈，这样我也好安排。'},
+    {q:'不写这条我就不租了',a:'那能不能加一句「上调需提前 30 天书面通知，乙方可选择不续租」？给我一个选择权就行。'}
+  ]
+},
+{
+  id:'r6', level:'note', sev:'低', cat:'居住安宁',
+  title:'入户检查：无需事先通知',
+  amt:'—', amtCls:'zero',
+  loc:'第 7 条 · 第 1 句', page:3, conf:'确定',
+  cons:'房东可随时进入，包括你不在家时。实际纠纷中这条常被用来主张「已告知」。',
+  law:'《民法典》第一千零三十二条', lawMeta:'2021 施行 · 北京 · 隐私权',
+  orig:'甲方有权随时进入房屋进行检查，无需事先通知乙方。',
+  sugg:'甲方因检查、维修需要进入房屋的，应提前 24 小时通知乙方，并在乙方或其指定人员在场时进行。',
+  why:'租期内房屋使用权归承租人，随时进入属于对居住安宁的干扰。改成提前 24 小时通知，不影响房东正当检查。',
+  polite:'房东您好，第 7 条写可以随时进屋检查，我这边上班时间不在家。能不能改成提前一天跟我说一声？您要检查我肯定配合。',
+  firm:'第 7 条「随时进入、无需通知」影响居住安宁，租期内使用权在我这边。建议改成提前 24 小时通知、我在场时进行，不影响您正常检查。',
+  obj:[
+    {q:'我就看看房子有没有被弄坏',a:'完全理解，您提前一天说，我调开时间在家等您，看得更清楚。'}
+  ]
+},
+{
+  id:'r7', level:'note', sev:'低', cat:'转租',
+  title:'转租：需甲方书面同意',
+  amt:'—', amtCls:'zero',
+  loc:'第 7 条 · 第 2 句', page:3, conf:'确定',
+  cons:'这条本身合法（民法典 716 条），属常见约定。但如果你打算合租或找人接手，需要提前问清。',
+  law:'《民法典》第七百一十六条', lawMeta:'2021 施行 · 北京 · 承租人经同意可转租',
+  orig:'乙方不得擅自改变房屋结构或转租、转借给他人使用；确需转租的，应经甲方书面同意。',
+  sugg:'保持原文即可，只需口头确认：如未来需要合租或转租，甲方是否同意、需要什么手续。',
+  why:'这不是一条「坏条款」，而是需要你确认事实的条款。写进风险清单，是因为它会影响你未来的选择，不是因为它违法。',
+  polite:'房东您好，第 7 条提到转租需要您书面同意。我暂时一个人住，想问一下如果以后找室友合租，您这边一般是什么规矩？',
+  firm:'第 7 条的转租限制我认可，也想提前问清楚：如果以后合租，需要走什么流程、是否加钱？先说清楚，免得以后有分歧。',
+  obj:[
+    {q:'我不接受合租',a:'明白，那我按一个人住签。这条我就先记下，不会擅自转租。'}
+  ]
+},
+{
+  id:'r8', level:'note', sev:'低', cat:'押金',
+  title:'押金退还：退租后 60 日内',
+  amt:'—', amtCls:'zero',
+  loc:'第 4 条 · 第 3 句', page:2, conf:'确定',
+  cons:'两个月才退押金，中间没有利息也没有违约后果，实际拖延很常见。',
+  law:'无强制性规定', lawMeta:'行业惯例 7–30 日 · 建议写入逾期责任',
+  orig:'甲方应于 60 日内无息退还押金。',
+  sugg:'甲方应于退租交接完成之日起 15 日内退还押金；逾期未退的，按日万分之五支付违约金。',
+  why:'60 天偏长且没有逾期责任。押金是你的钱，退还时限越短、越有约束，越不容易被拖。',
+  polite:'房东您好，第 4 条写押金 60 天内退，时间有点长。能不能改成交接完 15 天内退？我这边也要用这笔钱租下一个房子。',
+  firm:'第 4 条押金 60 天无息退还，且没有逾期责任。建议改成交接后 15 日内退还，逾期按日计违约金——这对双方都是个约束。',
+  obj:[
+    {q:'我要等水电费出账单才能算',a:'理解，那 15 天也够出账了。真有大额费用，我们可以单独结算，不用把整笔押金压着。'}
+  ]
+},
+{
+  id:'r9', level:'note', sev:'低', cat:'附件',
+  title:'设施清单：附件一未附',
+  amt:'—', amtCls:'zero',
+  loc:'第 10 条 · 第 4 句', page:4, conf:'确定',
+  cons:'合同说附件是组成部分，但清单没附。退租时「东西是不是你弄坏的」将无法举证。',
+  law:'《民法典》第七百一十条', lawMeta:'2021 施行 · 北京 · 损耗责任',
+  orig:'附件一：房屋设施清单（未附）。',
+  sugg:'入住当日双方共同清点设施并签字确认清单，对现有瑕疵拍照留存，作为退租验收依据。',
+  why:'没有清单，退租时任何损坏都可能算到你头上。补一份双方签字的清单，是成本最低的自保。',
+  polite:'房东您好，合同里提到附件一设施清单，但我没看到这份。入住那天我们一起清点一下、拍个照，签个字，退租的时候都好说。',
+  firm:'合同第 10 条说附件是组成部分，但设施清单没附。建议入住当天共同清点并拍照签字，否则退租时损坏责任没法界定。',
+  obj:[
+    {q:'东西都是好的，不用清单',a:'那就更简单了，我们拍几张照确认现状，对您是证明，对我是保障。'}
+  ]
+}
+];
+
+var CHECKS = [
+ {id:'c1',q:'房东本人是产权人吗？产证与身份证是否一致',done:true},
+ {id:'c2',q:'是否为转租？二房东是否有出租权授权',done:true},
+ {id:'c3',q:'物业费、取暖费由谁承担',done:false},
+ {id:'c4',q:'水电燃气是民用价还是商用价，如何抄表',done:false},
+ {id:'c5',q:'现有设施（空调 / 洗衣机 / 热水器）是否好用，坏了谁修',done:false},
+ {id:'c6',q:'入住前是否有未结清费用（水电、物业、宽带）',done:false},
+ {id:'c7',q:'除房租押金外，是否还有中介费、服务费、门禁卡费',done:false},
+ {id:'c8',q:'能否拍照留存房屋现状与设施（退租时是证据）',done:false}
+];
+
+var LV={must:'必须改',check:'建议确认',note:'仅提醒'};
+var state={tab:'ov',filter:'all',sort:'sev',active:'r1',done:{},tone:'polite',open:{},
+           accepted:{},edited:{},editing:false,dirty:false,objSel:0};
+
+/* ---------- utils ---------- */
+function toast(msg){
+  var t=$('#toast'); $('#toastTxt').textContent=msg;
+  t.classList.add('on'); clearTimeout(t._tm);
+  t._tm=setTimeout(function(){t.classList.remove('on')},2300);
+}
+function copyText(txt,msg){
+  var done=function(){toast(msg||'已复制，可以直接粘到微信')};
+  var fb=function(){
+    var ta=document.createElement('textarea'); ta.value=txt; ta.style.position='fixed'; ta.style.opacity='0';
+    document.body.appendChild(ta); ta.select();
+    try{document.execCommand('copy');done()}catch(e){toast('复制失败，请手动选择文本')}
+    document.body.removeChild(ta);
+  };
+  if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(done,fb);
+  else fb();
+}
+function byId(id){for(var i=0;i<RISKS.length;i++) if(RISKS[i].id===id) return RISKS[i]; return null}
+
+/* ---------- steps ---------- */
+var STEPS=[{k:'upload',t:'上传合同'},{k:'confirm',t:'确认信息'},{k:'work',t:'看结果与动作'}];
+function renderSteps(){
+  var box=$('#topSteps');
+  box.innerHTML=STEPS.map(function(st,idx){
+    return '<div class="sb" data-st="'+st.k+'"><span class="sbdot">'+(idx+1)+'</span>'
+          +'<span class="sblb">'+st.t+'</span>'
+          +(idx<STEPS.length-1?'<span class="sbline"></span>':'')+'</div>';
+  }).join('');
+}
+function setSteps(name){
+  var lvl={landing:0,upload:1,confirm:1,analyzing:3,work:3}[name]||0;
+  $$('#topSteps .sb').forEach(function(el,idx){
+    el.classList.remove('sbdone','sbcur');
+    var n=el.querySelector('.sbdot');
+    if(idx+1<lvl){el.classList.add('sbdone');n.textContent='✓'}
+    else{n.textContent=String(idx+1); if(idx+1===lvl) el.classList.add('sbcur');}
+  });
+  var narrow=(window.innerWidth<981)||document.body.getAttribute('data-m')==='1';
+  $('#topSteps').style.display=(name==='landing'||narrow)?'none':'flex';
+}
+
+/* ---------- router ---------- */
+function go(name,opts){
+  opts=opts||{};
+  $$('.screen').forEach(function(s){s.classList.toggle('on',s.id===name)});
+  document.body.setAttribute('data-screen',name);
+  setSteps(name);
+  if(name==='work'){
+    if(opts.tab) setTab(opts.tab);
+    else if(!state._touched) setTab('ov');
+    if(opts.active) setActive(opts.active,{scroll:true});
+  }
+  if(name==='analyzing') runAnalyze(); else clearAnalyze();
+  if(name==='upload') simulateUpload();
+  window.scrollTo(0,0);
+  if(!opts.silent){try{history.replaceState(null,'','#'+name+(opts.tab?('?tab='+opts.tab):''))}catch(e){}}
+}
+
+/* ---------- upload ---------- */
+var upT=null;
+function simulateUpload(){
+  var tag=$('#upTag'); if(!tag) return;
+  tag.textContent='识别中'; tag.className='tag blue';
+  clearTimeout(upT);
+  upT=setTimeout(function(){tag.textContent='已识别 96%';tag.className='tag check'},1100);
+}
+
+/* ---------- analyze ---------- */
+var aT=[];
+function clearAnalyze(){aT.forEach(clearTimeout);aT=[]}
+function runAnalyze(){
+  clearAnalyze();
+  var steps=$$('#analyzing .astep');
+  var pct=[8,26,64,92];
+  var txt=['正在读取第 1 页…','已读到第 3 页 · 正在核对押金条款','已核对 9 类条款中的 6 类','正在生成第 9 条建议…'];
+  steps.forEach(function(s,i){
+    s.classList.remove('on','done');
+    s.querySelector('.n').textContent=String(i+1);
+  });
+  steps[0].classList.add('on'); steps[0].querySelector('.n').textContent='●';
+  $('#aBar').style.width='8%'; $('#aPct').textContent='8%';
+  var seq=[1000,1200,1300,800],acc=0;
+  for(var i=1;i<steps.length;i++){
+    (function(i){
+      acc+=seq[i-1];
+      aT.push(setTimeout(function(){
+        steps.forEach(function(s){s.classList.remove('on')});
+        for(var k=0;k<i;k++){steps[k].classList.add('done');steps[k].querySelector('.n').textContent='✓'}
+        steps[i].classList.add('on'); steps[i].querySelector('.n').textContent='●';
+        $('#aBar').style.width=pct[i]+'%'; $('#aPct').textContent=pct[i]+'%';
+        var s3=$('#aStep3'); if(s3) s3.textContent=txt[i];
+      },acc));
+    })(i);
+  }
+  aT.push(setTimeout(function(){
+    $('#aBar').style.width='100%'; $('#aPct').textContent='100%';
+    steps.forEach(function(s){s.classList.remove('on');s.classList.add('done');s.querySelector('.n').textContent='✓'});
+    aT.push(setTimeout(function(){go('work',{tab:'ov'})},480));
+  },acc+1000));
+}
+
+/* ---------- tabs ---------- */
+var CTA={ov:'开始逐条看',risk:'看选中的这条',fix:'复制修改建议',say:'复制话术',check:'复制问题清单'};
+function setTab(t){
+  state._touched=true;
+  state.tab=t;
+  $$('#tabs .tab').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-t')===t)});
+  $$('.pane').forEach(function(p){p.classList.toggle('on',p.getAttribute('data-pane')===t)});
+  var btn=$('#abBtn'); if(btn) btn.textContent=CTA[t]||'下一步';
+  if(t==='risk') renderRisks();
+  if(t==='fix') renderFix();
+  if(t==='say') renderSay();
+  if(t==='check') renderChecks();
+  var pane=$('.pane[data-pane="'+t+'"]'); if(pane) pane.scrollTop=0;
+}
+
+/* ---------- active / locate ---------- */
+function setActive(id,opts){
+  if(id!==state.active){state.objSel=0;state.editing=false;state.dirty=false}
+  state.active=id;
+  $$('.risk').forEach(function(el){el.classList.toggle('on',el.getAttribute('data-id')===id)});
+  $$('.sn').forEach(function(el){el.classList.toggle('on',el.getAttribute('data-s')===id)});
+  if(opts&&opts.scroll){
+    state.open[id]=true;
+    var card=$('#riskList .risk[data-id="'+id+'"]');
+    if(card&&state.tab==='risk'){card.classList.add('open');}
+    var sn=$('.sn[data-s="'+id+'"]');
+    if(sn&&sn.scrollIntoView) sn.scrollIntoView({block:'center',behavior:'smooth'});
+  }
+}
+function locate(id){
+  var sn=$('.sn[data-s="'+id+'"]'); if(!sn) return;
+  sn.scrollIntoView({block:'center',behavior:'smooth'});
+  sn.style.transition='background .3s';
+  toast('已定位到第 '+(byId(id)||{}).page+' 页对应句子');
+}
+
+/* ---------- stats ---------- */
+function renderStats(){
+  var c={must:0,check:0,note:0};
+  RISKS.forEach(function(r){c[r.level]++});
+  var total=RISKS.length;
+  var data=[
+    {f:'all',cls:'s-all',n:total,lab:'全部'},
+    {f:'must',cls:'s-must',n:c.must,lab:'必须改'},
+    {f:'check',cls:'s-check',n:c.check,lab:'建议确认'},
+    {f:'note',cls:'s-note',n:c.note,lab:'仅提醒'},
+    {f:'ok',cls:'s-ok',n:29,lab:'已检查通过'}
+  ];
+  $('#stats').innerHTML=data.map(function(d){
+    return '<div class="stat '+d.cls+(state.filter===d.f?' on':'')+(d.n===0?' dim':'')+'" data-f="'+d.f+'"><i></i><span>'+d.lab+'</span><b style="margin-left:auto">'+d.n+'</b></div>';
+  }).join('');
+}
+
+/* ---------- risk list ---------- */
+function cardHTML(r){
+  var isDone=!!state.done[r.id];
+  var isOpen=!!state.open[r.id];
+  var amtCls=r.amtCls?(' '+r.amtCls):'';
+  return '<div class="risk lv-'+r.level+(isOpen?' open':'')+(state.active===r.id?' on':'')+(isDone?' done':'')+'" data-id="'+r.id+'">'
+   + '<div class="rh" data-toggle="'+r.id+'">'
+   +   '<span class="dot"></span>'
+   +   '<span class="tag '+r.level+'">'+LV[r.level]+'</span>'
+   +   '<span class="ti">'+esc(r.title)+'</span>'
+   +   (isDone?'<span class="doneflag">已处理</span>':'')
+   +   '<span class="amt'+amtCls+'">'+r.amt+'</span>'
+   +   '<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg>'
+   + '</div>'
+   + '<div class="rbody">'
+   +   '<div class="rmeta"><span>'+r.loc+'</span><span>第 '+r.page+' 页</span><span>置信度：'+r.conf+'</span><span>'+r.cat+'</span></div>'
+   +   '<div class="rsec"><div class="lab">风险结论</div><div class="c strong">'+esc(r.cons)+'</div></div>'
+   +   '<div class="rsec"><div class="lab">合同原文</div><div class="c paperq">'+esc(r.orig)
+   +     '<div class="mini"><button class="locbtn" data-locate="'+r.id+'">定位至原文 →</button></div></div></div>'
+   +   '<div class="rsec"><div class="lab">建议改为</div><div class="c sugg">'+esc(r.sugg)+'</div></div>'
+   +   '<div class="rsec"><div class="lab">法律依据</div><div class="c">'+r.law+'<div class="mini">'+r.lawMeta
+   +     ' · <a href="#" data-toast="演示：将打开国家法律法规数据库的条文原文">法条原文 ↗</a></div></div></div>'
+   +   '<div class="rfoot">'
+   +     '<button class="btn sm primary" data-act="tofix" data-id="'+r.id+'">看怎么改</button>'
+   +     '<button class="btn sm" data-act="tosay" data-id="'+r.id+'">怎么跟房东说</button>'
+   +     '<span class="x">'+(isDone?'✓ 已处理':'')+'</span>'
+   +     (isDone?'<button class="btn xs ghost" data-act="done" data-id="'+r.id+'">撤销</button>'
+              :'<button class="btn xs ghost" data-act="done" data-id="'+r.id+'">标记已处理</button>')
+   +   '</div>'
+   + '</div></div>';
+}
+function renderRisks(){
+  var list=RISKS.filter(function(r){return state.filter==='all'||r.level===state.filter});
+  if(state.sort==='order') list=list.slice().sort(function(a,b){return a.page-b.page||a.loc.localeCompare(b.loc)});
+  $('#riskList').innerHTML=list.length?list.map(cardHTML).join(''):'<div class="empty">这个分类下没有条款</div>';
+  $('#riskCount').textContent='共 '+list.length+' 条，按'+(state.sort==='sev'?'严重程度':'原文顺序')+'排序';
+  renderStats();
+}
+
+/* ---------- fix ---------- */
+var FIX_ORDER=RISKS.filter(function(r){return r.level!=='note'}).map(function(r){return r.id})
+  .concat(RISKS.filter(function(r){return r.level==='note'}).map(function(r){return r.id}));
+function diffChars(a,b){
+  var n=a.length,m=b.length,i,j,dp=[];
+  for(i=0;i<=n;i++) dp.push(new Array(m+1).fill(0));
+  for(i=n-1;i>=0;i--) for(j=m-1;j>=0;j--){
+    dp[i][j]=a.charAt(i)===b.charAt(j)?dp[i+1][j+1]+1:Math.max(dp[i+1][j],dp[i][j+1]);
+  }
+  var out=[],x=0,y=0;
+  while(x<n&&y<m){
+    if(a.charAt(x)===b.charAt(y)){out.push(['eq',a.charAt(x)]);x++;y++}
+    else if(dp[x+1][y]>=dp[x][y+1]){out.push(['del',a.charAt(x)]);x++}
+    else{out.push(['ins',b.charAt(y)]);y++}
+  }
+  while(x<n) out.push(['del',a.charAt(x++)]);
+  while(y<m) out.push(['ins',b.charAt(y++)]);
+  var mg=[]; out.forEach(function(p){var l=mg[mg.length-1]; if(l&&l.t===p[0]) l.s+=p[1]; else mg.push({t:p[0],s:p[1]})});
+  return mg;
+}
+function diffHTML(a,b,mode){
+  var h='';
+  diffChars(a,b).forEach(function(g){
+    if(g.t==='eq') h+=esc(g.s);
+    else if(g.t==='del'&&mode==='old') h+='<span class="d-del">'+esc(g.s)+'</span>';
+    else if(g.t==='ins'&&mode==='new') h+='<span class="d-ins">'+esc(g.s)+'</span>';
+  });
+  return h;
+}
+function renderFix(){
+  var r=byId(state.active)||RISKS[0];
+  var idx=RISKS.indexOf(r)+1;
+  $('#fixNo').textContent=String(idx);
+  var lv=$('#fixLevel'); lv.textContent=LV[r.level]; lv.className='tag '+r.level;
+  $('#fixTitle').textContent=r.title;
+  $('#fixLoc').textContent=r.loc+' · 第 '+r.page+' 页';
+  $('#fixLocate').setAttribute('data-locate',r.id);
+  $('#fixWhy').innerHTML='<b>为什么改：</b>'+esc(r.why);
+  $('#fixLaw').textContent=r.law; $('#fixLawMeta').textContent=r.lawMeta;
+
+  var ed=state.edited[r.id];
+  $('#diffOld').innerHTML=diffHTML(r.orig,r.sugg,'old');
+  $('#diffNew').innerHTML=ed?esc(ed):diffHTML(r.orig,r.sugg,'new');
+  $('#diffNew').style.display=state.editing?'none':'';
+
+  var ta=$('#fixEdit');
+  if(!state.editing||ta.dataset.id!==r.id){ta.value=ed||r.sugg;ta.dataset.id=r.id}
+  $('#edWrap').classList.toggle('on',!!state.editing);
+  $('#btnEditFix').textContent='编辑';
+  $('#btnEditFix').style.display=state.editing?'none':'';
+
+  var d=$('#fixDone');
+  d.classList.toggle('on',!!state.done[r.id]);
+  d.setAttribute('data-id',r.id);
+  d.querySelector('span').textContent=state.done[r.id]?'已处理':'标记已处理';
+
+  var ok=!!state.accepted[r.id], acc=$('#btnAccept');
+  acc.textContent=ok?'撤销修订':'接受建议并添加修订';
+  acc.className='btn '+(ok?'':'primary');
+  acc.setAttribute('data-id',r.id);
+  $('#fx').classList.toggle('accepted',ok);
+  var an=$('#btnAnnot');
+  an.textContent=ok?'已批注 ✓':'添加批注';
+  an.className='btn sm'+(ok?' dim':'');
+
+  var rel=RISKS.filter(function(x){return x.cat===r.cat&&x.id!==r.id});
+  $('#related').innerHTML=rel.length
+    ? '<div class="sechd"><b>同属「'+r.cat+'」的还有 '+rel.length+' 条</b></div>'+rel.map(function(x){
+        return '<div class="sumli" style="border:1px solid var(--line);border-radius:6px;margin-bottom:6px;padding:7px 10px" data-act="tofix" data-id="'+x.id+'">'
+        +'<span class="tag '+x.level+'">'+LV[x.level]+'</span><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(x.title)+'</span>'
+        +'<span class="l">'+x.loc+'</span></div>';
+      }).join('')
+    : '';
+
+  var q=RISKS.filter(function(x){return x.level==='must'&&x.id!==r.id&&!state.done[x.id]});
+  $('#fixQueue').innerHTML=q.length
+    ? '<div class="qh">还要改的 '+q.length+' 条</div>'+q.map(function(x){
+        return '<div class="qrow" data-act="tofix" data-id="'+x.id+'"><span class="tag must">必须改</span>'
+          +'<span class="qt">'+esc(x.title)+'</span><span class="qa">'+x.amt.replace('−','')+'</span></div>';
+      }).join('')
+    : '<div class="qh ok">必须改的 3 条都处理完了，可以往下看建议确认的 2 条</div>';
+}
+
+/* ---------- say ---------- */
+function renderSay(){
+  var r=byId(state.active)||RISKS[0];
+  $('#sayTarget').textContent=r.loc.split(' · ')[0]+' '+r.cat+' · '+(r.amtCls==='zero'?'需确认':r.amt.replace('−','').replace('+',''));
+  $('#sayBody').textContent=(state.tone==='polite'?r.polite:r.firm);
+  $$('#toneTabs button').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-tone')===state.tone)});
+
+  var col={must:'var(--red)',check:'var(--amber)',note:'#C2CAD6'};
+  $('#sayRail').innerHTML=RISKS.map(function(x){
+    return '<button class="rchip'+(x.id===r.id?' on':'')+'" data-say="'+x.id+'">'
+      +'<i style="background:'+col[x.level]+'"></i>'+x.loc.split(' · ')[0]+' '+x.cat+'</button>';
+  }).join('');
+
+  $('#objChips').innerHTML=r.obj.map(function(o,i){
+    return '<button class="ochip'+(i===state.objSel?' on':'')+'" data-obj="'+i+'">「'+esc(o.q)+'」</button>';
+  }).join('');
+
+  var o=r.obj[state.objSel]||r.obj[0];
+  $('#objThread').innerHTML=o
+    ? '<div class="tmsg them"><span class="av">房</span><div class="bb">「'+esc(o.q)+'」</div></div>'
+     +'<div class="tmsg me"><span class="av">你</span><div class="bb"><div class="tsay">这样接</div>'+esc(o.a)+'</div></div>'
+     +'<div style="display:flex;justify-content:flex-end"><button class="btn xs ghost" data-act="copyobj">复制这句回复</button></div>'
+    : '';
+  $('#objThread').style.display=o?'flex':'none';
+}
+
+/* ---------- checks ---------- */
+function renderChecks(){
+  var on=CHECKS.filter(function(c){return c.done}).length;
+  var list=CHECKS;
+  var h=list.map(function(c){
+    return '<div class="ck'+(c.done?' on':'')+'" data-cid="'+c.id+'"><div class="cbox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4"><path d="M5 12.5l4.5 4.5L19 7"/></svg></div>'
+      +'<div style="flex:1"><div class="q">'+esc(c.q)+'</div><div class="st">'+(c.done?'已确认':'待确认 · 建议现场问')+'</div></div></div>';
+  }).join('');
+  h+='<div class="ck dis"><div class="cbox"></div><div style="flex:1"><div class="q">口头承诺录入（如「可以养猫」）<span class="tag dim" style="margin-left:6px">V0.2</span></div><div class="st">把房东口头答应的事记下来，附在报告末尾</div></div></div>';
+  h+='<div class="ck dis"><div class="cbox"></div><div style="flex:1"><div class="q">合同内外一致性对照<span class="tag dim" style="margin-left:6px">V0.2</span></div><div class="st">核对「说的」和「写的」是否一致</div></div></div>';
+  $('#checkList').innerHTML=h;
+  var p=on/CHECKS.length, C=119.38;
+  $('#ringArc').setAttribute('stroke-dashoffset',String(C*(1-p)));
+  $('#ringTxt').textContent=on+'/'+CHECKS.length;
+  $('#cntCheck').textContent=String(CHECKS.length-on);
+  $('#cntCheck').classList.toggle('zero',on===CHECKS.length);
+}
+
+/* ---------- done ---------- */
+function refreshDone(){
+  var n=Object.keys(state.done).filter(function(k){return state.done[k]}).length;
+  $('#doneTxt').textContent='已处理 '+n+' / 9';
+  $('#doneBar').style.width=(n/9*100)+'%';
+  var mustLeft=RISKS.filter(function(r){return r.level==='must'&&!state.done[r.id]}).length;
+  $('#cntFix').textContent=String(mustLeft);
+  $('#cntFix').classList.toggle('zero',mustLeft===0);
+  $('#abMust').textContent=String(mustLeft);
+}
+function markDone(id){
+  state.done[id]=!state.done[id];
+  refreshDone(); renderRisks();
+  toast(state.done[id]?'已标记处理，左侧原文保留高亮':'已撤销标记');
+  if(state.tab==='fix') renderFix();
+}
+
+/* ---------- popover ---------- */
+var popFor=null;
+function showPop(el,id){
+  popFor=id;
+  var pop=$('#pop'),list=$('#popList'),ans=$('#popAns');
+  list.style.display='block'; ans.classList.remove('on');
+  $$('.qi',list).forEach(function(b){b.setAttribute('data-id',id)});
+  pop.classList.add('on');
+  var rect=el.getBoundingClientRect(),w=300,hh=168;
+  var left=Math.min(window.innerWidth-w-12,Math.max(12,rect.left+rect.width/2-w/2));
+  var top=rect.bottom+10;
+  if(top+hh>window.innerHeight-12) top=rect.top-hh-10;
+  pop.style.left=left+'px'; pop.style.top=Math.max(56,top)+'px';
+}
+
+/* ---------- events ---------- */
+renderSteps();
+
+$$('#tabs .tab').forEach(function(b){
+  b.addEventListener('click',function(){setTab(b.getAttribute('data-t'))});
+});
+
+document.addEventListener('click',function(e){
+  var t=e.target;
+
+  var goEl=t.closest('[data-go]');
+  if(goEl){ e.preventDefault(); go(goEl.getAttribute('data-go')); return; }
+
+  var tb=t.closest('[data-tab]');
+  if(tb){ setTab(tb.getAttribute('data-tab')); return; }
+
+  var cs=t.closest('[data-close]');
+  if(cs){ $('#'+cs.getAttribute('data-close')).classList.remove('on'); return; }
+
+  var toastEl=t.closest('[data-toast]');
+  if(toastEl){ e.preventDefault(); toast(toastEl.getAttribute('data-toast')); return; }
+
+  var loc=t.closest('[data-locate]');
+  if(loc){ locate(loc.getAttribute('data-locate')); return; }
+
+  var stat=t.closest('.stat');
+  if(stat){
+    var f=stat.getAttribute('data-f');
+    if(f==='ok'){ toast('另有 29 句已检查，未发现问题，不逐条列出'); return; }
+    state.filter=f; renderRisks(); return;
+  }
+
+  var tgl=t.closest('[data-toggle]');
+  if(tgl){
+    var id=tgl.getAttribute('data-toggle');
+    state.open[id]=!state.open[id];
+    var card=tgl.closest('.risk');
+    card.classList.toggle('open',state.open[id]);
+    setActive(id,{scroll:state.open[id]});
+    return;
+  }
+
+  var act=t.closest('[data-act]');
+  if(act){
+    var aid=act.getAttribute('data-id'), a=act.getAttribute('data-act');
+    if(a==='tofix'){ state.open[id]=true; setActive(aid,{scroll:true}); setTab('fix'); }
+    if(a==='tosay'){ setActive(aid,{scroll:true}); setTab('say'); }
+    if(a==='done'){ markDone(aid||state.active); }
+    if(a==='copyfix'){ var rf=byId(state.active); copyText(state.edited[rf.id]||rf.sugg,'已复制建议句'); }
+    if(a==='copyobj'){ var ro=byId(state.active).obj[state.objSel]||byId(state.active).obj[0]; copyText(ro.a,'已复制这句回复'); }
+    if(a==='copysay'){ copyText(($('#sayBody').textContent||'').trim(),'已复制，直接粘到微信'); }
+    if(a==='copycheck'){
+      copyText('签合同前想问清几件事：\n'+CHECKS.map(function(c,i){return (i+1)+'. '+c.q}).join('\n'),'已复制 8 个问题，可以直接发微信');
+    }
+    e.preventDefault(); return;
+  }
+
+  var sum=t.closest('.sumli[data-id]');
+  if(sum){ setActive(sum.getAttribute('data-id'),{scroll:true}); setTab('risk'); return; }
+});
+
+/* sort */
+$('#sorter').addEventListener('click',function(){
+  state.sort=state.sort==='sev'?'order':'sev';
+  this.firstChild.textContent=(state.sort==='sev'?'严重程度':'原文顺序');
+  renderRisks();
+});
+
+/* fix nav */
+$('#fixPrev').addEventListener('click',function(){
+  var i=FIX_ORDER.indexOf(state.active);
+  setActive(FIX_ORDER[(i-1+FIX_ORDER.length)%FIX_ORDER.length],{scroll:true}); renderFix();
+});
+$('#fixNext').addEventListener('click',function(){
+  var i=FIX_ORDER.indexOf(state.active);
+  setActive(FIX_ORDER[(i+1)%FIX_ORDER.length],{scroll:true}); renderFix();
+});
+
+/* fix edit / accept */
+$('#btnEditFix').addEventListener('click',function(){
+  if(state.editing){ state.editing=false; state.dirty=false; renderFix(); return; }
+  state.editing=true; state.dirty=false; renderFix();
+  var ta=$('#fixEdit'); ta.focus();
+  ta.setSelectionRange(ta.value.length,ta.value.length);
+});
+$('#fixEdit').addEventListener('input',function(){state.dirty=true});
+$('#btnSaveFix').addEventListener('click',function(){
+  var v=$('#fixEdit').value.trim();
+  if(!v){ toast('建议句不能为空'); return; }
+  var r=byId(state.active);
+  state.edited[r.id]=v; state.editing=false; state.dirty=false;
+  renderFix(); toast('已保存建议，可以接受修订了');
+});
+$('#btnCancelFix').addEventListener('click',function(){
+  state.editing=false; state.dirty=false; renderFix();
+});
+$('#btnAccept').addEventListener('click',function(){
+  var r=byId(state.active);
+  if(state.editing&&state.dirty){
+    toast('建议还没保存，先点 ✓ 再接受修订');
+    var b=$('#btnSaveFix'); b.classList.remove('shake'); void b.offsetWidth; b.classList.add('shake');
+    return;
+  }
+  if(state.accepted[r.id]){
+    delete state.accepted[r.id]; delete state.done[r.id];
+    renderFix(); renderRisks(); refreshDone(); toast('已撤销修订，原文恢复原样');
+    return;
+  }
+  state.accepted[r.id]=true; state.done[r.id]=true; state.editing=false; state.dirty=false;
+  renderFix(); renderRisks(); refreshDone();
+  toast('已接受：按原句原位替换，不新增标题；修订版与批注版 docx 一并生成');
+});
+$('#btnAnnot').addEventListener('click',function(){
+  var r=byId(state.active);
+  if(state.accepted[r.id]){ toast('这条已批注，可在「导出 · 批注版」里查看'); return; }
+  toast('已添加批注：风险说明 + 风险点 + 建议条款，导出 docx 批注版时写入');
+});
+
+/* tone */
+$('#toneTabs').addEventListener('click',function(e){
+  var b=e.target.closest('[data-tone]'); if(!b) return;
+  state.tone=b.getAttribute('data-tone'); renderSay();
+});
+document.addEventListener('click',function(e){
+  var ob=e.target.closest('[data-obj]');
+  if(ob){ state.objSel=parseInt(ob.getAttribute('data-obj'),10)||0; renderSay(); return; }
+  var sy=e.target.closest('[data-say]');
+  if(sy){ setActive(sy.getAttribute('data-say'),{scroll:false}); renderSay(); return; }
+});
+
+/* checks */
+$('#checkList').addEventListener('click',function(e){
+  var el=e.target.closest('.ck'); if(!el||el.classList.contains('dis')) return;
+  var id=el.getAttribute('data-cid'),c=null;
+  CHECKS.forEach(function(x){if(x.id===id) c=x});
+  if(!c) return;
+  c.done=!c.done; renderChecks();
+});
+
+/* action bar */
+$('#abBtn').addEventListener('click',function(){
+  if(state.tab==='ov') setTab('risk');
+  else if(state.tab==='risk'){
+    var r=byId(state.active); if(r){setActive(r.id,{scroll:true});setTab('fix')}
+  }
+  else if(state.tab==='fix'){ copyText($('#fixEdit').value,'已复制建议句'); }
+  else if(state.tab==='say'){ copyText(($('#sayBody').textContent||'').trim(),'已复制，直接粘到微信'); }
+  else { copyText('签合同前想问清几件事：\n'+CHECKS.map(function(c,i){return (i+1)+'. '+c.q}).join('\n'),'已复制 8 个问题'); }
+});
+
+/* doc sentence click */
+$('#docscroll').addEventListener('click',function(e){
+  var sn=e.target.closest('.sn'); if(!sn) return;
+  var id=sn.getAttribute('data-s');
+  setActive(id); showPop(sn,id);
+});
+$('#popClose').addEventListener('click',function(){$('#pop').classList.remove('on')});
+$('#popList').addEventListener('click',function(e){
+  var b=e.target.closest('.qi'); if(!b) return;
+  var id=b.getAttribute('data-id'), qi=parseInt(b.getAttribute('data-q'),10), r=byId(id);
+  var txt=qi===0?r.cons:(qi===1?('建议改为：'+r.sugg):r.obj[0].a);
+  $('#popList').style.display='none';
+  var ans=$('#popAns');
+  ans.innerHTML=esc(txt)+'<div class="src">依据：'+r.loc+' · 第 '+r.page+' 页'+(qi===1?'（已生成建议句）':'')+'</div>';
+  ans.classList.add('on');
+});
+document.addEventListener('click',function(e){
+  if(!e.target.closest('#pop')&&!e.target.closest('.sn')) $('#pop').classList.remove('on');
+  if(!e.target.closest('#exportMenu')&&!e.target.closest('#btnExport')) $('#exportMenu').classList.remove('on');
+});
+
+/* page rail */
+$('#pagerail').addEventListener('click',function(e){
+  var t=e.target.closest('.pgth'); if(!t) return;
+  var p=t.getAttribute('data-pg');
+  var pg=$('.page[data-p="'+p+'"]');
+  if(pg) pg.scrollIntoView({block:'start',behavior:'smooth'});
+});
+$('#docscroll').addEventListener('scroll',function(){
+  var sc=this.scrollTop, best=1, min=1e9;
+  $$('.page').forEach(function(pg){
+    var d=Math.abs(pg.offsetTop-sc);
+    if(d<min){min=d;best=parseInt(pg.getAttribute('data-p'),10)}
+  });
+  $('#pgNow').textContent=String(best);
+  $$('.pgth').forEach(function(x){x.classList.toggle('on',x.getAttribute('data-pg')===String(best))});
+});
+
+/* export menu + drawer */
+$('#btnExport').addEventListener('click',function(e){
+  e.stopPropagation();
+  $('#exportMenu').classList.toggle('on');
+});
+$('#exportMenu').addEventListener('click',function(e){
+  var mi=e.target.closest('.mi'); if(!mi) return;
+  this.classList.remove('on');
+  var k=mi.getAttribute('data-export');
+  if(k==='report'){ $('#drawer').classList.add('on'); $('#scrim').classList.add('on'); }
+  else toast(k==='revised'?'演示：修订版合同需逐条替换并保留格式，V0.2 开放':'演示：生成带 Word 批注的合同，可发给房东逐条回应');
+});
+$('#scrim').addEventListener('click',function(){$('#drawer').classList.remove('on');this.classList.remove('on')});
+$('#drawerClose').addEventListener('click',function(){$('#drawer').classList.remove('on');$('#scrim').classList.remove('on')});
+
+/* modals */
+function openMobile(){
+  var f=$('#devFrame');
+  if(!f) return;
+  if(f.getAttribute('src')!=='about:blank'){
+    try{ f.contentWindow.location.reload() }catch(e){}
+  } else {
+    f.setAttribute('src',location.pathname.split('/').pop()+'?m=1#work');
+  }
+  $('#mobileModal').classList.add('on');
+}
+document.addEventListener('keydown',function(e){
+  if(e.key==='?'&&!/input|textarea/i.test(document.activeElement.tagName)){
+    var m=$('#noteModal'); if(m) m.classList.toggle('on');
+  }
+});
+document.addEventListener('click',function(e){
+  if(e.target.closest('#btnMobile2')) openMobile();
+  if(e.target.closest('#btnNote2')) $('#noteModal').classList.add('on');
+});
+$$('.modal').forEach(function(m){
+  m.addEventListener('click',function(e){ if(e.target===m) m.classList.remove('on') });
+});
+
+/* upload interactions */
+(function(){
+  var dz=$('#dz'), fi=$('#fileInput');
+  if(!dz) return;
+  ['dragenter','dragover'].forEach(function(k){dz.addEventListener(k,function(e){e.preventDefault();dz.classList.add('over')})});
+  ['dragleave','drop'].forEach(function(k){dz.addEventListener(k,function(e){e.preventDefault();dz.classList.remove('over')})});
+  dz.addEventListener('drop',function(e){ if(e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files.length) go('upload'); });
+  dz.addEventListener('click',function(e){
+    if(e.target.closest('a')||e.target.closest('button')) return;
+    fi.click();
+  });
+  if(fi) fi.addEventListener('change',function(){ if(fi.files&&fi.files.length) go('upload'); });
+})();
+
+/* boot */
+(function boot(){
+  var h=(location.hash||'').replace('#','');
+  var m=location.search;
+  if(m.indexOf('m=1')>-1) document.body.setAttribute('data-m','1');
+  if(!h){ setSteps('landing'); renderStats(); return; }
+  var parts=h.split('?'), name=parts[0], q={};
+  if(parts[1]) parts[1].split('&').forEach(function(kv){var a=kv.split('=');q[a[0]]=a[1]});
+  if(!$('#'+name)){ setSteps('landing'); return; }
+  go(name,{tab:q.tab,active:q.active,silent:true});
+  if(name==='work'&&!q.tab) setTab('ov');
+})();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,49 @@
+/* 签前有数 MVP v0.1 · 设计令牌
+   数值来源：docs/prototype/签前有数_高保真原型_V3.html 的 :root
+   规则：颜色与圆角只在这里定义，组件内不再写死十六进制。 */
+
+:root {
+  /* 主色 —— 只用于主按钮、链接、进度、选中态 */
+  --blue: #1a5fff;
+  --blue-d: #1249cc;
+  --blue-bg: #eaf0ff;
+  --blue-bg2: #f4f8ff;
+
+  /* 墨色 —— 正文 / 次要 / 辅助 / 极弱 */
+  --ink: #1b2430;
+  --ink2: #485466;
+  --ink3: #78849a;
+  --ink4: #9aa4b2;
+
+  /* 线与底 */
+  --line: #e4e9f0;
+  --line2: #edf1f6;
+  --bg: #f5f7fa;
+  --card: #fff;
+
+  /* 三级语义色 —— 红只表示风险，绿只表示「这一句检查完未命中」 */
+  --red: #d93b3b;
+  --red-bg: #fdf1f0;
+  --amber: #c07a12;
+  --amber-bg: #fdf7ea;
+  --gray: #6b7686;
+  --gray-bg: #f2f4f7;
+  --green: #0f8a61;
+  --green-bg: #eaf8f1;
+
+  /* 合同纸 */
+  --paper: #fffdf8;
+  --paperline: #e8e2d3;
+
+  /* 字体 */
+  --sans: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei",
+    "Source Han Sans SC", "Segoe UI", sans-serif;
+  --serif: "Songti SC", "SimSun", "Source Han Serif SC", serif;
+
+  /* 尺寸 */
+  --r-card: 9px;
+  --r-btn: 6px;
+  --topbar-h: 48px;
+  --bar-h: 42px;
+  --tab-h: 40px;
+}
