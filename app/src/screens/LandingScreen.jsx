@@ -106,7 +106,7 @@ export default function LandingScreen({ onFile, onDemo, onPaste, onCamera }) {
           <input
             ref={inputRef}
             type="file"
-            accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"
+            accept=".pdf,.doc,.docx,.txt,.md,.png,.jpg,.jpeg"
             hidden
             onChange={(event) => {
               handleFiles(event.target.files)

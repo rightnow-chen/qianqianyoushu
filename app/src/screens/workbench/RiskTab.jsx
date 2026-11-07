@@ -3,7 +3,7 @@ import { ChevronDown, ChevronUp } from 'lucide-react'
 import { amountForRisk } from '../../features/amountEngine.js'
 import { levelLabel } from '../../features/riskModel.js'
 
-export default function RiskTab({ risks, amounts, done, onOpenFix, onTab, onLocate, onDone }) {
+export default function RiskTab({ risks, amounts, done, meta, onOpenFix, onTab, onLocate, onDone, onTrack }) {
   const [filter, setFilter] = useState('all')
   const [sort, setSort] = useState('severity')
   const [open, setOpen] = useState({ r1: true })
@@ -19,7 +19,7 @@ export default function RiskTab({ risks, amounts, done, onOpenFix, onTab, onLoca
     .filter((risk) => (filter === 'all' ? true : risk.level === filter))
     .slice()
     .sort((a, b) => {
-      if (sort === 'article') return a.location.article - b.location.article
+      if (sort === 'article') return (a.location.article ?? 999) - (b.location.article ?? 999)
       const order = { must: 0, check: 1, note: 2 }
       return order[a.level] - order[b.level]
     })
@@ -29,7 +29,12 @@ export default function RiskTab({ risks, amounts, done, onOpenFix, onTab, onLoca
     { key: 'must', label: '必须改', value: counts.must, cls: 'must' },
     { key: 'check', label: '建议确认', value: counts.check, cls: 'check' },
     { key: 'note', label: '仅提醒', value: counts.note, cls: '' },
-    { key: 'pass', label: '已检查通过', value: 29, cls: 'pass' },
+    {
+      key: 'pass',
+      label: '已检查通过',
+      value: Math.max(0, (meta?.sentenceCount || 0) - risks.length),
+      cls: 'pass',
+    },
   ]
 
   return (
@@ -40,7 +45,11 @@ export default function RiskTab({ risks, amounts, done, onOpenFix, onTab, onLoca
             className={`stat ${item.cls} ${filter === item.key ? 'on' : ''}`}
             key={item.key}
             type="button"
-            onClick={() => item.key !== 'pass' && setFilter(item.key)}
+            onClick={() => {
+              if (item.key === 'pass') return
+              setFilter(item.key)
+              onTrack?.('risk_filter', { filter: item.key })
+            }}
           >
             <div className="v">{item.value}</div>
             <div className="k">{item.label}</div>
@@ -56,7 +65,11 @@ export default function RiskTab({ risks, amounts, done, onOpenFix, onTab, onLoca
         <button
           className="sort-btn"
           type="button"
-          onClick={() => setSort(sort === 'severity' ? 'article' : 'severity')}
+          onClick={() => {
+            const next = sort === 'severity' ? 'article' : 'severity'
+            setSort(next)
+            onTrack?.('risk_sort', { sort: next })
+          }}
         >
           {sort === 'severity' ? '严重程度' : '原文顺序'}
           <ChevronDown size={11} aria-hidden="true" />
@@ -72,14 +85,20 @@ export default function RiskTab({ risks, amounts, done, onOpenFix, onTab, onLoca
             <button
               className="rc-hd"
               type="button"
-              onClick={() => setOpen((prev) => ({ ...prev, [risk.id]: !expanded }))}
+              onClick={() => {
+                setOpen((prev) => ({ ...prev, [risk.id]: !expanded }))
+                if (!expanded) onTrack?.('risk_card_open', { riskId: risk.id, level: risk.level })
+              }}
             >
               <span className={`tag ${risk.level}`}>{levelLabel(risk.level)}</span>
               <span className="rc-title">
                 {index}. {risk.title}
               </span>
               {done[risk.id] && <span className="tag line">已处理</span>}
-              <span className={`rc-amt ${amount.kind}`}>{amount.text}</span>
+              <span className={`rc-amt ${amount.kind}`}>
+                {amount.text}
+                {amount.kind !== 'none' && <i className="est">估算</i>}
+              </span>
               {expanded ? (
                 <ChevronUp size={13} aria-hidden="true" color="#9AA4B2" />
               ) : (
@@ -91,9 +110,11 @@ export default function RiskTab({ risks, amounts, done, onOpenFix, onTab, onLoca
               <div className="rc-body">
                 <div className="rc-meta">
                   <span>
-                    第 {risk.location.article} 条 · 第 {risk.location.sentence} 句
+                    {risk.location.article ? `第 ${risk.location.article} 条` : '条款位置待核对'}
                   </span>
-                  <span>第 {risk.location.page} 页</span>
+                  <span>
+                    {risk.location.page ? `第 ${risk.location.page} 页` : '页码未识别'}
+                  </span>
                   <span>置信度：{risk.confidence}</span>
                   <span>类别：{risk.cat}</span>
                 </div>

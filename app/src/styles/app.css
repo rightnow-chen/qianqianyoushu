@@ -1557,6 +1557,19 @@
   color: var(--ink4);
   font-weight: 400;
 }
+/* 「估算」角标：金额是原型假设值算出来的，不是法定或统计值，必须挂在数字旁边而不是藏在页脚 */
+.est {
+  margin-left: 4px;
+  padding: 0 3px;
+  font-size: 9.5px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--ink4);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  vertical-align: 1px;
+}
 .rc-body {
   padding: 0 11px 11px;
   border-top: 1px solid var(--line2);
@@ -2277,4 +2290,154 @@
   .v-desc {
     max-width: 100%;
   }
+}
+
+
+/* 读文件时的一层薄遮罩：解析 PDF / 跑 OCR 可能要几秒，不能让用户以为按钮没反应 */
+.busy-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  color: var(--ink2);
+  background: rgba(255, 253, 248, 0.72);
+  backdrop-filter: blur(2px);
+}
+
+
+/* —— 顶部提示条：演示数据 / 降级 / 部分缺失（PRD 9.6） —— */
+.banner {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+  padding: 8px 11px;
+  border-radius: var(--r-btn);
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--ink2);
+  background: var(--gray-bg);
+  border: 1px solid var(--line);
+}
+.banner b {
+  font-weight: 600;
+  color: var(--ink);
+}
+.banner b::after {
+  content: '·';
+  margin: 0 5px;
+  color: var(--ink4);
+  font-weight: 400;
+}
+.banner.demo {
+  background: var(--blue-bg2);
+  border-color: #cfe0ff;
+  color: var(--ink2);
+}
+.banner.partial {
+  background: var(--amber-bg);
+  border-color: #f0dfba;
+}
+.banner.failed {
+  background: var(--red-bg);
+  border-color: #f3d2cf;
+}
+.banner .bsm {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--blue);
+}
+
+/* —— 空结果态：没有可判断的条款时，不摆一张空表 —— */
+.empty-state {
+  padding: 26px 22px;
+  text-align: center;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+}
+.empty-state .es-t {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.empty-state .es-s {
+  max-width: 420px;
+  margin: 7px auto 14px;
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--ink3);
+}
+.empty-state .es-a {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.tag.demo {
+  color: var(--blue);
+  background: var(--blue-bg);
+}
+
+/* —— ?m=1：把桌面宽屏压成手机形态，用于 390px 走查 —— */
+.m-mode #root {
+  max-width: 390px;
+  margin: 0 auto;
+  min-height: 100vh;
+  box-shadow: 0 0 0 1px var(--line);
+}
+.m-mode .landing {
+  padding: 26px 12px 40px;
+}
+.m-mode .task {
+  padding: 16px 12px 32px;
+}
+.m-mode .h1 {
+  font-size: 23px;
+}
+.m-mode .metarow {
+  display: none;
+}
+.m-mode .facts,
+.m-mode .grid-upload,
+.m-mode .grid-confirm,
+.m-mode .analyze,
+.m-mode .sum3 {
+  grid-template-columns: 1fr;
+}
+.m-mode .work-body {
+  grid-template-columns: 1fr;
+}
+.m-mode .docpane {
+  display: none;
+}
+.m-mode .filebar {
+  height: auto;
+  flex-wrap: wrap;
+  padding: 8px 12px;
+  gap: 8px;
+}
+.m-mode .loss-num {
+  font-size: 26px;
+}
+.m-mode .v-desc {
+  max-width: 100%;
+}
+.m-mode .actionbar {
+  flex-wrap: wrap;
+  height: auto;
+  padding: 8px 12px;
+  gap: 8px;
+}
+.m-mode .actionbar .disc,
+.m-mode .ab-progress {
+  display: none;
+}
+.m-mode .btn.primary {
+  min-height: 42px;
+  width: 100%;
 }

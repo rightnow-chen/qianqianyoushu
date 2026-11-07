@@ -34,6 +34,8 @@ export default function WorkbenchScreen({
   verdict,
   checks,
   tab,
+  degradation,
+  isDemo,
   onTab,
   activeId,
   onActive,
@@ -49,6 +51,7 @@ export default function WorkbenchScreen({
   onExport,
   onToast,
   onCopy,
+  onTrack,
 }) {
   const [menuOpen, setMenuOpen] = useState(false)
 
@@ -75,6 +78,7 @@ export default function WorkbenchScreen({
       <div className="filebar">
         <span className="fi">{meta.fileKind}</span>
         <span className="fn">{meta.fileName}</span>
+        {isDemo && <span className="tag demo">演示数据</span>}
         <div className="metarow">
           <span>{meta.type}</span>
           <span>{meta.city}</span>
@@ -167,11 +171,16 @@ export default function WorkbenchScreen({
             <OverviewTab
               risks={risks}
               amounts={amounts}
+              meta={meta}
               counts={counts}
               worst={worst}
               verdict={verdict}
+              checks={checks}
+              degradation={degradation}
+              isDemo={isDemo}
               onTab={onTab}
               onOpenFix={openFix}
+              onReupload={onReupload}
             />
           )}
 
@@ -180,6 +189,8 @@ export default function WorkbenchScreen({
               risks={risks}
               amounts={amounts}
               done={done}
+              meta={meta}
+              onTrack={onTrack}
               onOpenFix={openFix}
               onTab={onTab}
               onLocate={(riskId) => {
@@ -244,7 +255,7 @@ export default function WorkbenchScreen({
                 已处理 {doneCount} / {risks.length}
               </span>
               <span className="ab-bar">
-                <i style={{ width: `${(doneCount / risks.length) * 100}%` }} />
+                <i style={{ width: `${risks.length ? (doneCount / risks.length) * 100 : 0}%` }} />
               </span>
             </div>
             <span className="sp" />
@@ -257,7 +268,7 @@ export default function WorkbenchScreen({
                 else handlePrimary()
               }}
             >
-              {tab === 'risk' && nextMust ? `改下一条：第 ${nextMust.location.article} 条` : PRIMARY[tab]}
+              {tab === 'risk' && nextMust ? `改下一条：${nextMust.location.article ? `第 ${nextMust.location.article} 条` : nextMust.cat}` : PRIMARY[tab]}
             </button>
           </div>
         </main>

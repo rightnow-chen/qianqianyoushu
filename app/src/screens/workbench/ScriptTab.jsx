@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { MessageCircle } from 'lucide-react'
 import { amountForRisk } from '../../features/amountEngine.js'
+import EmptyPane from './EmptyPane.jsx'
 
 export default function ScriptTab({ risks, amounts, activeId, onSelect, onTab, onToast, onCopy }) {
   const [tone, setTone] = useState('polite')
@@ -8,11 +9,23 @@ export default function ScriptTab({ risks, amounts, activeId, onSelect, onTab, o
   const [bodies, setBodies] = useState({})
 
   const risk = risks.find((item) => item.id === activeId) || risks[0]
+
+  // 所有 hook 必须在提前 return 之前：否则 risks 从 0 变 1 时 hook 顺序会变。
+  const objections = useMemo(() => risk?.objections || [], [risk])
+
+  if (!risk) {
+    return (
+      <EmptyPane
+        title="没有可对照的话术"
+        desc="这次没读出可判断的条款，也就没有绑定的条款和金额。合同本身没问题的话，重点放在下面那几件合同外的事。"
+        onTab={onTab}
+      />
+    )
+  }
+
   const key = `${risk.id}:${tone}`
   const amount = amountForRisk(risk, amounts)
   const text = bodies[key] ?? risk.scripts[tone]
-
-  const objections = useMemo(() => risk.objections || [], [risk])
   const activeObjection = objections[Math.min(objIndex, objections.length - 1)]
 
   const copy = async () => {
@@ -46,7 +59,8 @@ export default function ScriptTab({ risks, amounts, activeId, onSelect, onTab, o
         <span className="bind">
           绑定{' '}
           <b>
-            第 {risk.location.article} 条 {risk.cat} · {amount.text === '—' ? '无直接金额' : amount.text}
+            {risk.location.article ? `第 ${risk.location.article} 条` : '条款位置待核对'} {risk.cat} ·{' '}
+            {amount.text === '—' ? '无直接金额' : `${amount.text}（估算）`}
           </b>
         </span>
       </div>
@@ -59,7 +73,7 @@ export default function ScriptTab({ risks, amounts, activeId, onSelect, onTab, o
             type="button"
             onClick={() => onSelect(item.id)}
           >
-            {index + 1}. 第 {item.location.article} 条 {item.cat}
+            {index + 1}. {item.location.article ? `第 ${item.location.article} 条` : '待核对'} {item.cat}
           </button>
         ))}
       </div>

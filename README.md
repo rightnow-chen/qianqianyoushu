@@ -8,7 +8,9 @@
 | 目录 | 放什么 | 什么时候看 |
 |---|---|---|
 | `app/` | 唯一代码工程（React + Vite 前端、Express 服务端、测试、部署配置） | 改功能、跑演示 |
-| `docs/product/` | PRD、产品定位与 MVP 边界、指标体系 | 讲清楚"做什么、不做什么" |
+| `docs/product/` | PRD、产品定位与 MVP 边界、指标体系、**MVP v0.1 对齐与实施计划** | 讲清楚"做什么、不做什么" |
+| `docs/prototype/` | 高保真原型 V3（UI 唯一事实源） | 改界面前先看它 |
+| `docs/tech/` | 技术栈与架构说明、弃用清单 | 接手代码、复原旧界面 |
 | `docs/log/` | 迭代日志 | 回顾决策过程 |
 | `research/scripts/` | 需求验证、数据分析、文档生成类一次性脚本 | 复算问卷、重出报告 |
 | `research/artifacts/` | 文档结构分析产物（json） | 排查报告生成问题 |
@@ -25,18 +27,23 @@
 ```bash
 cd app
 npm install
-npm run dev:full        # 前端 + 本地 AI 代理（8787）
+npm run dev             # 只跑前端，5173
+npm run dev:full        # 前端 + 本地 AI 代理（8787），走真实模型/OCR 时用
 ```
 
-只跑前端：`npm run dev`。真实模型调用需要先复制 `.env.example` 为 `.env` 并填入密钥（`.env` 已被 git 忽略）。
+真实模型调用需要先复制 `.env.example` 为 `.env` 并填入密钥（`.env` 已被 git 忽略）。
+
+**不配密钥也能完整走通主路径**：规则引擎、文件解析、金额计算全在本地，模型只是"补漏"。演示入口：`#work?demo=1`（样例数据）、`#work?demo=1&m=1`（手机形态）。
 
 验证：
 
 ```bash
 cd app
-npm run build                      # 构建通过 = 引用路径无断裂
-node tests/unit/legal-basis.test.mjs
-npx playwright test --list         # 确认 e2e 用例可见
+npm run build                            # 构建通过 = 引用路径无断裂
+npm run lint                             # ESLint 零告警
+node tests/e2e/mvp-flow.mjs              # MVP 主路径 12 步（自己起静态服务器）
+node scripts/verify/mvp-walkthrough.mjs  # PRD 9.10 十二项走查
+for f in tests/unit/*.mjs; do node "$f"; done   # 全部单元测试
 ```
 
 测试与脚本的分工：
@@ -44,7 +51,7 @@ npx playwright test --list         # 确认 e2e 用例可见
 | 位置 | 用途 | 运行方式 |
 |---|---|---|
 | `app/tests/unit/` | 纯 Node 断言测试，不启浏览器 | `node tests/unit/xxx.test.mjs` |
-| `app/tests/e2e/` | Playwright 端到端用例 | `npm run test:e2e` |
+| `app/tests/e2e/` | Playwright 端到端用例；`mvp-flow.mjs` 是 MVP 主路径（独立可跑） | `node tests/e2e/mvp-flow.mjs` |
 | `app/scripts/` | 基准评测、数据生成、真实合同跑批 | `npm run test:xxx` |
 | `app/scripts/verify/` | 一次性界面走查与截图 | `node scripts/verify/_flow1.mjs` |
 
@@ -67,10 +74,18 @@ npx playwright test --list         # 确认 e2e 用例可见
 
 依赖方向单向：`config → lib → services → routes → ai-proxy`，无循环引用。
 
-## 当前状态
+## 当前状态（2026-11-07）
 
-- 已完成：目录分层（P0 基线 + P1 搬运），构建与单元测试均通过。
-- 已完成 P2：12 个临时走查脚本收进 `app/scripts/verify/`（路径改为按项目根解析，截图落到 `out/`）；`app/tests/` 拆为 `unit/`（17 个）与 `e2e/`（5 个文件 29 条用例），`playwright.config.js` 与 13 条 npm 脚本同步更新。
-- 已归档：截图、原型构建快照、渲染产物全部移入 `archive/`，一份未删。
-- 已完成 P3：`server/ai-proxy.mjs` 由 1431 行拆为 83 行装配入口 + `config / lib / services / routes` 四层（共 15 个模块），对外导出保持兼容。
-- 待推进（可选）：`app/generated-reports/` 与 `app/real-contract-samples/` 可并入 `app/tests/fixtures/`；`src/App.jsx` 有一处既有的未使用变量告警待清理。
+**MVP v0.1 已收口**：5 屏（首页 / 上传质检 / 确认六字段 / 分析 / 工作台）+ 5 Tab（概览 / 风险 / 修改 / 话术 / 待核实），整条闭环接的是真实引擎，不是写死的演示数据。
+
+| 项 | 结果 |
+|---|---|
+| 引擎对接 | `contractReview`（50 组租赁规则）→ `riskMapper`（severity→必须改/建议确认/仅提醒、类别→金额键、句子级定位、两档话术、降级判断） |
+| 金额 | 全部由月租 / 押金 / 租期算出，界面逐处标「估算」；`amount-engine.test.mjs` 锁口径 |
+| 验收 | PRD 9.10 十二项走查 **12/12**；主路径 e2e **12 步**；9 个单测全绿；ESLint 零告警 |
+| 旧界面 | 40 个文件移入 `archive/legacy-ia/`（tag `v0.9-legacy-sidebar`），清单见 `docs/tech/弃用清单_legacy-ia.md` |
+| 体量 | `src/` 10,436 行 JS/JSX + 2,563 行 CSS（旧版 11,952 + 9,494） |
+
+**V0.2 待接**：修订版/批注版 docx 导出（`utils/docxExport.js` 已就位未接）、口头承诺录入、合同内外一致性核对、修改后复查。
+
+**仍待处理**：`tests/e2e/` 下另有 5 个 spec 针对旧流程，目前不作为门槛；`app/generated-reports/` 与 `real-contract-samples/` 可并入 `tests/fixtures/`。

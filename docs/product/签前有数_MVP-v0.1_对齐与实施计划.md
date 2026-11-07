@@ -20,23 +20,33 @@ PRD v1.2 与原型 V3 是同一套东西（5 屏 + 5 Tab 的签约前审查闭�
 
 ---
 
-## 0.5 执行进度快照（2026-11-07 18:50 实测）
+## 0.5 执行进度快照（2026-11-07 21:40 实测，MVP v0.1 收口）
 
-对比计划与代码后的事实：**外壳（阶段 1–3）已建成，引擎（阶段 4）一行未接。** 当前 `app/` 是一个能演示、但所有数据都来自 `DEMO_*` 的成品界面。
+**阶段 0–6 全部走完。** 一条从上传到"能开口"的直线闭环已经接上真实引擎，并且有可复跑的验收脚本。
 
 | 阶段 | 计划 | 实际 | 证据（实测） |
 |---|---|---|---|
-| 0 基线整理 | 原型落位 / 打 tag / 弃用清单 | **部分完成** | `docs/prototype/签前有数_高保真原型_V3.html` 与桌面原件逐字节一致；旧模块 9 个文件仍在 `src/`（已不被 `App.jsx` 引用）；未打 tag、无弃用清单 |
-| 1 设计令牌与数据层 | tokens / riskModel / amountEngine / demoCase / 金额单测 | **基本完成，缺单测** | `tokens.css` 1.2KB、`app.css` 2,280 行；`riskModel.js` 95 行（三级 + 九类 + 置信度 + 降级规则 + 校验）；`amountEngine.js` 129 行（5 个金额键全由月租/押金/租期算）；`demoCase.js` 601 行（9 条风险 = 3/2/4，8 件待核实，2 项已确认）；`diff.js` 已实现字符级 LCS。**`tests/unit/` 仍是旧 17 个，没有金额单测** |
-| 2 五屏骨架 | hash 路由 + AppShell + P0–P3 | **完成** | `App.jsx` 由 1,882 行降到约 250 行，`?module=` 已换 `#landing/#upload/#confirm/#analyzing/#work?tab=`；`screens/` 5 屏共 935 行 |
-| 3 工作台五 Tab | T1–T5 | **完成，待走查** | `screens/workbench/` 6 文件 738 行（含 `ContractPane` 左栏）；导出菜单 4 项已齐（报告 PDF / 修订版·V0.2 灰 / 批注版·V0.2 灰 / 只复制文字） |
-| 4 引擎对接 | `analyzeContract` → `riskModel` 映射 | **未开始** | `src/` 中 0 处引用 `contractReview` / `contractFacts`；所有业务数据走 `DEMO_*` 常量 |
-| 5 导出·埋点·边界 | 4 项菜单 / 事件 / 去账号 | **部分完成** | 菜单齐；埋点 11/18（缺 `quality_warn`、`risk_card_open`、`risk_filter`、`risk_sort`、`script_copy`、`obj_copy`、`checklist_copy`，多一个 PRD 没有的 `quality_continue`）；`src/` 已无 localStorage 历史 |
-| 6 验收收口 | 12 项走查 + 构建 + 单测 + e2e | **未开始** | `vite build` 通过（1.31s，index 276.69 kB / gzip 88.58 kB）；无金额单测；无 V0.1 主路径 e2e |
+| 0 基线整理 | 原型落位 / 打 tag / 弃用清单 | **完成** | 原型 V3 落在 `docs/prototype/` 并与桌面原件逐字节一致；tag `v0.9-legacy-sidebar` + `legacy-ia`；40 个旧文件移入 `archive/legacy-ia/`（不是删除，可原样搬回）；弃用清单见 `docs/tech/弃用清单_legacy-ia.md` |
+| 1 设计令牌与数据层 | tokens / riskModel / amountEngine / demoCase / 金额单测 | **完成** | `tokens.css` 49 行；`riskModel.js` 95 行（三级+九类+置信度+降级）；`amountEngine.js` 134 行（5 个金额键全部由月租/押金/租期算）；`demoCase.js` 602 行（9 条=3/2/4、8 件待核实、2 已确认）；`diff.js` 字符级 LCS；新增 `amount-engine.test.mjs` 10 组断言 |
+| 2 五屏骨架 | hash 路由 + AppShell + P0–P3 | **完成** | `App.jsx` 1,882 → **505 行**；`screens/` 5 屏 946 行；`?m=1` 手机形态可直接走查 |
+| 3 工作台五 Tab | T1–T5 | **完成** | `screens/workbench/` 7 文件 1,038 行；导出菜单 4 项（报告 PDF 为主项，修订版/批注版标 V0.2）；空结果有 `EmptyPane`，不再是白屏 |
+| 4 引擎对接 | `analyzeContract` → 九件套映射 | **完成** | `riskMapper.js` 256 行（severity→三级、类别→金额键、句子级定位、两档话术、降级判断）；`scriptTemplates.js` 228 行（9 类 × 两档 + 兜底）；`contractPages.js` 114 行（切页与句子级高亮）；`risk-mapper.test.mjs` 全绿；真实合同已跑通（`real-contract-samples/`，10 条命中） |
+| 5 导出·埋点·边界 | 4 项菜单 / 事件 / 边界 | **完成** | 埋点 16 个（PRD 18 项去重后全覆盖；`quality_continue` 合并进 `quality_warn`）；六种异常态做了五种：带瑕疵继续、非租房合同、空结果、超长合同截断、引擎失败；`?m=1` 390px 无横向滚动 |
+| 6 验收收口 | 12 项走查 + 单测 + e2e | **完成** | `scripts/verify/mvp-walkthrough.mjs` **12/12 通过**；`tests/e2e/mvp-flow.mjs` **12 步通过**；`tests/unit/` 9 个文件全绿；`vite build` 通过；ESLint 零告警 |
 
-**新外壳体量**：935（屏）+ 738（Tab）+ 2,280（CSS）+ 约 700（features）≈ **4,900 行**，与计划预估的 3,500–4,500 行同量级，没有失控。
+**当前体量**：`src/` 10,436 行 JS/JSX + 2,563 行 CSS（旧版 11,952 + 9,494）。CSS 从 9,494 降到 2,563，是删旧界面的直接结果。
 
-**结论修正一条**：原计划把"删旧代码"排在最前，实测发现不必——旧模块已不被引用，删不删都不影响构建。真正的分水岭是**阶段 4**：界面再好，只要数据是假的，这份 MVP 就只能做作品集，不能给真人用。所以顺序调整为 **4 → 6 → 5 → 0 收尾**。
+**复跑方式**（三条命令，都不需要外部服务）：
+
+```bash
+cd app
+npm run build                                  # 构建
+node tests/unit/amount-engine.test.mjs         # 金额口径（连同另外 8 个单测）
+node tests/e2e/mvp-flow.mjs                    # 主路径 12 步
+node scripts/verify/mvp-walkthrough.mjs        # PRD 9.10 十二项走查
+```
+
+**一条仍要记住的话**：金额是**估值**不是统计值（押金×40%、月租×2、维修 3,000）。界面已逐处标「估算」，但 PRD 9.5 仍需补一句来源说明，否则被追问时会站不住。
 
 ---
 

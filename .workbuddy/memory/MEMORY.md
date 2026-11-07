@@ -28,6 +28,11 @@
 - 信任最短路径：LeaseSnipe"免注册+不存储"比免责声明更有效→隐私脱敏+不存储应做成默认能力。
 - 待实测：埋雷合同横测(M1-M8,评分维度10项)、稳定性测试、用户反馈均为空表待填；汇策云/木瓜租房功能须直接打开核实。
 
+## V0.1 之后仍要记的三件事
+- 金额是**估值**（押金×40% / 月租×2 / 维修 3,000），界面已逐处标「估算」，PRD 9.5 仍缺来源说明。
+- `utils/docxExport.js`、`contractOcrReview.js`、`imageTools.js` 未被引用，是 V0.2（修订版/批注版导出、离线 OCR）的地基，不要误删。
+- `tests/e2e/` 另 5 个 spec 针对旧流程，不作为门槛；`contractReview.js` 仍是 2,300 行单文件（规则库本体，暂不拆）。
+
 ## 关键文档位置
 - 修订版定位：`C:\Users\cxy32\Desktop\产品定位_修订版.docx`
 - 需求验证报告：`C:\Users\cxy32\Desktop\签约有数\发现需求验证需求\租房合同审查产品需求验证分析报告.docx`
@@ -38,5 +43,5 @@
 - **UI 事实源**：`C:\Users\cxy32\Desktop\签前有数_高保真原型.html`（V3，单文件 2,311 行，5 屏 landing/upload/confirm/analyzing/work + 5 Tab）。旧构建快照留在 `archive/builds/`。
 - **需求事实源**：`C:\Users\cxy32\Desktop\签前有数_PRD框架_v1.2.docx`（15 章；正文已导出 `docs/_prd_v12_dump.txt` 便于 grep）。
 - **目标**：MVP v0.1 = 5 屏 + 5 Tab 闭环（上传→质检→确认六字段→分析→概览/风险/修改/话术/待核实）。
-- **现状**：`app/` 是上一代产品（侧栏 4 模块 + 预算通勤决策 + 自由 AI 对话），需 IA 重装、保留引擎。计划见 `docs/product/签前有数_MVP-v0.1_对齐与实施计划.md`。
+- **现状（2026-11-07 21:40 收口）**：MVP v0.1 已完成 IA 重装并接上真实引擎。5 屏 + 5 Tab 闭环；旧界面 40 文件移到 `archive/legacy-ia/`（tag `legacy-ia`）；`riskMapper.js` 把 `analyzeContract` 的 high/medium/low 翻成「必须改/建议确认/仅提醒」+ 金额键 + 句子级定位 + 两档话术 + 降级判断。验收：`tests/e2e/mvp-flow.mjs` 12 步、`scripts/verify/mvp-walkthrough.mjs` 12/12、9 个单测全绿、ESLint 零告警。计划与进度见 `docs/product/签前有数_MVP-v0.1_对齐与实施计划.md`，弃用清单见 `docs/tech/弃用清单_legacy-ia.md`。
 - 核心口径：9 条风险 = 3 必须改 + 2 建议确认 + 4 仅提醒；最坏合计 ¥17,400；8 件待核实（2 已确认）；对外 3 分钟 / 模型 28 秒；审查尺度严格·逐句 / 标准两档。

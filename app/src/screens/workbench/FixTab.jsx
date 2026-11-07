@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Check } from 'lucide-react'
 import { buildDiff } from '../../features/diff.js'
 import { levelLabel } from '../../features/riskModel.js'
+import EmptyPane from './EmptyPane.jsx'
 
 export default function FixTab({
   risks,
@@ -22,7 +23,15 @@ export default function FixTab({
   const [editing, setEditing] = useState(false)
   const [draft, setDraft] = useState('')
 
-  if (!risk) return null
+  if (!risk) {
+    return (
+      <EmptyPane
+        title="没有需要修改的条款"
+        desc="这次没读出可判断的风险条款，所以没有修改建议。先看合同外那几件事要不要当面问清。"
+        onTab={onTab}
+      />
+    )
+  }
 
   const current = edited[risk.id] ?? risk.suggestion
   const userEdited = Boolean(edited[risk.id])
@@ -45,7 +54,8 @@ export default function FixTab({
           <span className={`tag ${risk.level}`}>{levelLabel(risk.level)}</span>
           <span className="sp" />
           <span className="fix-loc">
-            第 {risk.location.article} 条 · 第 {risk.location.sentence} 句 · 第 {risk.location.page} 页
+            {risk.location.article ? `第 ${risk.location.article} 条` : '条款位置待核对'} ·{' '}
+            {risk.location.page ? `第 ${risk.location.page} 页` : '页码未识别'}
           </span>
           <div style={{ display: 'flex', gap: 4, marginLeft: 8 }}>
             <button
@@ -202,7 +212,7 @@ export default function FixTab({
           还要改的 {queue.length} 条（必须改 · 未处理）
           {queue.map((item) => (
             <button className="queue-item" key={item.id} type="button" onClick={() => onSelect(item.id)}>
-              → 第 {item.location.article} 条 {item.title}
+              → {item.location.article ? `第 ${item.location.article} 条` : item.cat} {item.title}
             </button>
           ))}
         </div>

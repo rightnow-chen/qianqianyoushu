@@ -17,14 +17,28 @@ import {
 } from './data/demoCase.js'
 import { computeAmounts, computeVerdict, computeWorstCase } from './features/amountEngine.js'
 import { countByLevel } from './features/riskModel.js'
+import { analyzeContract } from './features/contractReview.js'
+import { extractContractFacts } from './features/contractFacts.js'
+import { describeDegradation, metaFromFacts, toRiskModel } from './features/riskMapper.js'
+import { buildContractPages, estimatePages } from './features/contractPages.js'
 import { buildPlainText, buildReportHtml } from './features/reportText.js'
 import { track } from './features/track.js'
+import { extractContractTextFromFile } from './utils/fileImport.js'
 
 const SCREENS = ['landing', 'upload', 'confirm', 'analyzing', 'work']
 
+// 一份租房合同不可能完全不出现这些词。没有就提醒「可能传错了」，但不拦。
+const LEASE_HINTS = /租赁|出租|承租|房东|租金|押金|租期|房屋/
+// 超长文本只审前 6 万字：再长也不是一份租房合同，反而会把逐句比对拖垮。
+const MAX_ANALYZE_CHARS = 60000
+
+function looksLikeLease(text = '') {
+  return LEASE_HINTS.test(text)
+}
+
 function readRoute() {
   const raw = (window.location.hash || '').replace(/^#/, '')
-  if (!raw) return { screen: 'landing', tab: 'ov', active: 'r1' }
+  if (!raw) return { screen: 'landing', tab: 'ov', active: 'r1', demo: false }
   const [path, query] = raw.split('?')
   const params = new URLSearchParams(query || '')
   const screen = SCREENS.includes(path) ? path : 'landing'
@@ -32,28 +46,96 @@ function readRoute() {
     screen,
     tab: params.get('tab') || 'ov',
     active: params.get('active') || 'r1',
+    demo: params.get('demo') === '1',
+    mobile: params.get('m') === '1',
   }
 }
 
-function routeToHash({ screen, tab, active }) {
-  if (screen === 'landing') return ''
-  if (screen !== 'work') return `#${screen}`
+function routeToHash({ screen, tab, active, demo, mobile }) {
+  const keep = new URLSearchParams()
+  if (demo) keep.set('demo', '1')
+  if (mobile) keep.set('m', '1')
+  const suffix = keep.toString() ? `?${keep.toString()}` : ''
+  if (screen !== 'work') return screen === 'landing' ? '' : `#${screen}${suffix}`
   const params = new URLSearchParams({ tab, active })
+  if (demo) params.set('demo', '1')
+  if (mobile) params.set('m', '1')
   return `#work?${params.toString()}`
+}
+
+const EMPTY_SESSION = {
+  kind: 'empty', // empty | real | demo
+  fileName: '',
+  fileSize: '',
+  fileText: '',
+  source: '',
+  confidence: null,
+  meta: DEMO_META,
+  facts: null,
+  quality: DEMO_QUALITY,
+  risks: [],
+  findings: [],
+  degradation: null,
+}
+
+function countSentences(text = '') {
+  return Math.max(1, (String(text).match(/[。；;！!？?]/g) || []).length)
+}
+
+function countMasked(text = '') {
+  const ids = (text.match(/\d{17}[\dXx]/g) || []).length
+  const phones = (text.match(/1[3-9]\d{9}/g) || []).length
+  return { ids, phones }
+}
+
+/** 真实文件没有「手写好的质检结果」，这里按来源与字数生成一份，缺什么就说什么。 */
+function qualityForFile({ text, source, confidence, pageCount }) {
+  const totalPages = pageCount || estimatePages(text)
+  const chars = String(text).replace(/\s/g, '').length
+  const masked = countMasked(text)
+  const ocr = source === '图片 OCR'
+  const pages = Array.from({ length: totalPages }, (_, index) => ({
+    n: index + 1,
+    state: ocr && (confidence || 0) < 80 && index === 0 ? 'retake' : 'ok',
+    label: ocr ? `OCR ${Math.round(confidence || 90)}%` : '文字层完整',
+  }))
+  const notLease = !looksLikeLease(text)
+  const tooLong = chars > MAX_ANALYZE_CHARS
+  return {
+    totalPages,
+    pages,
+    warn: notLease
+      ? '这份文件里没有出现「租赁 / 出租 / 租金 / 押金」这类字样，可能不是租房合同。仍可以继续，但审查结论大概率对不上。'
+      : tooLong
+        ? `这份合同有 ${chars} 个字，超过单次审查上限（${MAX_ANALYZE_CHARS} 字）。这次只审前 ${MAX_ANALYZE_CHARS} 字，后面的部分请自己核对。`
+        : chars < 300
+          ? `这份文件只读出 ${chars} 个字，可能不是完整合同。可以先继续，但受影响条款会被标为「需人工核对」。`
+          : `已读出 ${chars} 个字，没有发现缺页。押金、退租、维修三类条款会逐句比对。`,
+    notLease,
+    ocrSample: String(text).slice(0, 80),
+    ocrBadChar: '',
+    maskedIds: masked.ids,
+    maskedPhones: masked.phones,
+  }
 }
 
 export default function App() {
   const [route, setRoute] = useState(readRoute)
-  const [meta, setMeta] = useState(DEMO_META)
+  const [session, setSession] = useState(EMPTY_SESSION)
   const [done, setDone] = useState({})
   const [accepted, setAccepted] = useState({})
   const [edited, setEdited] = useState({})
   const [checks, setChecks] = useState(DEMO_CHECKS)
-  const [quality] = useState(DEMO_QUALITY)
   const [privacyOpen, setPrivacyOpen] = useState(false)
   const [toastMessage, setToastMessage] = useState('')
   const [locateSignal, setLocateSignal] = useState(0)
+  const [busy, setBusy] = useState(false)
   const toastTimer = useRef(null)
+
+  const isDemo = session.kind === 'demo'
+  const meta = session.meta
+  const risks = session.risks
+  const quality = session.quality
 
   const toast = useCallback((message) => {
     setToastMessage(message)
@@ -64,10 +146,8 @@ export default function App() {
   useEffect(() => () => window.clearTimeout(toastTimer.current), [])
 
   useEffect(() => {
-    const onHash = () => setRoute(readRoute())
-    window.addEventListener('hashchange', onHash)
-    return () => window.removeEventListener('hashchange', onHash)
-  }, [])
+    document.documentElement.classList.toggle('m-mode', !!route.mobile)
+  }, [route.mobile])
 
   const go = useCallback((screen, extra = {}) => {
     setRoute((prev) => {
@@ -80,10 +160,34 @@ export default function App() {
     })
   }, [])
 
+  useEffect(() => {
+    const onHash = () => setRoute(readRoute())
+    window.addEventListener('hashchange', onHash)
+    return () => window.removeEventListener('hashchange', onHash)
+  }, [])
+
+  // 直接开 ?demo=1：装载演示数据，不用重新走一遍上传。
+  // 依赖里必须带 route.demo：否则在同一会话里从真实合同跳到演示链接，界面会沿用真实结果。
+  useEffect(() => {
+    if (route.demo && session.kind !== 'demo') {
+      setSession({ ...EMPTY_SESSION, kind: 'demo', fileName: DEMO_META.fileName, risks: DEMO_RISKS })
+      setChecks(DEMO_CHECKS)
+    } else if (!route.demo && session.kind === 'demo') {
+      setSession(EMPTY_SESSION)
+    }
+  }, [route.demo, session.kind])
+
   const amounts = useMemo(() => computeAmounts(meta), [meta])
-  const counts = useMemo(() => countByLevel(DEMO_RISKS), [])
-  const worst = useMemo(() => computeWorstCase(DEMO_RISKS, amounts), [amounts])
-  const verdict = useMemo(() => computeVerdict(DEMO_RISKS, amounts), [amounts])
+  const counts = useMemo(() => countByLevel(risks), [risks])
+  const worst = useMemo(() => computeWorstCase(risks, amounts), [risks, amounts])
+  const verdict = useMemo(
+    () => computeVerdict(risks, amounts, { checklistCount: checks.length }),
+    [risks, amounts, checks.length],
+  )
+  const pages = useMemo(
+    () => (isDemo ? DEMO_PAGES : buildContractPages(session.fileText, risks)),
+    [isDemo, session.fileText, risks],
+  )
 
   useEffect(() => {
     if (route.screen === 'work') track('page_view', { screen: 'work', tab: route.tab })
@@ -104,14 +208,163 @@ export default function App() {
   }, [])
 
   const changeMeta = useCallback((patch) => {
-    setMeta((prev) => ({ ...prev, ...patch }))
+    setSession((prev) => ({ ...prev, meta: { ...prev.meta, ...patch } }))
     track('field_corrected', patch)
   }, [])
+
+  /** 读文件：真实解析（PDF / Word / 图片 OCR / 文本），失败就明说，不悄悄塞演示数据。 */
+  const handleFile = useCallback(
+    async (file) => {
+      if (!file) return
+      setBusy(true)
+      try {
+        const result = await extractContractTextFromFile(file)
+        const text = result.text || ''
+        const facts = extractContractFacts(text)
+        const extracted = metaFromFacts(facts)
+        const pagesCount = result.structure?.pageCount || estimatePages(text)
+        const sizeText = `${(file.size / 1024 / 1024).toFixed(1)} MB`
+        setSession({
+          ...EMPTY_SESSION,
+          kind: 'real',
+          fileName: file.name,
+          fileSize: sizeText,
+          fileText: text,
+          source: result.source || result.type || '文本',
+          confidence: result.confidence ?? null,
+          facts,
+          quality: qualityForFile({
+            text,
+            source: result.source,
+            confidence: result.confidence,
+            pageCount: pagesCount,
+          }),
+          meta: {
+            ...DEMO_META,
+            fileName: file.name,
+            fileSize: sizeText,
+            filePages: pagesCount,
+            fileKind: (file.name.split('.').pop() || '').toUpperCase(),
+            fileNote: `${result.source || '文件'} · 已脱敏`,
+            type: looksLikeLease(text) ? '房屋租赁合同' : '疑似非租赁合同',
+            city: '待确认',
+            rent: extracted.rent ?? 0,
+            deposit: extracted.deposit ?? 0,
+            months: extracted.months ?? 12,
+            scale: '严格 · 逐句',
+            sentenceCount: countSentences(text),
+          },
+        })
+        setDone({})
+        setAccepted({})
+        setEdited({})
+        setChecks(DEMO_CHECKS.map((item) => ({ ...item, done: false })))
+        track('upload_success', { name: file.name, size: file.size, source: result.source })
+        toast(`已读出「${file.name}」· ${result.source || '文本'}，检查一下识别结果`)
+        go('upload')
+      } catch (error) {
+        toast(error?.message || '这份文件没读出来，换一份或直接粘贴文字')
+      } finally {
+        setBusy(false)
+      }
+    },
+    [go, toast],
+  )
+
+  const handlePaste = useCallback(async () => {
+    let text
+    try {
+      text = await navigator.clipboard.readText()
+    } catch {
+      text = ''
+    }
+    if (!text || text.trim().length < 40) {
+      toast('没读到剪贴板里的合同：先复制文字再点这里，或直接上传文件')
+      return
+    }
+    const facts = extractContractFacts(text)
+    const extracted = metaFromFacts(facts)
+    setSession({
+      ...EMPTY_SESSION,
+      kind: 'real',
+      fileName: '粘贴的合同文字',
+      fileText: text,
+      source: '粘贴文本',
+      facts,
+      quality: qualityForFile({ text, source: '粘贴文本' }),
+      meta: {
+        ...DEMO_META,
+        fileName: '粘贴的合同文字',
+        fileSize: '',
+        filePages: estimatePages(text),
+        fileKind: 'TXT',
+        fileNote: '粘贴文本 · 已脱敏',
+        city: '待确认',
+        rent: extracted.rent ?? 0,
+        deposit: extracted.deposit ?? 0,
+        months: extracted.months ?? 12,
+        scale: '严格 · 逐句',
+        sentenceCount: countSentences(text),
+      },
+    })
+    setChecks(DEMO_CHECKS.map((item) => ({ ...item, done: false })))
+    track('upload_success', { source: 'paste' })
+    toast('已按粘贴的文字继续，检查一下六个字段')
+    go('confirm')
+  }, [go, toast])
+
+  const loadDemo = useCallback(() => {
+    setSession({ ...EMPTY_SESSION, kind: 'demo', fileName: DEMO_META.fileName, risks: DEMO_RISKS })
+    setChecks(DEMO_CHECKS)
+    track('upload_success', { source: 'demo' })
+    go('work', { tab: 'ov', demo: true })
+  }, [go])
+
+  /** 进分析页就开跑：动画不等模型，模型也不挡动画。 */
+  const runAnalysis = useCallback(() => {
+    const full = session.fileText
+    const text = full.length > MAX_ANALYZE_CHARS ? full.slice(0, MAX_ANALYZE_CHARS) : full
+    const currentMeta = session.meta
+    if (!text) return
+    window.setTimeout(() => {
+      const started = Date.now()
+      try {
+        const depth = currentMeta.scale === '标准' ? 'business' : 'strict'
+        const findings = analyzeContract(text, {
+          contractType: 'lease',
+          partyRole: 'partyB',
+          reviewDepth: depth,
+        })
+        const mapped = toRiskModel(findings, {
+          contractText: text,
+          pages: currentMeta.filePages || 0,
+          amounts: computeAmounts(currentMeta),
+        })
+        const degradation = describeDegradation(findings, mapped)
+        setSession((prev) => ({ ...prev, findings, risks: mapped, degradation }))
+        track('analyze_done', {
+          seconds: Math.round((Date.now() - started) / 1000),
+          count: mapped.length,
+          truncated: full.length > MAX_ANALYZE_CHARS,
+        })
+      } catch (error) {
+        setSession((prev) => ({
+          ...prev,
+          risks: [],
+          findings: [],
+          degradation: {
+            level: 'failed',
+            message: error?.message || '分析没跑完，请重试或换一份合同',
+          },
+        }))
+      }
+    }, 60)
+  }, [session.fileText, session.meta])
 
   const handleExport = async (kind) => {
     track('export', { kind })
     if (kind === 'report') {
-      const html = buildReportHtml({ meta, risks: DEMO_RISKS, amounts, worst, verdict, checks })
+      const html = buildReportHtml({ meta, risks, amounts, worst, verdict, checks })
       const win = window.open('', '_blank')
       if (!win) {
         toast('浏览器拦了弹窗，允许后重试')
@@ -122,10 +375,10 @@ export default function App() {
       toast('已打开打印预览，选「另存为 PDF」就能带走')
       return
     }
-    const text = buildPlainText({ risks: DEMO_RISKS, amounts, checks })
+    const text = buildPlainText({ risks, amounts, checks })
     try {
       await navigator.clipboard.writeText(text)
-      toast('已复制 3 条建议 + 3 段话术，可直接粘进微信')
+      toast('已复制建议与话术，可直接粘进微信')
     } catch {
       toast('复制失败，长按选中也可以')
     }
@@ -137,17 +390,17 @@ export default function App() {
 
       {route.screen === 'landing' && (
         <LandingScreen
-          onFile={(file) => {
-            track('upload_success', { name: file.name, size: file.size })
-            toast(`已读取「${file.name}」· 演示环境用示例合同继续`)
-            go('upload')
-          }}
+          onFile={handleFile}
           onCamera={() => {
-            track('upload_success', { source: 'camera' })
-            go('upload')
+            const input = document.createElement('input')
+            input.type = 'file'
+            input.accept = 'image/*'
+            input.capture = 'environment'
+            input.onchange = (event) => handleFile(event.target.files?.[0])
+            input.click()
           }}
-          onPaste={() => go('confirm')}
-          onDemo={() => go('work')}
+          onPaste={handlePaste}
+          onDemo={loadDemo}
         />
       )}
 
@@ -157,18 +410,19 @@ export default function App() {
           quality={quality}
           onRetake={(page) => {
             track('repage_retake', { page })
-            toast(page ? `演示：只替换第 ${page} 页，不重走流程` : '演示：补拍或加页')
+            toast(page ? `只替换第 ${page} 页，不重走流程（V0.2）` : '补拍或加页（V0.2）')
           }}
           onReplace={() => {
-            toast('演示：换一份更清晰的文件')
+            toast('换一份文件')
             go('landing')
           }}
           onManual={() => {
-            track('ocr_edit', { page: 2 })
+            track('ocr_edit', { page: 1 })
             go('confirm')
           }}
           onContinue={() => {
-            track('quality_continue', { warnPages: 1 })
+            const warnPages = quality.pages.filter((page) => page.state !== 'ok').length
+            track('quality_warn', { warnPages, totalPages: quality.pages.length })
             go('confirm')
           }}
           onBack={() => go('landing')}
@@ -179,17 +433,17 @@ export default function App() {
         <ConfirmScreen
           meta={meta}
           onChangeMeta={changeMeta}
-          onNext={() => go('analyzing')}
+          onNext={() => {
+            go('analyzing')
+            if (!isDemo) runAnalysis()
+          }}
           onBack={() => go('upload')}
         />
       )}
 
       {route.screen === 'analyzing' && (
         <AnalyzingScreen
-          onDone={() => {
-            track('analyze_done', { seconds: 28 })
-            go('work', { tab: 'ov' })
-          }}
+          onDone={() => go('work', { tab: 'ov' })}
           onSkip={() => go('work', { tab: 'ov' })}
         />
       )}
@@ -197,13 +451,15 @@ export default function App() {
       {route.screen === 'work' && (
         <WorkbenchScreen
           meta={meta}
-          pages={DEMO_PAGES}
-          risks={DEMO_RISKS}
+          pages={pages}
+          risks={risks}
           amounts={amounts}
           counts={counts}
           worst={worst}
           verdict={verdict}
           checks={checks}
+          degradation={session.degradation}
+          isDemo={isDemo}
           tab={route.tab}
           onTab={(tab) => go('work', { tab })}
           activeId={route.active}
@@ -233,13 +489,15 @@ export default function App() {
             )
             track('checklist_check', { checkId })
           }}
-          onReupload={() => go('upload')}
+          onReupload={() => go('landing')}
           onExport={handleExport}
           onToast={toast}
           onCopy={(event, payload) => track(event, payload)}
+          onTrack={(event, payload) => track(event, payload)}
         />
       )}
 
+      {busy && <div className="busy-mask">正在读取文件…</div>}
       <Toast message={toastMessage} />
       <PrivacyModal open={privacyOpen} onClose={() => setPrivacyOpen(false)} />
     </>

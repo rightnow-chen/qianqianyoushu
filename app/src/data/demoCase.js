@@ -14,6 +14,7 @@ export const DEMO_META = {
   months: 12,
   deposit: 13500,
   scale: '严格 · 逐句',
+  sentenceCount: 38,
 }
 
 // 合同正文：句子级切分，带 risk 的片段会在左栏高亮并带句尾编号。

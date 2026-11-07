@@ -70,35 +70,40 @@ export function amountForRisk(risk, amounts) {
 
 /**
  * 最坏情况合计：只累加「必须改」且能定价的项（PRD FR-05）。
- * 返回合计值与三个分项，分项用于概览右下角的出处说明。
+ * 同一个金额口径只算一次——三条风险都挂「违约金」时，赔的是同一笔钱，不能叠加三次。
  */
 export function computeWorstCase(risks = [], amounts) {
-  const items = risks
+  const seen = new Set()
+  const items = []
+
+  risks
     .filter((risk) => risk.level === 'must')
-    .map((risk) => {
+    .forEach((risk) => {
+      const key = risk.amountKey
+      const spec = key ? AMOUNT_SPECS[key] : null
+      if (!key || !spec || !spec.includeInWorst || seen.has(key)) return
       const amount = amountForRisk(risk, amounts)
-      return { risk, amount, spec: risk.amountKey ? AMOUNT_SPECS[risk.amountKey] : null }
+      if (amount.value <= 0) return
+      seen.add(key)
+      items.push({
+        riskId: risk.id,
+        label: spec.label,
+        value: amount.value,
+        text: amount.text,
+        note: risk.location?.article ? `第 ${risk.location.article} 条` : '条款位置待核对',
+      })
     })
-    .filter((item) => item.spec?.includeInWorst && item.amount.value > 0)
 
-  const total = items.reduce((sum, item) => sum + item.amount.value, 0)
+  const total = items.reduce((sum, item) => sum + item.value, 0)
 
-  return {
-    total,
-    items: items.map((item) => ({
-      riskId: item.risk.id,
-      label: item.spec.label,
-      value: item.amount.value,
-      text: item.amount.text,
-      note: `第 ${item.risk.location.article} 条`,
-    })),
-  }
+  return { total, items }
 }
 
 /** 审查结论三档措辞（PRD FR-05 ①） */
-export function computeVerdict(risks = [], amounts) {
+export function computeVerdict(risks = [], amounts, options = {}) {
   const must = risks.filter((risk) => risk.level === 'must')
   const check = risks.filter((risk) => risk.level === 'check')
+  const outside = options.checklistCount ?? 8
   const { total } = computeWorstCase(risks, amounts)
 
   if (must.length === 0) {
@@ -106,8 +111,8 @@ export function computeVerdict(risks = [], amounts) {
       key: 'go',
       title: '可以继续沟通',
       desc: check.length
-        ? `没有必须修改的条款，但有 ${check.length} 条建议当面确认。另有 8 件合同外的事要问清，问完再签更稳。`
-        : '这份合同没有发现必须修改的高风险条款。别忘了把合同外那 8 件事问清楚——合同没问题不等于事情办完了。',
+        ? `没有必须修改的条款，但有 ${check.length} 条建议当面确认。另有 ${outside} 件合同外的事要问清，问完再签更稳。`
+        : `这份合同没有发现必须修改的高风险条款。别忘了把合同外那 ${outside} 件事问清楚——合同没问题不等于事情办完了。`,
     }
   }
 
@@ -124,6 +129,6 @@ export function computeVerdict(risks = [], amounts) {
   return {
     key: 'hold',
     title: '关键问题确认后再决定',
-    desc: `${risks.length} 条风险中 ${must.length} 条必须在签约前改掉，其中${top.cat}条款可能让你多损失 ${topAmount.text.replace(/[−+]/, '')}；另有 8 件合同外的事要当面问清。改完这 ${must.length} 条，这份合同可以签。`,
+    desc: `${risks.length} 条风险中 ${must.length} 条必须在签约前改掉，其中${top.cat}条款可能让你多损失 ${topAmount.text.replace(/[−+]/, '')}；另有 ${outside} 件合同外的事要当面问清。改完这 ${must.length} 条，这份合同可以签。`,
   }
 }
