@@ -50,3 +50,5 @@
 - **产品决策（2026-11-08）**：**城市参数不做**——用户明确「现在没有那个能力，后续迭代再看」。武汉只作为法条核实的口径提醒，不进规则库结构。V0.2 剩余：口头承诺录入、合同内外一致性核对、修改后复查。
 - **PDF 解析必须用 `pdfjs-dist/legacy/build/*`（2026-11-08 用户实测报错后定）**：pdfjs-dist@6.2 标准构建依赖 `Uint8Array.prototype.toHex`（Chrome 133+ 原生才有），旧内核（360/QQ/微信内置/旧 Edge）上传 PDF 直接报 `hashOriginal.toHex is not a function`。legacy 构建自带 polyfill，worker 1.6MB→2.4MB。改动被 `tests/unit/contract-import.test.mjs` 第 5–7 组钉死（源码 / node_modules / dist 三处），别为省体积改回去。同批还加了 `ContractImportError`（底层异常只进 console，UI 只出中文人话）与扫描件 PDF 拦截（正文 <30 字提示走拍照 OCR）。
 - **构建顺序坑**：`vite preview` 正在服务 `dist` 时 `vite build` 会失败（清 `dist/assets` 被 safe-delete shim 拦住）。先停 preview → `rm -rf dist` → build → 再起 preview。
+- **质检页语义按来源分派（2026-11-08 commit 50c5179，产品规则）**：「识别率 / 反光 / 重拍 / 置信度」只对拍照 OCR 成立；PDF / Word 走「文字来源：自带文字层，逐字提取，不经过 OCR」+ 一段提取预览（用来发现多栏串行）；TXT 不编页数；逐页缩略图只在拍照或有坏页时显示。规则在 `src/features/uploadQuality.js`，被 `tests/unit/upload-quality.test.mjs` 钉死（PDF/纯文本两组断言不出现那四个词）。用户原话：「直接上传 PDF 为什么会有识别率，只有拍照才需要质检吧」。
+- **危险习惯**：WorkBuddy 的 safe-delete shim 曾连带删掉 `deliverables/test-kits/` 下 16 个已跟踪文件（非主动操作）。**每次 rm 之后立刻 `git status --short` 复查**，发现 ` D` 就 `git checkout -- <path>` 恢复。
