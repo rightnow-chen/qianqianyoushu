@@ -100,7 +100,8 @@ async function extractPdfText(file, signal) {
     fail('这份 PDF 里没有可以选中的文字，应该是扫描件或拍照转的 PDF。请改用「拍照上传」，或把合同截图后上传，会走文字识别。')
   }
 
-  return text
+  // 真实页数，别拿字数估——质检页写「共 N 页」就得是真的 N 页
+  return { text, pageCount: pdf.numPages }
 }
 
 async function extractDocxText(file, signal) {
@@ -270,8 +271,10 @@ async function runImport(file, options = {}) {
   }
 
   if (CONTRACT_PDF_EXTENSIONS.includes(extension)) {
+    const { text, pageCount } = await extractPdfText(file, options.signal)
     return {
-      text: relayoutContractText(await extractPdfText(file, options.signal)),
+      text: relayoutContractText(text),
+      pageCount,
       type: 'PDF 合同',
       source: 'PDF',
     }

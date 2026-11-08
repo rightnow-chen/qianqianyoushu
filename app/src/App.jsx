@@ -22,6 +22,12 @@ import { analyzeContract } from './features/contractReview.js'
 import { extractContractFacts } from './features/contractFacts.js'
 import { describeDegradation, metaFromFacts, toRiskModel } from './features/riskMapper.js'
 import { buildContractPages, estimatePages } from './features/contractPages.js'
+import {
+  MAX_ANALYZE_CHARS,
+  countSentences,
+  looksLikeLease,
+  qualityForFile,
+} from './features/uploadQuality.js'
 import { buildCommentDocxBlob, buildRevisionDocxBlob } from './features/contractDocx.js'
 import { buildPlainText, buildReportHtml } from './features/reportText.js'
 import { track } from './features/track.js'
@@ -29,15 +35,6 @@ import { downloadBlob } from './utils/docxExport.js'
 import { extractContractTextFromFile } from './utils/fileImport.js'
 
 const SCREENS = ['landing', 'upload', 'confirm', 'analyzing', 'work']
-
-// 一份租房合同不可能完全不出现这些词。没有就提醒「可能传错了」，但不拦。
-const LEASE_HINTS = /租赁|出租|承租|房东|租金|押金|租期|房屋/
-// 超长文本只审前 6 万字：再长也不是一份租房合同，反而会把逐句比对拖垮。
-const MAX_ANALYZE_CHARS = 60000
-
-function looksLikeLease(text = '') {
-  return LEASE_HINTS.test(text)
-}
 
 function readRoute() {
   const raw = (window.location.hash || '').replace(/^#/, '')
@@ -79,47 +76,6 @@ const EMPTY_SESSION = {
   risks: [],
   findings: [],
   degradation: null,
-}
-
-function countSentences(text = '') {
-  return Math.max(1, (String(text).match(/[。；;！!？?]/g) || []).length)
-}
-
-function countMasked(text = '') {
-  const ids = (text.match(/\d{17}[\dXx]/g) || []).length
-  const phones = (text.match(/1[3-9]\d{9}/g) || []).length
-  return { ids, phones }
-}
-
-/** 真实文件没有「手写好的质检结果」，这里按来源与字数生成一份，缺什么就说什么。 */
-function qualityForFile({ text, source, confidence, pageCount }) {
-  const totalPages = pageCount || estimatePages(text)
-  const chars = String(text).replace(/\s/g, '').length
-  const masked = countMasked(text)
-  const ocr = source === '图片 OCR'
-  const pages = Array.from({ length: totalPages }, (_, index) => ({
-    n: index + 1,
-    state: ocr && (confidence || 0) < 80 && index === 0 ? 'retake' : 'ok',
-    label: ocr ? `OCR ${Math.round(confidence || 90)}%` : '文字层完整',
-  }))
-  const notLease = !looksLikeLease(text)
-  const tooLong = chars > MAX_ANALYZE_CHARS
-  return {
-    totalPages,
-    pages,
-    warn: notLease
-      ? '这份文件里没有出现「租赁 / 出租 / 租金 / 押金」这类字样，可能不是租房合同。仍可以继续，但审查结论大概率对不上。'
-      : tooLong
-        ? `这份合同有 ${chars} 个字，超过单次审查上限（${MAX_ANALYZE_CHARS} 字）。这次只审前 ${MAX_ANALYZE_CHARS} 字，后面的部分请自己核对。`
-        : chars < 300
-          ? `这份文件只读出 ${chars} 个字，可能不是完整合同。可以先继续，但受影响条款会被标为「需人工核对」。`
-          : `已读出 ${chars} 个字，没有发现缺页。押金、退租、维修三类条款会逐句比对。`,
-    notLease,
-    ocrSample: String(text).slice(0, 80),
-    ocrBadChar: '',
-    maskedIds: masked.ids,
-    maskedPhones: masked.phones,
-  }
 }
 
 export default function App() {
@@ -225,7 +181,7 @@ export default function App() {
         const text = result.text || ''
         const facts = extractContractFacts(text)
         const extracted = metaFromFacts(facts)
-        const pagesCount = result.structure?.pageCount || estimatePages(text)
+        const pagesCount = result.pageCount || result.structure?.pageCount || estimatePages(text)
         const sizeText = `${(file.size / 1024 / 1024).toFixed(1)} MB`
         setSession({
           ...EMPTY_SESSION,

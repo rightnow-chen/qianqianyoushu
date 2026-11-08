@@ -568,15 +568,53 @@ export const DEMO_CHECKS = [
   { id: 'c8', q: '能否拍照留存房屋现状与设施（退租时是证据）', done: false },
 ]
 
-// P1 质检页的演示状态：第 2 页反光，只提示不拦截。
+// P1 质检页的演示状态：手机拍摄转 PDF，第 2 页反光，只提示不拦截。
+// 注意这里必须是 ocr 模式：这一屏的「识别率 / 补拍」只在拍照场景下成立，
+// PDF 直接上传不该出现这套语言（见 App.jsx qualityForFile 的注释）。
 export const DEMO_QUALITY = {
+  mode: 'ocr',
   totalPages: 4,
+  pagesCountLabel: '共 4 页',
   pages: [
-    { n: 1, state: 'ok', label: '文字层完整' },
+    { n: 1, state: 'ok', label: 'OCR 94%' },
     { n: 2, state: 'retake', label: '右下角反光', rate: 61 },
     { n: 3, state: 'ok', label: 'OCR 96%', rate: 96 },
     { n: 4, state: 'ok', label: 'OCR 98%', rate: 98 },
   ],
+  checks: [
+    {
+      key: 'integrity',
+      title: '文件完整性',
+      status: 'ok',
+      detail: '4 页连续，无缺页',
+    },
+    {
+      key: 'ocr',
+      title: '文字识别率',
+      status: 'warn',
+      badge: '第 2 页 61%',
+      detail: '反光区域集中在押金条款，其余 3 页 96% 以上',
+      bar: { value: 61 },
+    },
+    {
+      key: 'type',
+      title: '合同类型',
+      status: 'ok',
+      detail: '识别为「房屋租赁合同」，将按 9 类条款审查',
+    },
+    {
+      key: 'privacy',
+      title: '隐私脱敏',
+      status: 'ok',
+      detail: '两个身份证号、两个手机号已打码，不进模型',
+    },
+  ],
+  advice: [
+    { label: '① 只补拍第 2 页', kind: 'retake', page: 2 },
+    { label: '② 换一份文件', kind: 'replace' },
+    { label: '③ 手动改这一条', kind: 'manual' },
+  ],
+  footerHint: '第 2 页识别不全也可以继续，押金条款会被标为「需人工核对」，但建议先补拍。',
   warn:
     '第 2 页第 4 条（押金）有 21 个字没识别出来，这一条恰好是风险最集中的地方 —— 建议先补拍这一页，再继续。',
   ocrSample: '2. 退租时需扣除全屋保洁费，标 准 由 甲 方 核 定。',

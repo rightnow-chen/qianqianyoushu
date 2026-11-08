@@ -544,17 +544,23 @@
   color: var(--green);
   position: relative;
   z-index: 1;
+  flex: 0 0 auto;
+  white-space: nowrap;
 }
 .thumb-box .flag {
   color: var(--amber);
   position: relative;
   z-index: 1;
+  flex: 0 0 auto;
+  white-space: nowrap;
 }
 .thumb-box .pg {
   color: var(--ink4);
   margin-left: auto;
   position: relative;
   z-index: 1;
+  /* 「第 12 页」在 78px 宽的格子里会断成两行，页码必须单行 */
+  white-space: nowrap;
 }
 .thumb-cap {
   margin-top: 4px;
@@ -658,6 +664,14 @@
 .ocr-text .bad {
   background: #fff3d0;
   border-bottom: 1px solid #e8c675;
+}
+/* 文字层文件的提取预览：只读，保留换行，让人一眼看出有没有串行 */
+.preview-text {
+  max-height: 132px;
+  color: var(--ink2);
+  white-space: pre-wrap;
+  cursor: default;
+  user-select: text;
 }
 .ocr-tip {
   padding: 0 10px 8px;
