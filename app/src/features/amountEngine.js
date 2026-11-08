@@ -50,21 +50,25 @@ export function computeAmounts(meta = {}) {
   }
 }
 
-/** 一条风险的金额展示：{ text, kind, value, includeInWorst } */
+/** 一条风险的金额展示：{ text, kind, value, includeInWorst, missing } */
 export function amountForRisk(risk, amounts) {
   const key = risk?.amountKey
   const spec = key ? AMOUNT_SPECS[key] : null
   if (!key || !spec) {
-    return { text: '—', kind: 'none', value: 0, includeInWorst: false }
+    return { text: '—', kind: 'none', value: 0, includeInWorst: false, missing: false }
   }
   const value = amounts[key] || 0
   const unitText = spec.unit === 'monthly' ? '/月' : spec.unit === 'yearly' ? '/年' : ''
   const sign = spec.kind === 'loss' ? '−' : '+'
+  // 合同里没读到月租/押金时算出来就是 0。这时候写「−¥0」等于说「不会亏」，
+  // 恰恰相反——是还不知道会亏多少。必须说「金额待补」。
+  const missing = value <= 0
   return {
-    text: `${sign}¥${formatMoney(value)}${unitText}`,
+    text: missing ? '金额待补' : `${sign}¥${formatMoney(value)}${unitText}`,
     kind: spec.kind,
     value,
     includeInWorst: spec.includeInWorst,
+    missing,
   }
 }
 
@@ -95,8 +99,12 @@ export function computeWorstCase(risks = [], amounts) {
     })
 
   const total = items.reduce((sum, item) => sum + item.value, 0)
+  // 有几条「必须改」算不出钱：合同没读到月租/押金，或者条款本身没有可定价的机制。
+  // 界面要能用它区分「真的不用担心」和「还不知道多少」。
+  const mustCount = risks.filter((risk) => risk.level === 'must').length
+  const unpriced = Math.max(0, mustCount - items.length)
 
-  return { total, items }
+  return { total, items, unpriced }
 }
 
 /** 审查结论三档措辞（PRD FR-05 ①） */
@@ -117,18 +125,22 @@ export function computeVerdict(risks = [], amounts, options = {}) {
   }
 
   if (must.length >= 4) {
+    const money = total > 0 ? `最坏可能损失 ¥${formatMoney(total)}。` : '合同里没读到月租或押金，损失还没法估，先补上这两个数。'
     return {
       key: 'stop',
       title: '暂不建议签约',
-      desc: `${risks.length} 条风险中 ${must.length} 条必须在签约前改掉，最坏可能损失 ¥${formatMoney(total)}。建议先按清单逐条提出修改，对方一条都不肯改时再考虑放弃。`,
+      desc: `${risks.length} 条风险中 ${must.length} 条必须在签约前改掉，${money}建议先按清单逐条提出修改，对方一条都不肯改时再考虑放弃。`,
     }
   }
 
   const top = must[0]
   const topAmount = amountForRisk(top, amounts)
+  const topSentence = topAmount.missing
+    ? `其中${top.cat}条款的问题最需要在签约前落实，具体会损失多少取决于月租和押金——这两个数补上就能算。`
+    : `其中${top.cat}条款可能让你多损失 ${topAmount.text.replace(/[−+]/, '')}。`
   return {
     key: 'hold',
     title: '关键问题确认后再决定',
-    desc: `${risks.length} 条风险中 ${must.length} 条必须在签约前改掉，其中${top.cat}条款可能让你多损失 ${topAmount.text.replace(/[−+]/, '')}；另有 ${outside} 件合同外的事要当面问清。改完这 ${must.length} 条，这份合同可以签。`,
+    desc: `${risks.length} 条风险中 ${must.length} 条必须在签约前改掉，${topSentence}另有 ${outside} 件合同外的事要当面问清。改完这 ${must.length} 条，这份合同可以签。`,
   }
 }

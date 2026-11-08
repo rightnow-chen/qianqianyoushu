@@ -107,4 +107,28 @@ assert.ok(verdictGo.desc.includes('8 件'), '没有必须改时，指向合同�
 const verdictGo6 = computeVerdict([], base, { checklistCount: 6 })
 assert.ok(verdictGo6.desc.includes('6 件'), '清单件数必须跟着实际条数走，不能写死 8')
 
+// 11) 合同里没读到月租/押金时，不能把 0 当成「不用担心」
+//     真实事故：国家示范文本没有金额，结果页大红字写「最坏情况合计损失 ¥0」，
+//     旁边却有 1 条「必须改」的风险，读起来像「这件事不花钱」。
+const noMoney = { rent: 0, deposit: 0, months: 12, repairEstimate: 3000 }
+const zeroAmounts = computeAmounts(noMoney)
+const zeroDeposit = amountForRisk({ amountKey: 'depositDeduct' }, zeroAmounts)
+assert.equal(zeroDeposit.value, 0)
+assert.equal(zeroDeposit.missing, true, '押金为 0 时必须标记「算不出来」')
+assert.equal(zeroDeposit.text, '金额待补', '不能显示 −¥0，那意思是「不会亏」')
+
+const zeroWorst = computeWorstCase([{ id: 'a', level: 'must', amountKey: 'depositDeduct' }], zeroAmounts)
+assert.equal(zeroWorst.total, 0)
+assert.equal(zeroWorst.items.length, 0)
+assert.equal(zeroWorst.unpriced, 1, '要能数出还有几条必须改算不出钱')
+
+const zeroVerdict = computeVerdict(
+  [{ id: 'a', level: 'must', amountKey: 'depositDeduct', cat: '押金', location: { article: 3 } }],
+  zeroAmounts,
+  { checklistCount: 8 },
+)
+assert.equal(zeroVerdict.key, 'hold')
+assert.ok(!zeroVerdict.desc.includes('¥0'), `结论里不能出现 ¥0：${zeroVerdict.desc}`)
+assert.ok(zeroVerdict.desc.includes('月租和押金'), '要说清是缺了哪两个数')
+
 console.log('amount-engine: 全部断言通过')

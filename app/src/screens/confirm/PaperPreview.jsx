@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { createImageUrl, openPdfPreview } from '../../features/filePreview.js'
+import { layoutContractLines } from '../../features/previewText.js'
 
 /** PDF 原页渲染：一次解析，翻页复用；卸载时释放 pdf 文档。 */
 function PdfPages({ file, pageCount }) {
@@ -15,12 +16,20 @@ function PdfPages({ file, pageCount }) {
 
     const draw = async () => {
       try {
-        if (!docRef.current) docRef.current = await openPdfPreview(file)
+        if (!docRef.current) {
+          const opened = await openPdfPreview(file)
+          // 解析期间用户切走了：这时不能把句柄留在 ref 里，直接销毁，否则 worker 泄漏
+          if (cancelled) {
+            opened.destroy()
+            return
+          }
+          docRef.current = opened
+        }
         if (cancelled || !canvasRef.current) return
         const width = wrapRef.current?.clientWidth || 520
         await docRef.current.render(page, canvasRef.current, Math.min(width, 620))
       } catch {
-        if (!cancelled) setFailure({ page, message: '这一页没能渲染出来，可以切到「识别全文」看提取结果。' })
+        if (!cancelled) setFailure({ page, message: '这一页没能渲染出来，可以切到「识别文字」看提取结果。' })
       }
     }
 
@@ -84,9 +93,32 @@ function ImagePreview({ file }) {
   )
 }
 
+// 「第X条」「一、」「（一）」开头的行当成小标题；合同正文几乎都是这个结构。
+
+/**
+ * 纯文字稿：OCR 结果和 TXT 都走这里。
+ * 不假装有版式，但至少把标题、条款标题和正文分开——一坨密密麻麻的字没人看。
+ */
+function TextPaper({ text, emptyHint }) {
+  const lines = useMemo(() => layoutContractLines(text), [text])
+
+  if (!lines.length) return <div className="mini-paper"><div className="mp-plain">{emptyHint}</div></div>
+
+  return (
+    <div className="mini-paper">
+      {lines.map((line, index) => {
+        const key = `${index}-${line.text.slice(0, 8)}`
+        if (line.type === 'title') return <div className="mp-title" key={key}>{line.text}</div>
+        if (line.type === 'clause') return <div className="mp-clause" key={key}>{line.text}</div>
+        return <p key={key}>{line.text}</p>
+      })}
+    </div>
+  )
+}
+
 /** Word 的排版还原不了，但标题 / 段落 / 列表层级还是原样。 */
-function WordText({ structure }) {
-  if (!structure?.length) return <PlainText text="" />
+function WordText({ structure, text }) {
+  if (!structure?.length) return <TextPaper text={text} emptyHint="（这份文件里没有提取到文字）" />
   return (
     <div className="mini-paper word-paper">
       {structure.map((node, index) => {
@@ -100,20 +132,11 @@ function WordText({ structure }) {
   )
 }
 
-function PlainText({ text }) {
-  return (
-    <div className="mini-paper">
-      <div className="mp-plain">{text || '（这份文件里没有提取到文字）'}</div>
-    </div>
-  )
-}
-
 export default function PaperPreview({ kind, file, text, structure, pageCount, mode }) {
-  if (mode === 'text') {
-    return <div className="mini-paper"><div className="mp-plain">{text || '（这份文件里没有提取到文字）'}</div></div>
-  }
+  // 拍照才有「原件 / 识别文字」两档：第二档是 OCR 出来的字，排好给人核对
+  if (mode === 'text') return <TextPaper text={text} emptyHint="这张照片没识别出文字，换一张更清晰的照片，或直接粘贴合同文字。" />
   if (kind === 'pdf' && file) return <PdfPages file={file} pageCount={pageCount} />
   if (kind === 'image' && file) return <ImagePreview file={file} />
-  if (kind === 'word') return <WordText structure={structure} />
-  return <PlainText text={text} />
+  if (kind === 'word') return <WordText structure={structure} text={text} />
+  return <TextPaper text={text} emptyHint="（这份文件里没有提取到文字）" />
 }

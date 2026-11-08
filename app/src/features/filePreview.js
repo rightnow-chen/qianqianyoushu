@@ -57,7 +57,11 @@ export async function openPdfPreview(file) {
   pdfjsLib.GlobalWorkerOptions.workerSrc = workerUrl
 
   const buffer = await file.arrayBuffer()
-  const pdf = await pdfjsLib.getDocument({ data: buffer }).promise
+  // pdfjs 6 的 PDFDocumentProxy 没有 destroy()，只有 cleanup()；
+  // 要真正释放 worker 必须留着 loadingTask 再销毁它。
+  // 之前直接调 pdf.destroy()，卸载这个组件时抛 TypeError，整页 React 树被带走→白屏。
+  const task = pdfjsLib.getDocument({ data: buffer })
+  const pdf = await task.promise
 
   return {
     numPages: pdf.numPages,
@@ -83,8 +87,14 @@ export async function openPdfPreview(file) {
       await page.render({ canvasContext: context, viewport }).promise
       context.restore()
     },
+    /** 卸载时释放：销毁 loadingTask（proxy 本身没有 destroy）。失败不影响界面。 */
     destroy() {
-      pdf.destroy()
+      try {
+        const pending = task.destroy()
+        if (pending?.catch) pending.catch(() => {})
+      } catch {
+        // 文档还没加载完就卸载了，worker 会自己回收
+      }
     },
   }
 }

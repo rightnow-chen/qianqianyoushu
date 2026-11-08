@@ -91,10 +91,14 @@ export default function OverviewTab({
           <div className="loss">
             <div className="loss-main">
               <div className="lbl">最坏情况合计损失（估算）</div>
-              <div className="loss-num">
-                <small>¥</small>
-                {formatMoney(worst.total)}
-              </div>
+              {worst.total > 0 ? (
+                <div className="loss-num">
+                  <small>¥</small>
+                  {formatMoney(worst.total)}
+                </div>
+              ) : (
+                <div className="loss-num tbd">待补</div>
+              )}
             </div>
             <div className="loss-brk">
               {worst.items.map((item) => (
@@ -104,6 +108,14 @@ export default function OverviewTab({
                   <div className="bn">{item.note} · 估算</div>
                 </div>
               ))}
+              {worst.total === 0 && (
+                <div className="loss-item">
+                  <div className="bt">还没法算</div>
+                  <div className="bn" style={{ whiteSpace: 'normal' }}>
+                    这份合同里没读到月租或押金金额，损失推算不出来。回到上一步把这几个数补上，这里的金额会立刻重算。
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 

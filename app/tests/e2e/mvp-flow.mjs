@@ -276,10 +276,24 @@ try {
   })
   assert.ok(drawn > 20, 'PDF 画布应该是真的画上内容了，不是一块白板')
   assert.equal(await pdfPage.locator('canvas.pdf-canvas').count(), 1, 'PDF 只能有一个画布')
-  assert.equal(await pdfPage.locator('.preview-hd .seg button').count(), 2, 'PDF 应能切换「原件 / 识别全文」')
+  assert.equal(
+    await pdfPage.locator('.preview-hd .seg button').count(),
+    0,
+    '文件上传没有「识别」这回事，不该出现「原件 / 识别文字」切换',
+  )
+  step('PDF 确认页渲染原件')
+
+  // 16. 从 PDF 确认页点「开始审查」：不能白屏
+  //    这一条钉住真实事故——预览组件卸载时调了不存在的 pdf.destroy()，
+  //    异常发生在 React 卸载阶段，整棵树被带走，页面只剩空白。
+  await pdfPage.locator('button.btn.primary').last().click()
+  await pdfPage.waitForFunction(() => location.hash.includes('work'), null, { timeout: 40000 })
+  const workText = await pdfPage.evaluate(() => document.body.innerText.trim().length)
+  assert.ok(workText > 200, `结果页不能是空白，实际只有 ${workText} 个字`)
+  assert.equal(await pdfPage.locator('.preview-hd .seg button').count(), 0, '离开确认页后不该残留切换按钮')
   await pdfPage.close()
   await pdfContext.close()
-  step('PDF 确认页渲染原件')
+  step('PDF 确认页 → 开始审查不白屏')
 
   assert.deepEqual(errors, [], `页面报错：${errors.join(' | ')}`)
   console.log(`\nMVP 主路径 e2e 通过（${steps.length} 步）：`)

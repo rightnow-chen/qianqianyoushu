@@ -1427,10 +1427,17 @@
   font-size: 15px;
   margin-right: 1px;
 }
+/* 算不出金额时不能显示 ¥0 —— 那读起来像「不会亏」 */
+.loss-num.tbd {
+  font-size: 24px;
+  color: var(--amber);
+  letter-spacing: 1px;
+}
 .loss-brk {
   display: flex;
   gap: 18px;
   margin-left: auto;
+  max-width: 58%;
 }
 .loss-item .bt {
   font-size: 11px;

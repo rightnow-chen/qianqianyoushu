@@ -17,13 +17,20 @@ export default function ConfirmScreen({ meta, onChangeMeta, onNext, onBack, file
   const kind = previewKindOf({ fileName: meta.fileName, source: meta.source, mime: file?.type })
   // 只有拿到原始文件才能显示原件；演示数据没有文件，退化成全文
   const hasOriginal = Boolean(file) && (kind === 'pdf' || kind === 'image')
-  // Word / 纯文本没有「原件 vs 识别结果」之分，切换按钮是多余的
-  const canToggle = hasOriginal
+  // 只有拍照才有「识别」这回事：PDF / Word / TXT 的文字本来就是文件自带的，
+  // 给它们放一个「识别全文」只会让人以为是识别出来的，还多一层没必要的点击。
+  const canToggle = kind === 'image'
+  const heading = kind === 'image' ? '合同照片' : kind === 'pdf' ? '合同原件' : '原文预览'
+  // 不支持切换的来源一律按原件渲染，mode 残值不影响显示
+  const activeMode = canToggle ? mode : 'paper'
   const note = useMemo(() => {
+    if (canToggle && mode === 'text') {
+      return '这是从照片里识别出来的文字，按条款重新排过版，方便你逐条核对；识别错的地方右边字段可以直接改。'
+    }
     if (hasOriginal) return previewNoteFor(kind, { pageCount: meta.filePages })
     if (kind === 'word') return previewNoteFor('word')
     return '这是从文件里读出来的正文全文，右边的六个字段就是从这段文字里提取的。'
-  }, [hasOriginal, kind, meta.filePages])
+  }, [canToggle, mode, hasOriginal, kind, meta.filePages])
   // 空白模板、扫描不清、格式怪异，都可能读不出数字。
   // 不说清就变成「识别错了」——用户以为是产品算错，其实是合同里没有或没读到。
   const missing = [
@@ -38,16 +45,16 @@ export default function ConfirmScreen({ meta, onChangeMeta, onNext, onBack, file
         <div className="grid-confirm">
           <div className="preview">
             <div className="preview-hd">
-              <span>原文预览</span>
+              <span>{heading}</span>
               <span className="tag line">{meta.fileKind || '文本'}</span>
               <span className="sp" />
               {canToggle ? (
                 <div className="seg">
                   <button className={mode === 'paper' ? 'on' : ''} type="button" onClick={() => setMode('paper')}>
-                    原件
+                    照片
                   </button>
                   <button className={mode === 'text' ? 'on' : ''} type="button" onClick={() => setMode('text')}>
-                    识别全文
+                    识别文字
                   </button>
                 </div>
               ) : null}
@@ -59,7 +66,7 @@ export default function ConfirmScreen({ meta, onChangeMeta, onNext, onBack, file
               text={text}
               structure={structure}
               pageCount={meta.filePages}
-              mode={canToggle ? mode : 'paper'}
+              mode={activeMode}
             />
 
             <div className="preview-note">{note}</div>
