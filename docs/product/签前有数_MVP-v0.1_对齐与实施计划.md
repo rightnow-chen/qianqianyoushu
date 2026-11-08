@@ -36,17 +36,21 @@ PRD v1.2 与原型 V3 是同一套东西（5 屏 + 5 Tab 的签约前审查闭�
 
 **当前体量**：`src/` 10,436 行 JS/JSX + 2,563 行 CSS（旧版 11,952 + 9,494）。CSS 从 9,494 降到 2,563，是删旧界面的直接结果。
 
-**复跑方式**（三条命令，都不需要外部服务）：
+**复跑方式**（四条命令，都不需要外部服务）：
 
 ```bash
 cd app
-npm run build                                  # 构建
-node tests/unit/amount-engine.test.mjs         # 金额口径（连同另外 8 个单测）
-node tests/e2e/mvp-flow.mjs                    # 主路径 12 步
-node scripts/verify/mvp-walkthrough.mjs        # PRD 9.10 十二项走查
+npm run build        # 构建
+npm run lint         # ESLint
+npm run test:unit    # 9 个单测（含金额口径、映射层、规则库、法条守门）
+npm run test:e2e     # 主路径 12 步（tests/e2e/mvp-flow.mjs）
+npm run verify:mvp   # PRD 9.10 十二项走查
 ```
 
-**一条仍要记住的话**：金额是**估值**不是统计值（押金×40%、月租×2、维修 3,000）。界面已逐处标「估算」，但 PRD 9.5 仍需补一句来源说明，否则被追问时会站不住。
+**遗留两件已于 2026-11-08 处置**：
+
+1. **PRD 9.5 金额来源说明** —— 已补录到 `签前有数_PRD框架_v1.2.docx` 9.5 表后（四段：金额来源 / 表述纪律 / 口径演进 / 追溯），`docs/_prd_v12_dump.txt` 同步。改前备份见 `archive/prd-backup/`。
+2. **5 个针对旧 IA 的 Playwright 用例** —— 已移入 `app/tests/e2e-legacy/`，从默认门槛移出（`npm run test:e2e` 只跑新 IA 主路径），需要时可 `npm run test:e2e:legacy` 单独跑；其中 3 个覆盖的健壮性行为仍需在 V0.2 重写，见该目录 README。
 
 ---
 
@@ -337,6 +341,8 @@ V0.1 明确不做，写在这里是为了被否时不用重新论证：
 ---
 
 ## 12 剩余工作清单（按新顺序：4 → 6 → 5 → 0）
+
+> **状态（2026-11-08）：本清单已全部执行完毕**，保留作为验收口径索引。执行证据见 0.5 快照；两份收尾项（PRD 9.5 金额来源、旧 e2e 用例）见 0.5 末尾。
 
 每一条都写成"改哪个文件、改到什么程度"，做完就能勾。
 

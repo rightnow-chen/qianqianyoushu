@@ -18,7 +18,7 @@ export default defineConfig([
       parserOptions: { ecmaFeatures: { jsx: true } },
     },
     rules: {
-      // 合同原文里的全角空格是有意的排版（「第一条　房屋基本情况」），不是笔误
+      // 合同原文里的全角空格（U+3000）是有意的排版，不是笔误
       'no-irregular-whitespace': [
         'error',
         { skipStrings: true, skipTemplates: true, skipJSXText: true },

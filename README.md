@@ -39,21 +39,22 @@ npm run dev:full        # 前端 + 本地 AI 代理（8787），走真实模型/
 
 ```bash
 cd app
-npm run build                            # 构建通过 = 引用路径无断裂
-npm run lint                             # ESLint 零告警
-node tests/e2e/mvp-flow.mjs              # MVP 主路径 12 步（自己起静态服务器）
-node scripts/verify/mvp-walkthrough.mjs  # PRD 9.10 十二项走查
-for f in tests/unit/*.mjs; do node "$f"; done   # 全部单元测试
+npm run build        # 构建通过 = 引用路径无断裂
+npm run lint         # ESLint 零告警
+npm run test:unit    # 9 个单测（金额口径 / 映射层 / 规则库 / 法条守门）
+npm run test:e2e     # MVP 主路径 12 步（自己起静态服务器）
+npm run verify:mvp   # PRD 9.10 十二项走查
 ```
 
 测试与脚本的分工：
 
 | 位置 | 用途 | 运行方式 |
 |---|---|---|
-| `app/tests/unit/` | 纯 Node 断言测试，不启浏览器 | `node tests/unit/xxx.test.mjs` |
-| `app/tests/e2e/` | Playwright 端到端用例；`mvp-flow.mjs` 是 MVP 主路径（独立可跑） | `node tests/e2e/mvp-flow.mjs` |
+| `app/tests/unit/` | 纯 Node 断言测试，不启浏览器 | `npm run test:unit` |
+| `app/tests/e2e/` | 新 IA 的端到端主路径（`mvp-flow.mjs`，独立可跑） | `npm run test:e2e` |
+| `app/tests/e2e-legacy/` | 旧 IA 的 5 个 Playwright 用例，**不拦版本**，留着待重写 | `npm run test:e2e:legacy` |
 | `app/scripts/` | 基准评测、数据生成、真实合同跑批 | `npm run test:xxx` |
-| `app/scripts/verify/` | 一次性界面走查与截图 | `node scripts/verify/_flow1.mjs` |
+| `app/scripts/verify/` | 一次性界面走查与截图 | `npm run verify:mvp` |
 
 `scripts/verify/` 的截图统一输出到 `scripts/verify/out/`（已被 git 忽略），不会再污染工程根目录。
 
@@ -74,18 +75,19 @@ for f in tests/unit/*.mjs; do node "$f"; done   # 全部单元测试
 
 依赖方向单向：`config → lib → services → routes → ai-proxy`，无循环引用。
 
-## 当前状态（2026-11-07）
+## 当前状态（2026-11-08）
 
 **MVP v0.1 已收口**：5 屏（首页 / 上传质检 / 确认六字段 / 分析 / 工作台）+ 5 Tab（概览 / 风险 / 修改 / 话术 / 待核实），整条闭环接的是真实引擎，不是写死的演示数据。
 
 | 项 | 结果 |
 |---|---|
 | 引擎对接 | `contractReview`（50 组租赁规则）→ `riskMapper`（severity→必须改/建议确认/仅提醒、类别→金额键、句子级定位、两档话术、降级判断） |
-| 金额 | 全部由月租 / 押金 / 租期算出，界面逐处标「估算」；`amount-engine.test.mjs` 锁口径 |
+| 金额 | 全部由月租 / 押金 / 租期算出，界面逐处标「估算」；`amount-engine.test.mjs` 锁口径；PRD 9.5 已补「金额来源 / 表述纪律 / 口径演进」四段 |
 | 验收 | PRD 9.10 十二项走查 **12/12**；主路径 e2e **12 步**；9 个单测全绿；ESLint 零告警 |
 | 旧界面 | 40 个文件移入 `archive/legacy-ia/`（tag `v0.9-legacy-sidebar`），清单见 `docs/tech/弃用清单_legacy-ia.md` |
+| 旧用例 | 5 个旧 IA 的 Playwright 用例移入 `tests/e2e-legacy/`，不参与发布门槛；其中 3 个覆盖的健壮性行为需在 V0.2 重写 |
 | 体量 | `src/` 10,436 行 JS/JSX + 2,563 行 CSS（旧版 11,952 + 9,494） |
 
 **V0.2 待接**：修订版/批注版 docx 导出（`utils/docxExport.js` 已就位未接）、口头承诺录入、合同内外一致性核对、修改后复查。
 
-**仍待处理**：`tests/e2e/` 下另有 5 个 spec 针对旧流程，目前不作为门槛；`app/generated-reports/` 与 `real-contract-samples/` 可并入 `tests/fixtures/`。
+**仍待处理**：`real-contract-samples/` 可并入 `tests/fixtures/`；`scripts/verify/` 下 `_flow1–6`、`verify-decision/negotiation/takeaway/no-evidence` 是针对旧流程的一次性脚本，确认无用后可整体移入 `archive/`。

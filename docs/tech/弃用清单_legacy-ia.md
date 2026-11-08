@@ -72,6 +72,20 @@ MVP v0.1 是「一条直线」：上传 → 质检 → 确认六字段 → 审�
 
 `tests/unit/` 下 `assistant-ui`、`decision-ui`、`negotiation-ui`、`review-ui`、`sidebar-order`、`topbar-ui`、`proposal-entry`、`review-quality-ui`、`review-audit`、`contract-layout` 十个用例，断言的是已退场的 UI 契约，随模块一起移出。
 
+`package.json` 里对应的 6 条脚本（`test:review-quality-ui`、`test:review-audit`、`test:review-ui`、`test:negotiation-ui`、`test:decision-ui`、`test:assistant-ui`、`test:topbar-ui` 中指向已删文件的部分）已于 2026-11-08 清掉，并补上 `test:unit` / `test:e2e` / `verify:mvp` 三条真有落点的入口。
+
+### 旧 IA 的 Playwright 用例（5，**未删除**，移到 `app/tests/e2e-legacy/`）
+
+| 文件 | 断言的是 | 处理 |
+|---|---|---|
+| `app.spec.js` | docx 上传 → 使用总览 → 导出 | 移出默认门槛；V0.2 按新 5 屏重写 |
+| `apply-all-review.spec.js` | 一键应用全部改写后复查 | 同上（新 IA 只有逐条采纳） |
+| `ai-review-failure.spec.js` | 模型输出截断 / JSON 破损兜底 | 移出默认门槛；**行为仍需守住**，对应新 IA 的降级三档 |
+| `module-navigation.spec.js` | 提案路由跳「补贴匹配」 | 模块已退场，确认后可直接删 |
+| `resilience.spec.js` | `?module=checkin` 分享链接恢复「入住验房」 | 同上，对应物是 `#work?tab=…&active=…` 深链 |
+
+它们单独用 `playwright.legacy.config.js` 运行（`npm run test:e2e:legacy`），不参与 `npm run test:e2e`（该命令只跑新 IA 主路径 `tests/e2e/mvp-flow.mjs` 12 步）。
+
 ## 没有退场、且必须继续保留的能力
 
 | 能力 | 文件 | 为什么留 |

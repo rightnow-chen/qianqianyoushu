@@ -15,9 +15,11 @@ child.stdout.on('data', (chunk) => { output += chunk.toString() })
 child.stderr.on('data', (chunk) => { output += chunk.toString() })
 
 await new Promise((resolve, reject) => {
-  const timer = setTimeout(() => reject(new Error(`proxy did not start: ${output}`)), 5000)
-  child.stdout.on('data', (chunk) => {
-    if (chunk.toString().includes('AI proxy listening')) {
+  // Windows 冷启动（首次加载 express/pdfjs 等）可能超过 5 秒，留足余量避免假失败
+  const timer = setTimeout(() => reject(new Error(`proxy did not start: ${output}`)), 20000)
+  // 用累积输出判断，避免启动日志被拆成多个 chunk 时漏判
+  child.stdout.on('data', () => {
+    if (output.includes('AI proxy listening')) {
       clearTimeout(timer)
       resolve()
     }
