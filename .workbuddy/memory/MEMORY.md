@@ -50,5 +50,8 @@
 - **产品决策（2026-11-08）**：**城市参数不做**——用户明确「现在没有那个能力，后续迭代再看」。武汉只作为法条核实的口径提醒，不进规则库结构。V0.2 剩余：口头承诺录入、合同内外一致性核对、修改后复查。
 - **PDF 解析必须用 `pdfjs-dist/legacy/build/*`（2026-11-08 用户实测报错后定）**：pdfjs-dist@6.2 标准构建依赖 `Uint8Array.prototype.toHex`（Chrome 133+ 原生才有），旧内核（360/QQ/微信内置/旧 Edge）上传 PDF 直接报 `hashOriginal.toHex is not a function`。legacy 构建自带 polyfill，worker 1.6MB→2.4MB。改动被 `tests/unit/contract-import.test.mjs` 第 5–7 组钉死（源码 / node_modules / dist 三处），别为省体积改回去。同批还加了 `ContractImportError`（底层异常只进 console，UI 只出中文人话）与扫描件 PDF 拦截（正文 <30 字提示走拍照 OCR）。
 - **构建顺序坑**：`vite preview` 正在服务 `dist` 时 `vite build` 会失败（清 `dist/assets` 被 safe-delete shim 拦住）。先停 preview → `rm -rf dist` → build → 再起 preview。
+- **金额提取口径（2026-11-08 修）**：`AMOUNT_RE` 必须写成 `\d[\d,]*`（合同普遍写 `4,500 元`，用 `\d+` 会读成 500）；「万元」要换算成元。`metaFromFacts` 返回 rent/deposit/months，读不到就是 0，确认页会黄底高亮要求手填——不要用默认值假装读到了。
+- **确认页预览**：左侧预览必须来自 `session.rawFile`（PDF 渲染真实页面 / 图片原图 / Word 走 mammoth structure / TXT 全文），禁止再写死示例合同。判断依据在 `features/filePreview.js#previewKindOf`。
+- **静态服务器**：`.mjs` 必须返回 `text/javascript`（pdf.js worker 是 .mjs），漏了会表现为「上传 PDF 后完全没反应」。`tests/e2e/mvp-flow.mjs` 的 MIME 表已补，线上部署同样要查。
 - **质检页语义按来源分派（2026-11-08 commit 50c5179，产品规则）**：「识别率 / 反光 / 重拍 / 置信度」只对拍照 OCR 成立；PDF / Word 走「文字来源：自带文字层，逐字提取，不经过 OCR」+ 一段提取预览（用来发现多栏串行）；TXT 不编页数；逐页缩略图只在拍照或有坏页时显示。规则在 `src/features/uploadQuality.js`，被 `tests/unit/upload-quality.test.mjs` 钉死（PDF/纯文本两组断言不出现那四个词）。用户原话：「直接上传 PDF 为什么会有识别率，只有拍照才需要质检吧」。
 - **危险习惯**：WorkBuddy 的 safe-delete shim 曾连带删掉 `deliverables/test-kits/` 下 16 个已跟踪文件（非主动操作）。**每次 rm 之后立刻 `git status --short` 复查**，发现 ` D` 就 `git checkout -- <path>` 恢复。

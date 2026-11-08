@@ -11,13 +11,17 @@ import { chromium } from 'playwright'
 const here = path.dirname(fileURLToPath(import.meta.url))
 const dist = path.resolve(here, '../../dist')
 const sample = path.resolve(here, '../../real-contract-samples/sample-landlord-self-drafted.txt')
+const pdfSample = path.resolve(here, '../../public/dataset/rental-contracts/qhd-2025-rental-contract.pdf')
 
 assert.ok(fs.existsSync(path.join(dist, 'index.html')), '先跑 npm run build，dist 里没有产物')
 assert.ok(fs.existsSync(sample), '缺真实合同样本')
+assert.ok(fs.existsSync(pdfSample), '缺 PDF 样本')
 
 const MIME = {
   '.html': 'text/html; charset=utf-8',
   '.js': 'text/javascript; charset=utf-8',
+  // PDF 的 worker 是 .mjs；漏了这一条，pdf.js 会静默失败（上传后什么都不发生）
+  '.mjs': 'text/javascript; charset=utf-8',
   '.css': 'text/css; charset=utf-8',
   '.svg': 'image/svg+xml',
   '.png': 'image/png',
@@ -87,13 +91,24 @@ try {
 
   // 3. 带瑕疵也允许继续 → 确认页六字段
   await page.locator('button.btn.primary').first().click()
-  await page.waitForTimeout(500)
+  await page.waitForTimeout(800)
   const rents = page.locator('input[inputmode=numeric], input[type=number]')
   const rentValue = Number(await rents.nth(0).inputValue())
   const depositValue = Number(await rents.nth(2).inputValue())
   assert.ok(rentValue > 0, `月租应从合同里抽出来，实际是 ${rentValue}`)
   assert.ok(depositValue > 0, `押金应从合同里抽出来，实际是 ${depositValue}`)
-  step('确认六字段（合同抽取生效）')
+
+  // 预览必须是这份文件的内容：以前这里写死了一份示例合同，传什么都长一样
+  const previewText = await page.locator('.preview').innerText()
+  assert.ok(!previewText.includes('建国路 88 号'), '确认页不能显示写死的示例合同')
+  assert.ok(previewText.includes('押金'), '确认页应显示上传合同的实际内容')
+
+  // 数字不许被输入框裁掉：13500 曾显示成 600，看起来就像「识别错了」
+  const clipped = await page.evaluate(() =>
+    [...document.querySelectorAll('.field input')].filter((input) => input.scrollWidth > input.clientWidth + 1).length,
+  )
+  assert.equal(clipped, 0, `有 ${clipped} 个金额输入框装不下数字`)
+  step('确认六字段（合同抽取生效、预览是原件）')
 
   // 4. 改月租，验证金额联动
   await rents.nth(0).fill('3000')
@@ -223,6 +238,48 @@ try {
   await mobile.screenshot({ path: path.resolve(here, 'out/mobile-work.png') })
   await mobile.close()
   step('手机形态 390px')
+
+  // 15. 上传 PDF：确认页左侧要渲染原件（canvas），不是一段文字
+  // 单独开一个 context：主流程那个页面已经走过导出，带着一堆状态，容易互相干扰
+  const pdfContext = await browser.newContext({ viewport: { width: 1280, height: 900 } })
+  const pdfPage = await pdfContext.newPage()
+  await pdfPage.goto(BASE, { waitUntil: 'networkidle' })
+  await pdfPage.setInputFiles('input[type=file]', pdfSample)
+  // 22 页的 PDF 解析要看机器脸色，等状态而不是等时间
+  const uploaded = await pdfPage
+    .waitForFunction(() => location.hash.includes('upload'), null, { timeout: 30000 })
+    .then(() => true)
+    .catch(async () => {
+      console.error('[debug] hash:', await pdfPage.evaluate(() => location.hash))
+      console.error('[debug] toast:', await pdfPage.locator('.toast').innerText().catch(() => '(无)'))
+      console.error('[debug] inputs:', await pdfPage.locator('input[type=file]').count())
+      return false
+    })
+  assert.ok(uploaded, 'PDF 应能上传成功并进入质检页')
+  await pdfPage.locator('button.btn.primary').first().click()
+  await pdfPage.waitForSelector('canvas.pdf-canvas', { timeout: 15000 })
+  await pdfPage.waitForFunction(
+    () => {
+      const canvas = document.querySelector('canvas.pdf-canvas')
+      return canvas && canvas.width > 100
+    },
+    null,
+    { timeout: 20000 },
+  )
+  const drawn = await pdfPage.evaluate(() => {
+    const canvas = document.querySelector('canvas.pdf-canvas')
+    if (!canvas) return 0
+    const data = canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height).data
+    let ink = 0
+    for (let i = 0; i < data.length; i += 4 * 97) if (data[i] < 200) ink += 1
+    return ink
+  })
+  assert.ok(drawn > 20, 'PDF 画布应该是真的画上内容了，不是一块白板')
+  assert.equal(await pdfPage.locator('canvas.pdf-canvas').count(), 1, 'PDF 只能有一个画布')
+  assert.equal(await pdfPage.locator('.preview-hd .seg button').count(), 2, 'PDF 应能切换「原件 / 识别全文」')
+  await pdfPage.close()
+  await pdfContext.close()
+  step('PDF 确认页渲染原件')
 
   assert.deepEqual(errors, [], `页面报错：${errors.join(' | ')}`)
   console.log(`\nMVP 主路径 e2e 通过（${steps.length} 步）：`)

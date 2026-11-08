@@ -1,0 +1,95 @@
+/**
+ * 确认页左侧「原文预览」的数据源。
+ *
+ * 原则：能显示原件就显示原件，不能显示原件就说清为什么。
+ * - PDF：交给 pdf.js 渲染成图片，就是用户上传的那一页（能看出印章、表格、排版）
+ * - 图片：直接显示原图
+ * - Word：浏览器无法还原 Word 排版，退而渲染最接近原文层级的标题/段落/列表
+ * - TXT / 粘贴：没有版式，显示提取文本
+ *
+ * 之前这一栏是写死的示例合同，跟用户传什么文件无关——这是 bug，不是设计。
+ */
+
+const PDF_EXTENSIONS = ['pdf']
+const IMAGE_EXTENSIONS = ['png', 'jpg', 'jpeg', 'webp', 'bmp', 'gif', 'heic']
+
+function extensionOf(fileName = '') {
+  return String(fileName).split('.').pop()?.toLowerCase() || ''
+}
+
+/**
+ * @param {{ fileName?: string, source?: string, mime?: string }} input
+ * @returns {'pdf'|'image'|'word'|'text'}
+ */
+export function previewKindOf({ fileName = '', source = '', mime = '' } = {}) {
+  const extension = extensionOf(fileName)
+  if (PDF_EXTENSIONS.includes(extension) || source === 'PDF') return 'pdf'
+  if (IMAGE_EXTENSIONS.includes(extension) || String(mime).startsWith('image/')) return 'image'
+  if (source === 'Word' || ['docx', 'doc'].includes(extension)) return 'word'
+  return 'text'
+}
+
+/** 每种来源都要有一句实话：为什么这里不是「原件」。 */
+export function previewNoteFor(kind, { pageCount = 0 } = {}) {
+  if (kind === 'pdf') {
+    return pageCount > 1
+      ? `这是你上传的 PDF 原件，共 ${pageCount} 页，可以翻页对照。右边六个字段都是从这份文件里读出来的。`
+      : '这是你上传的 PDF 原件。右边六个字段都是从这份文件里读出来的。'
+  }
+  if (kind === 'image') {
+    return '这是你上传的原图。文字是从这张图识别出来的，识别有误的地方右边可以直接改。'
+  }
+  if (kind === 'word') {
+    return 'Word 的字体、页边距这类排版在浏览器里无法还原，这里按原文的标题和段落层级显示，文字内容与文件一致。'
+  }
+  return '文本文件没有版式，这里显示的是提取出来的正文全文。'
+}
+
+/**
+ * 打开 PDF 并返回渲染句柄。同一个文件只解析一次，翻页时复用。
+ * 用 legacy 构建的理由与 fileImport.js 相同：标准构建在旧内核里会直接抛异常。
+ */
+export async function openPdfPreview(file) {
+  const [{ default: workerUrl }, pdfjsLib] = await Promise.all([
+    import('pdfjs-dist/legacy/build/pdf.worker.mjs?url'),
+    import('pdfjs-dist/legacy/build/pdf.mjs'),
+  ])
+  pdfjsLib.GlobalWorkerOptions.workerSrc = workerUrl
+
+  const buffer = await file.arrayBuffer()
+  const pdf = await pdfjsLib.getDocument({ data: buffer }).promise
+
+  return {
+    numPages: pdf.numPages,
+    async render(pageNumber, canvas, maxWidth = 560) {
+      const page = await pdf.getPage(pageNumber)
+      const base = page.getViewport({ scale: 1 })
+      // 上限 2 倍：再高只是浪费内存，屏幕上分辨不出来
+      const scale = Math.min(maxWidth / base.width, 2)
+      const viewport = page.getViewport({ scale })
+      const ratio = Math.min(window.devicePixelRatio || 1, 2)
+
+      canvas.width = Math.floor(viewport.width * ratio)
+      canvas.height = Math.floor(viewport.height * ratio)
+      canvas.style.width = `${Math.floor(viewport.width)}px`
+      canvas.style.height = `${Math.floor(viewport.height)}px`
+
+      const context = canvas.getContext('2d')
+      context.save()
+      context.scale(ratio, ratio)
+      // 白底：PDF 背景透明时，深色模式下不铺白会看不清黑字
+      context.fillStyle = '#ffffff'
+      context.fillRect(0, 0, viewport.width, viewport.height)
+      await page.render({ canvasContext: context, viewport }).promise
+      context.restore()
+    },
+    destroy() {
+      pdf.destroy()
+    },
+  }
+}
+
+/** 图片预览用的临时 URL，组件卸载时要 revoke。 */
+export function createImageUrl(file) {
+  return URL.createObjectURL(file)
+}

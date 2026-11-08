@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict'
 import { extractContractFacts } from '../../src/features/contractFacts.js'
+import { metaFromFacts } from '../../src/features/riskMapper.js'
 import { createAiReviewPrompt } from '../../src/features/aiAssistant.js'
 
 const text = `房屋租赁合同
@@ -60,5 +61,19 @@ assert.ok(qualityFacts.qualityWarnings.some((item) => item.type === 'ocr_suspect
 const conflictPrompt = createAiReviewPrompt(`${conflictText}\n金额�待确认`, { contractType: 'lease', reviewDepth: 'strict' })
 assert.match(conflictPrompt, /事实冲突：/)
 assert.match(conflictPrompt, /质量警告：/)
+
+// 金额必须容忍千分位与「万元」：正式合同写「4,500 元」是常态，
+// 曾经只用 \d+ 匹配，4,500 被读成 500、13,500 被读成 500，确认页看起来就像「识别错了」。
+const moneyText = `第三条 租金。房屋月租金为人民币 4,500 元（大写：肆仟伍佰元整）。
+第四条 押金。乙方应支付押金人民币 13,500 元。
+第五条 其他。年租金 5.4 万元的情形另议。`
+const moneyFacts = extractContractFacts(moneyText)
+const moneyValue = (key) => moneyFacts.amounts.find((item) => item.key === key)?.value
+assert.equal(moneyValue('月租金'), 4500, '千分位月租应读成 4500')
+assert.equal(moneyValue('押金'), 13500, '千分位押金应读成 13500')
+assert.equal(moneyValue('租金'), 54000, '「5.4 万元」应换算成 54000')
+const moneyMeta = metaFromFacts(moneyFacts)
+assert.equal(moneyMeta.rent, 4500)
+assert.equal(moneyMeta.deposit, 13500)
 
 console.log('contract-facts passed: clauses, locations, amounts, dates, terms and references')

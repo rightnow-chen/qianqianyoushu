@@ -73,6 +73,8 @@ const EMPTY_SESSION = {
   meta: DEMO_META,
   facts: null,
   quality: DEMO_QUALITY,
+  rawFile: null, // 原始文件，确认页要拿它渲染 PDF 原件 / 原图
+  structure: null, // Word 的段落层级，用来还原「接近原件」的排版
   risks: [],
   findings: [],
   degradation: null,
@@ -191,6 +193,8 @@ export default function App() {
           fileText: text,
           source: result.source || result.type || '文本',
           confidence: result.confidence ?? null,
+          rawFile: file,
+          structure: Array.isArray(result.structure) ? result.structure : null,
           facts,
           quality: qualityForFile({
             text,
@@ -205,6 +209,7 @@ export default function App() {
             filePages: pagesCount,
             fileKind: (file.name.split('.').pop() || '').toUpperCase(),
             fileNote: `${result.source || '文件'} · 已脱敏`,
+            source: result.source || '文件',
             type: looksLikeLease(text) ? '房屋租赁合同' : '疑似非租赁合同',
             city: '待确认',
             rent: extracted.rent ?? 0,
@@ -273,7 +278,14 @@ export default function App() {
   }, [go, toast])
 
   const loadDemo = useCallback(() => {
-    setSession({ ...EMPTY_SESSION, kind: 'demo', fileName: DEMO_META.fileName, risks: DEMO_RISKS })
+    setSession({
+      ...EMPTY_SESSION,
+      kind: 'demo',
+      fileName: DEMO_META.fileName,
+      fileText: getContractText(DEMO_PAGES),
+      source: '演示数据',
+      risks: DEMO_RISKS,
+    })
     setChecks(DEMO_CHECKS)
     track('upload_success', { source: 'demo' })
     go('work', { tab: 'ov', demo: true })
@@ -429,6 +441,9 @@ export default function App() {
         <ConfirmScreen
           meta={meta}
           onChangeMeta={changeMeta}
+          file={session.rawFile}
+          text={session.fileText}
+          structure={session.structure}
           onNext={() => {
             go('analyzing')
             if (!isDemo) runAnalysis()

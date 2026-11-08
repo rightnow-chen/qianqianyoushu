@@ -744,6 +744,65 @@
   font-weight: 700;
   text-indent: 0;
 }
+/* 纯文本 / 粘贴的合同：保留原有换行，不假装是排版好的纸 */
+.mini-paper .mp-plain {
+  white-space: pre-wrap;
+  font-family: var(--serif);
+  font-size: 12.5px;
+  line-height: 1.95;
+  text-indent: 0;
+}
+.mini-paper .mp-li {
+  text-indent: 0;
+  padding-left: 1.2em;
+}
+.mini-paper .mp-table {
+  margin: 6px 0;
+  padding: 8px 10px;
+  background: #fff;
+  border: 1px solid var(--paperline);
+  border-radius: 4px;
+  font-family: var(--mono, ui-monospace, monospace);
+  font-size: 11px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
+/* PDF 原件：渲染出来就是用户上传的那一页 */
+/* 确认页的预览要比别处高：这一屏就是用来核对原文的，露三行等于没露 */
+.preview .mini-paper {
+  max-height: 560px;
+}
+.pdf-preview {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  max-height: 560px;
+  overflow: auto;
+}
+.pdf-canvas {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border: 1px solid var(--paperline);
+  border-radius: 4px;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(20, 30, 50, 0.08);
+}
+.pdf-pager {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11.5px;
+  color: var(--ink3);
+}
+.preview-note {
+  margin-top: 9px;
+  font-size: 11px;
+  line-height: 1.7;
+  color: var(--ink4);
+}
 .field-row {
   display: flex;
   flex-wrap: wrap;
@@ -773,11 +832,34 @@
   font-weight: 500;
   color: var(--ink);
 }
+/* 数字框必须给足宽度且不许被 flex 压缩：
+   之前 64px + flex-shrink:1，5 位数会被挤到只剩右边几位（13500 显示成 600），
+   看起来就像「识别错了」。 */
 .field input {
-  width: 64px;
+  width: 80px;
+  flex: 0 0 auto;
+  text-align: left;
+  font-variant-numeric: tabular-nums;
 }
-.field input.narrow {
-  width: 30px;
+.field input[type='number'] {
+  /* Firefox / Safari 会用内容宽度重排，显式补一次 */
+  min-width: 80px;
+}
+.field .unit {
+  flex: 0 0 auto;
+  color: var(--ink4);
+  font-size: 11px;
+}
+/* 没读到的字段要看得出来：否则用户会以为「识别错了」，其实是合同里没有 */
+.field.needs-value {
+  border-color: #e8c675;
+  background: #fffdf4;
+}
+.field.needs-value .k {
+  color: #a9761a;
+}
+.hint-warn {
+  color: #8a6414;
 }
 .scope-grid {
   display: grid;

@@ -2,7 +2,9 @@ import { tidyContractText } from '../utils/text.js'
 
 const CLAUSE_HEADER_RE = /^(第\s*([一二三四五六七八九十百千万零\d]+)\s*条|([一二三四五六七八九十百千万零]+)\s*[、.]|[（(]\s*([一二三四五六七八九十百千万零\d]+)\s*[)）]|(\d+)\s*[、.)])\s*/
 const DATE_RE = /\d{4}\s*(?:年|[./-])\s*\d{1,2}\s*(?:月|[./-])\s*\d{1,2}\s*日?/g
-const AMOUNT_RE = /(?:人民币|￥|¥)?\s*\d+(?:\.\d+)?\s*(?:万元|元|%)/g
+// 金额必须容忍千分位：正式合同写「4,500 元」是常态，
+// 用 \d+ 去配会把 4,500 读成 500、13,500 读成 500 —— 金额直接差两个数量级。
+const AMOUNT_RE = /(?:人民币|￥|¥)?\s*\d[\d,]*(?:\.\d+)?\s*(?:万元|元|%)/g
 const TERM_RE = /\d+\s*(?:个?月|日内|个?工作日|小时|天)/g
 const ARTICLE_REF_RE = /第\s*([一二三四五六七八九十百千万零\d]+)\s*条/g
 const DEFINITION_RE = /(?:本合同(?:中|所)?(?:所称|称)|以下简称)\s*[“"「]?([^”"」：:，,。；;\s]+)[”"」]?\s*(?:是指|指|为|有效)?/g
@@ -73,9 +75,12 @@ export function extractContractFacts(inputText) {
     const sentenceStart = Math.max(text.lastIndexOf('。', match.index - 1), text.lastIndexOf('；', match.index - 1), text.lastIndexOf('\n', match.index - 1)) + 1
     const context = text.slice(sentenceStart, match.index)
     const labels = [...context.matchAll(FACT_LABEL_RE)]
+    const digits = Number(match[0].replace(/[^\d.]/g, ''))
+    // 「1.2 万元」要换算成 12000；百分比保持原值（5 就是 5%）
+    const value = /万元/.test(match[0]) ? digits * 10000 : digits
     return {
       raw: match[0].replace(/\s+/g, ''),
-      value: Number(match[0].replace(/[^\d.]/g, '')) || null,
+      value: Number.isFinite(value) && value !== 0 ? value : null,
       key: labels.at(-1)?.[1] || null,
       clauseId: clauseForOffset(match.index),
     }
