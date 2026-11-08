@@ -75,6 +75,18 @@ npm run verify:mvp   # PRD 9.10 十二项走查
 
 依赖方向单向：`config → lib → services → routes → ai-proxy`，无循环引用。
 
+## 踩过的坑（不要改回去）
+
+### PDF 解析必须用 `pdfjs-dist` 的 legacy 构建
+
+- **现象**：上传 PDF 时弹一句英文 `hashOriginal.toHex is not a function`，文件完全传不上去。
+- **原因**：`pdfjs-dist` 6.x 的**标准构建**在 worker 里调用 `Uint8Array.prototype.toHex`——ES2026 的新方法，Chrome / Edge 要到 133 才原生支持。360、QQ、微信内置浏览器和旧版 Edge 的 Chromium 内核普遍低于这个版本，于是第一步计算文档指纹就崩了。标准构建里**没有任何 polyfill**。
+- **修法**：`src/utils/fileImport.js` 引 `pdfjs-dist/legacy/build/pdf.worker.mjs` 与 `pdfjs-dist/legacy/build/pdf.mjs`。legacy 构建自带 full polyfill（`Uint8Array.prototype.toHex` / `fromHex`），代码一行不用改，代价是 worker 从 1.6MB 涨到约 2.4MB。
+- **守门**：`tests/unit/contract-import.test.mjs` 第 5–7 组分别断言源码引用、`node_modules` 里的 legacy worker、`dist` 构建产物三处都不能退回标准构建。哪天 pdfjs 官方补上 polyfill，第 6 组会打印提示，那时才考虑切回。
+- **顺带修的两件**：
+  - 底层解析库抛出的技术异常不再直接进 UI，一律收敛成中文提示（`ContractImportError`），原始异常只写控制台。
+  - 扫描件 PDF 没有文字层，抽出的正文不足 30 个汉字/字母时直接提示改用拍照上传走 OCR，不再让一份空合同走到确认页。
+
 ## 当前状态（2026-11-08）
 
 **MVP v0.1 已收口**：5 屏（首页 / 上传质检 / 确认六字段 / 分析 / 工作台）+ 5 Tab（概览 / 风险 / 修改 / 话术 / 待核实），整条闭环接的是真实引擎，不是写死的演示数据。
@@ -83,7 +95,7 @@ npm run verify:mvp   # PRD 9.10 十二项走查
 |---|---|
 | 引擎对接 | `contractReview`（50 组租赁规则）→ `riskMapper`（severity→必须改/建议确认/仅提醒、类别→金额键、句子级定位、两档话术、降级判断） |
 | 金额 | 全部由月租 / 押金 / 租期算出，界面逐处标「估算」；`amount-engine.test.mjs` 锁口径；PRD 9.5 已补「金额来源 / 表述纪律 / 口径演进」四段 |
-| 验收 | PRD 9.10 十二项走查 **12/12**；主路径 e2e **14 步**（含两份 docx 真实下载并解包断言）；10 个单测全绿；ESLint 零告警 |
+| 验收 | PRD 9.10 十二项走查 **12/12**；主路径 e2e **14 步**（含两份 docx 真实下载并解包断言）；11 个单测全绿；ESLint 零告警 |
 | 导出 | 审查报告（打印成 PDF）、**合同修订版 docx**（已采纳的修改标红 + 文末修改清单）、**合同批注版 docx**（Word 原生批注挂原句，正文一字未改）、只复制文字 |
 | 旧界面 | 40 个文件移入 `archive/legacy-ia/`（tag `v0.9-legacy-sidebar`），清单见 `docs/tech/弃用清单_legacy-ia.md` |
 | 旧用例 | 5 个旧 IA 的 Playwright 用例移入 `tests/e2e-legacy/`，不参与发布门槛；其中 3 个覆盖的健壮性行为需在 V0.2 重写 |

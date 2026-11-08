@@ -18,7 +18,7 @@
     "test:e2e": "node tests/e2e/mvp-flow.mjs",
     "test:e2e:legacy": "npm run clean && playwright test --config=playwright.legacy.config.js",
     "verify:mvp": "node scripts/verify/mvp-walkthrough.mjs",
-    "test:unit": "node tests/unit/risk-mapper.test.mjs && node tests/unit/amount-engine.test.mjs && node tests/unit/contract-docx.test.mjs && node tests/unit/contract-facts.test.mjs && node tests/unit/contract-review-playbook.test.mjs && node tests/unit/contract-review-playbook-cases.test.mjs && node tests/unit/legal-basis.test.mjs && node tests/unit/ai-review-reliability.test.mjs && node tests/unit/ai-chat-request.test.mjs && node tests/unit/ai-proxy-lifecycle.test.mjs",
+    "test:unit": "node tests/unit/risk-mapper.test.mjs && node tests/unit/amount-engine.test.mjs && node tests/unit/contract-docx.test.mjs && node tests/unit/contract-import.test.mjs && node tests/unit/contract-facts.test.mjs && node tests/unit/contract-review-playbook.test.mjs && node tests/unit/contract-review-playbook-cases.test.mjs && node tests/unit/legal-basis.test.mjs && node tests/unit/ai-review-reliability.test.mjs && node tests/unit/ai-chat-request.test.mjs && node tests/unit/ai-proxy-lifecycle.test.mjs",
     "test:contract-review-benchmark": "node scripts/test-contract-review-benchmark.mjs",
     "test:review-reliability": "node tests/unit/ai-review-reliability.test.mjs && node tests/unit/ai-chat-request.test.mjs",
     "test:contract-review-playbook": "node tests/unit/contract-review-playbook.test.mjs",
