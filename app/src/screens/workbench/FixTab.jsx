@@ -183,7 +183,11 @@ export default function FixTab({
             <span>{done[risk.id] ? '已处理' : '标记已处理'}</span>
           </button>
           <span className="sp" />
-          <button className="btn sm" type="button" onClick={() => onToast('演示：为这一句生成 Word 批注，随批注版导出')}>
+          <button
+            className="btn sm"
+            type="button"
+            onClick={() => onToast('导出「批注版」时，这条会作为 Word 批注挂在这句话上')}
+          >
             添加批注
           </button>
           <button

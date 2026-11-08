@@ -102,11 +102,11 @@ MVP v0.1 是「一条直线」：上传 → 质检 → 确认六字段 → 审�
 
 | 文件 | 行数 | 状态 | 用途 |
 |---|---|---|---|
-| `src/utils/docxExport.js` | 200 | 未接入 | V0.2「导出合同原文（修订版 / 批注版）」要用它生成 docx；菜单项已就位并标灰 |
+| `src/utils/docxExport.js` | 200 | **已接入（2026-11-08）** | `downloadBlob` 被 `App.handleExport` 复用；`buildContractDocxBlob` / `buildTextReportDocxBlob` 仍是普通文本排版，修订版/批注版的逻辑在 `features/contractDocx.js` |
 | `src/utils/contractOcrReview.js` | — | 未接入 | 客户端图片预处理 + OCR 兜底，服务端不可用时才会用 |
 | `src/utils/imageTools.js` | 53 | 未接入 | 图片压缩/纠偏，供上面那个文件使用 |
 
-这三个不是垃圾，是 V0.2 的地基；但**现在确实没有任何代码 import 它们**。要么在 V0.2 接上，要么到时候一起搬进 `archive/`，不要长期悬着。
+`contractOcrReview.js` 与 `imageTools.js` 不是垃圾，是「断网也能用」的地基；但**现在确实没有任何代码 import 它们**。要么在下一版接上，要么到时候一起搬进 `archive/`，不要长期悬着。
 
 ## 复原方法
 

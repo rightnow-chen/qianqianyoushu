@@ -38,6 +38,26 @@ const BASE = `http://127.0.0.1:${PORT}`
 const steps = []
 const step = (name) => steps.push(name)
 
+/** 点开「导出」菜单 → 选一项 → 等真实下载，返回文件内容。 */
+async function exportContract(page, label) {
+  await page.locator('.export-wrap button').first().click()
+  await page.waitForTimeout(200)
+  const item = page.locator('.menu-item', { hasText: label }).first()
+  assert.ok(await item.count(), `导出菜单里应有「${label}」`)
+  const [download] = await Promise.all([page.waitForEvent('download', { timeout: 20000 }), item.click()])
+  const file = await download.path()
+  assert.ok(file, `「${label}」没有产生下载文件`)
+  return fs.readFileSync(file)
+}
+
+/** 读 docx（zip）里的某个部件，用于断言真的写进了批注/修订。 */
+async function readDocxPart(buf, name) {
+  const JSZip = (await import('jszip')).default
+  const zip = await JSZip.loadAsync(buf)
+  const file = zip.file(name)
+  return file ? file.async('string') : null
+}
+
 const browser = await chromium.launch()
 const context = await browser.newContext({
   viewport: { width: 1440, height: 900 },
@@ -169,13 +189,31 @@ try {
   assert.ok((await events()).includes('checklist_copy'), '复制清单应记 checklist_copy')
   step('待核实勾选与一键成文')
 
-  // 11. 演示入口带标识
+  // 11. 导出修订版：必须真的下载出一个 docx，且正文里已经换成建议文本
+  const revisionBuf = await exportContract(page, '修订版')
+  const revisionBody = await readDocxPart(revisionBuf, 'word/document.xml')
+  assert.ok(revisionBody?.includes('<w:document'), '修订版 docx 里应有 document.xml')
+  assert.ok(!revisionBody.includes('commentReference'), '修订版不该带批注')
+  assert.ok(revisionBody.length > 2000, '修订版正文不该是空的')
+  assert.ok(revisionBody.includes('修改清单'), '修订版文末要有修改清单')
+  assert.ok(revisionBody.includes('红色下划线'), '修订版要说明标红含义')
+  step('导出修订版 docx')
+
+  // 12. 导出批注版：原文不动，Word 原生批注挂上去
+  const commentBuf = await exportContract(page, '批注版')
+  const commentsXml = await readDocxPart(commentBuf, 'word/comments.xml')
+  const commentBody = await readDocxPart(commentBuf, 'word/document.xml')
+  assert.ok(commentsXml?.includes('w:comment'), '批注版必须写出 comments.xml')
+  assert.ok(commentBody?.includes('commentReference'), '批注版正文要挂批注引用')
+  step('导出批注版 docx')
+
+  // 13. 演示入口带标识
   await page.goto(`${BASE}/#work?demo=1&tab=ov`, { waitUntil: 'load' })
   await page.waitForTimeout(900)
   assert.ok((await text()).includes('演示数据'), '演示模式必须有「演示数据」标识')
   step('演示入口标识')
 
-  // 12. 手机形态：390 宽不出横向滚动
+  // 14. 手机形态：390 宽不出横向滚动
   const mobile = await context.newPage()
   await mobile.setViewportSize({ width: 390, height: 844 })
   await mobile.goto(`${BASE}/#work?demo=1&m=1&tab=ov`, { waitUntil: 'load' })

@@ -83,11 +83,14 @@ npm run verify:mvp   # PRD 9.10 十二项走查
 |---|---|
 | 引擎对接 | `contractReview`（50 组租赁规则）→ `riskMapper`（severity→必须改/建议确认/仅提醒、类别→金额键、句子级定位、两档话术、降级判断） |
 | 金额 | 全部由月租 / 押金 / 租期算出，界面逐处标「估算」；`amount-engine.test.mjs` 锁口径；PRD 9.5 已补「金额来源 / 表述纪律 / 口径演进」四段 |
-| 验收 | PRD 9.10 十二项走查 **12/12**；主路径 e2e **12 步**；9 个单测全绿；ESLint 零告警 |
+| 验收 | PRD 9.10 十二项走查 **12/12**；主路径 e2e **14 步**（含两份 docx 真实下载并解包断言）；10 个单测全绿；ESLint 零告警 |
+| 导出 | 审查报告（打印成 PDF）、**合同修订版 docx**（已采纳的修改标红 + 文末修改清单）、**合同批注版 docx**（Word 原生批注挂原句，正文一字未改）、只复制文字 |
 | 旧界面 | 40 个文件移入 `archive/legacy-ia/`（tag `v0.9-legacy-sidebar`），清单见 `docs/tech/弃用清单_legacy-ia.md` |
 | 旧用例 | 5 个旧 IA 的 Playwright 用例移入 `tests/e2e-legacy/`，不参与发布门槛；其中 3 个覆盖的健壮性行为需在 V0.2 重写 |
 | 体量 | `src/` 10,436 行 JS/JSX + 2,563 行 CSS（旧版 11,952 + 9,494） |
 
-**V0.2 待接**：修订版/批注版 docx 导出（`utils/docxExport.js` 已就位未接）、口头承诺录入、合同内外一致性核对、修改后复查。
+**V0.2 已完成**：修订版 / 批注版 docx 导出（`features/contractDocx.js`）。样张可直接打开检查：`node scripts/export-sample-docx.mjs` → `generated-reports/contract-docx/`。
+
+**V0.2 待接**：口头承诺录入、合同内外一致性核对、修改后复查。
 
 **仍待处理**：`real-contract-samples/` 可并入 `tests/fixtures/`；`scripts/verify/` 下 `_flow1–6`、`verify-decision/negotiation/takeaway/no-evidence` 是针对旧流程的一次性脚本，确认无用后可整体移入 `archive/`。

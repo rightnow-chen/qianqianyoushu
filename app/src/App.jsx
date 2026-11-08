@@ -14,6 +14,7 @@ import {
   DEMO_PAGES,
   DEMO_QUALITY,
   DEMO_RISKS,
+  getContractText,
 } from './data/demoCase.js'
 import { computeAmounts, computeVerdict, computeWorstCase } from './features/amountEngine.js'
 import { countByLevel } from './features/riskModel.js'
@@ -21,8 +22,10 @@ import { analyzeContract } from './features/contractReview.js'
 import { extractContractFacts } from './features/contractFacts.js'
 import { describeDegradation, metaFromFacts, toRiskModel } from './features/riskMapper.js'
 import { buildContractPages, estimatePages } from './features/contractPages.js'
+import { buildCommentDocxBlob, buildRevisionDocxBlob } from './features/contractDocx.js'
 import { buildPlainText, buildReportHtml } from './features/reportText.js'
 import { track } from './features/track.js'
+import { downloadBlob } from './utils/docxExport.js'
 import { extractContractTextFromFile } from './utils/fileImport.js'
 
 const SCREENS = ['landing', 'upload', 'confirm', 'analyzing', 'work']
@@ -375,6 +378,43 @@ export default function App() {
       toast('已打开打印预览，选「另存为 PDF」就能带走')
       return
     }
+
+    if (kind === 'revision' || kind === 'comment') {
+      const contractText = isDemo ? getContractText(DEMO_PAGES) : session.fileText
+      if (!contractText) {
+        toast('没有合同原文可导出，先重新上传一份')
+        return
+      }
+      if (kind === 'revision' && Object.keys(accepted).length === 0) {
+        toast('还没采纳任何修改：到「修改」页点「接受建议并添加修订」，再回来导出')
+        return
+      }
+      const base = String(meta.fileName || '合同').replace(/\.[^.]+$/, '')
+      const label = kind === 'revision' ? '修订版' : '批注版'
+      const filename = `${base}_${label}_${new Date().toISOString().slice(0, 10)}.docx`
+      setBusy(true)
+      try {
+        const result =
+          kind === 'revision'
+            ? await buildRevisionDocxBlob({ text: contractText, risks, accepted, edited, meta })
+            : await buildCommentDocxBlob({ text: contractText, risks, accepted, meta })
+        downloadBlob(result.blob, filename)
+        if (kind === 'revision') {
+          const skipped = result.composed.changes.filter((item) => !item.applied).length
+          toast(
+            `已导出修订版：替换 ${result.composed.appliedCount} 处${skipped ? `，${skipped} 条列在文末清单` : ''}`,
+          )
+        } else {
+          toast(`已导出批注版：${result.plan.anchors.length} 条批注挂在原句上`)
+        }
+      } catch (error) {
+        toast(`导出失败：${error?.message || '请重试'}`)
+      } finally {
+        setBusy(false)
+      }
+      return
+    }
+
     const text = buildPlainText({ risks, amounts, checks })
     try {
       await navigator.clipboard.writeText(text)
@@ -476,7 +516,7 @@ export default function App() {
             setAccepted((prev) => ({ ...prev, [riskId]: true }))
             setDone((prev) => ({ ...prev, [riskId]: true }))
             track('suggestion_accept', { riskId })
-            toast('已接受修订：导出批注版时会带上这条（V0.2）')
+            toast('已接受修订：导出修订版会把这句替换掉')
           }}
           onSaveEdit={(riskId, text) => {
             setEdited((prev) => ({ ...prev, [riskId]: text }))
@@ -497,7 +537,7 @@ export default function App() {
         />
       )}
 
-      {busy && <div className="busy-mask">正在读取文件…</div>}
+      {busy && <div className="busy-mask">正在处理…</div>}
       <Toast message={toastMessage} />
       <PrivacyModal open={privacyOpen} onClose={() => setPrivacyOpen(false)} />
     </>

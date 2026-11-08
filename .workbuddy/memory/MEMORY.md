@@ -45,3 +45,4 @@
 - **目标**：MVP v0.1 = 5 屏 + 5 Tab 闭环（上传→质检→确认六字段→分析→概览/风险/修改/话术/待核实）。
 - **现状（2026-11-07 21:40 收口）**：MVP v0.1 已完成 IA 重装并接上真实引擎。5 屏 + 5 Tab 闭环；旧界面 40 文件移到 `archive/legacy-ia/`（tag `legacy-ia`）；`riskMapper.js` 把 `analyzeContract` 的 high/medium/low 翻成「必须改/建议确认/仅提醒」+ 金额键 + 句子级定位 + 两档话术 + 降级判断。验收：`tests/e2e/mvp-flow.mjs` 12 步、`scripts/verify/mvp-walkthrough.mjs` 12/12、9 个单测全绿、ESLint 零告警。计划与进度见 `docs/product/签前有数_MVP-v0.1_对齐与实施计划.md`，弃用清单见 `docs/tech/弃用清单_legacy-ia.md`。
 - 核心口径：9 条风险 = 3 必须改 + 2 建议确认 + 4 仅提醒；最坏合计 ¥17,400；8 件待核实（2 已确认）；对外 3 分钟 / 模型 28 秒；审查尺度严格·逐句 / 标准两档。
+- **2026-11-08 收尾（commit 6b9b14e）**：PRD 9.5 已补「金额来源/表述纪律/口径演进/追溯」四段（改前备份 `archive/prd-backup/`）；旧 IA 的 5 个 Playwright 用例移入 `app/tests/e2e-legacy/`（`playwright.legacy.config.js`），**`npm run test:e2e` 现在的含义是 mvp-flow.mjs 12 步，不再是 playwright test**；新增 `test:unit` / `test:e2e:legacy` / `verify:mvp` 三条 npm 入口。PRD docx 用 `.venv-html-to-docx` 的 python-docx 改，脚本无幂等保护，改完即删。

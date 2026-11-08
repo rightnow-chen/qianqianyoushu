@@ -113,13 +113,27 @@ export default function WorkbenchScreen({
                   导出审查报告
                   <span className="k">PDF · 含脱敏原文</span>
                 </button>
-                <button className="menu-item" type="button" disabled title="V0.2 开放">
+                <button
+                  className="menu-item"
+                  type="button"
+                  onClick={() => {
+                    setMenuOpen(false)
+                    onExport('revision')
+                  }}
+                >
                   导出合同原文（修订版）
-                  <span className="k">docx · V0.2</span>
+                  <span className="k">docx · 已采纳的修改标红</span>
                 </button>
-                <button className="menu-item" type="button" disabled title="V0.2 开放">
+                <button
+                  className="menu-item"
+                  type="button"
+                  onClick={() => {
+                    setMenuOpen(false)
+                    onExport('comment')
+                  }}
+                >
                   导出合同原文（批注版）
-                  <span className="k">docx · V0.2</span>
+                  <span className="k">docx · Word 批注挂在原句</span>
                 </button>
                 <button className="menu-item" type="button" onClick={() => onExport('text')}>
                   只复制文字
