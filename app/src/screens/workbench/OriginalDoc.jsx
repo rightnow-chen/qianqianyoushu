@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { createImageUrl, openPdfPreview } from '../../features/filePreview.js'
+import { openPdfPreview } from '../../features/filePreview.js'
 import { fitDocxToWidth, renderDocx } from '../../features/officePreview.js'
 import { sentenceNeedle } from '../../features/contractPages.js'
 import {
@@ -14,15 +14,11 @@ const HIGHLIGHT_NAMES = ['risk-must', 'risk-check', 'risk-note', 'risk-active']
 const SOURCE_LABEL = {
   pdf: 'PDF 原件',
   word: 'Word 原件',
-  image: '合同照片',
-  text: '合同原文',
 }
 
 const FAIL_COPY = {
   pdf: '这份 PDF 没能渲染出来（可能损坏或加密）。右边的内容仍是从文件里读出来的，可以导出一份带批注的 docx 对照。',
   word: '这份 Word 没能还原排版（可能加密、损坏，或本身是 .doc 改了后缀）。下面按段落显示文字。',
-  image: '图片没能显示出来，重新上传一次试试。',
-  text: '没有可显示的内容。',
 }
 
 /**
@@ -118,15 +114,6 @@ export default function OriginalDoc({ kind, file, risks, activeId, locateSignal,
 
   const handleClick = useRiskHighlight({ rootRef, scrollRef, risks, activeId, locateSignal, ready, onPickRisk })
 
-  // 图片的 objectURL 要在卸载时释放，但创建本身是纯计算，放 useMemo 里就不用 setState
-  const imageUrl = useMemo(() => (kind === 'image' && file ? createImageUrl(file) : ''), [kind, file])
-  useEffect(
-    () => () => {
-      if (imageUrl) URL.revokeObjectURL(imageUrl)
-    },
-    [imageUrl],
-  )
-
   // 栏宽决定每页画多大：宽度变了得重画，否则字会糊
   useEffect(() => {
     const host = scrollRef.current
@@ -219,7 +206,7 @@ export default function OriginalDoc({ kind, file, risks, activeId, locateSignal,
 
         pageRefs.current = []
         setTotal(1)
-        setStatus(kind === 'image' ? 'image' : 'empty')
+        setStatus('empty')
         setReady(false)
       } catch {
         if (!cancelled) {
@@ -295,12 +282,7 @@ export default function OriginalDoc({ kind, file, risks, activeId, locateSignal,
         ) : null}
 
         <div className="doc-scroll" ref={scrollRef} onScroll={handleScroll}>
-          {status === 'failed' ? <div className="warn-strip">{FAIL_COPY[kind] || FAIL_COPY.text}</div> : null}
-          {kind === 'image' && imageUrl ? (
-            <div className="orig-page orig-image">
-              <img src={imageUrl} alt="上传的合同照片" />
-            </div>
-          ) : null}
+          {status === 'failed' ? <div className="warn-strip">{FAIL_COPY[kind] || '这份文件没能显示出来。'}</div> : null}
           {status === 'scanned' ? (
             <div className="orig-note">
               这份 PDF 是扫描件，页面上没有可以定位的文字层。右边每条风险都附了原句，可以对着页码自己找。

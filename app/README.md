@@ -107,14 +107,18 @@ npm run dev:full
 - `docs/ai-review-prompt.md`：大模型审查 Prompt 模板。
 - `docs/proposal.md`：项目提案资料。
 
-## 左侧显示的合同原件（确认页 + 结果页）
+## 左侧显示的合同内容（确认页 + 结果页）
 
-| 来源 | 怎么显示 | 备注 |
+两页的规则不一样，别混着改：
+
+| 来源 | 确认页 | 结果页 |
 | --- | --- | --- |
-| PDF | pdf.js 渲染成 canvas，可翻页 | 必须用 legacy 构建，标准构建在旧内核里抛 `toHex is not a function` |
-| Word | docx-preview 还原真排版（字体 / 缩进 / 表格 / 分页） | 纯前端解析，不上传；栏宽小于 A4 时整页等比 `zoom` 缩放 |
-| 图片 | 原图 + OCR 文字两档 | 只有拍照才有「识别」这回事 |
-| TXT / 粘贴 | 按条款层级重排的纯文本 | 没有版式，不假装有 |
+| PDF | pdf.js 渲染成 canvas，可翻页 | 同左，再加透明文本层做高亮定位 |
+| Word | docx-preview 还原真排版（字体 / 缩进 / 表格 / 分页） | 同左 |
+| 图片（拍照） | 原图 + OCR 文字两档，用来核对识别得准不准 | **只给排过版的文字**，不摆照片 |
+| TXT / 粘贴 | 按条款层级重排的纯文本 | 同左 |
+
+图片在结果页不显示照片是产品决定：照片没法句子级定位，也不帮人读合同，用户要读的是识别出来的字。确认页保留原图，是因为那一刻的任务是**核对 OCR 准不准**，需要两边对照。
 
 Word 不用 Office Online / WPS WebOffice 的原因：那两套都要求文件有公网可访问的 HTTPS 地址（等于把合同先交给第三方），还要后端签名和商业授权。「不存储原文」是这个产品的底线，所以走纯前端渲染。代价是字体依赖本机（Windows 自带宋体/仿宋，macOS 会 fallback）。
 
@@ -122,7 +126,7 @@ Word 不用 Office Online / WPS WebOffice 的原因：那两套都要求文件�
 
 ### 结果页左栏（`screens/workbench/OriginalDoc.jsx`）
 
-有原件就显示原件，没有才重排成纸（`PaperDoc.jsx`，只剩演示数据和纯文本走这条路）。
+只有 PDF / Word 走原件（`ContractPane.jsx` 的 `hasOriginal`），其余走重排的纸（`PaperDoc.jsx`：演示数据、纯文本、拍照）。
 
 PDF 走 `preparePage()`：先给每一页搭一个空白 canvas **和透明的文本层**，返回的 `draw()` 稍后补画面。分开的原因是一份 22 页的合同如果「画完一页再画下一页」，要等五六秒才有完整文字；文本层是纯 DOM，建起来快，所以先让定位/高亮/选中可用，canvas 再一页页补。**只有 canvas 的话，画得再像也只是张图，点哪儿都定位不了。**
 
@@ -139,7 +143,7 @@ PDF 走 `preparePage()`：先给每一页搭一个空白 canvas **和透明的�
 npm run lint
 npm run build
 npm run test:unit      # 13 组单测
-npm run test:e2e       # MVP 主路径 19 步（含 PDF / Word 在确认页与结果页两处都要是原件）
+npm run test:e2e       # MVP 主路径 20 步（PDF / Word 两页都是原件；拍照结果页只有重排文字）
 npm run verify:mvp     # 12 项口径校验
 ```
 

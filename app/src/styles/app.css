@@ -1243,11 +1243,6 @@
 .orig-page > canvas {
   display: block;
 }
-.orig-image img {
-  display: block;
-  max-width: 100%;
-  height: auto;
-}
 
 /* pdf.js 的文本层：字是透明的，位置由库算好，盖在 canvas 上。
    没有这层，PDF 就只是张图片——选不中、搜不到、也高亮不了。 */

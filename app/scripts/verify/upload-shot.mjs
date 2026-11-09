@@ -27,8 +27,22 @@ const MIME = {
   '.json': 'application/json',
 }
 
+// 拍照上传要打 /api/ocr/image，但 dist 是纯静态的，没有后端。
+// 走查图片时回一份固定文本，只为看界面（识别准不准跟这个脚本无关）。
+const OCR_FALLBACK = path.resolve(here, '../../real-contract-samples/sample-landlord-self-drafted.txt')
+const ocrText = (() => {
+  const file = process.env.OCR_TEXT_FILE || OCR_FALLBACK
+  return fs.existsSync(file) ? fs.readFileSync(file, 'utf8') : ''
+})()
+
 const server = http.createServer((req, res) => {
   const url = decodeURIComponent((req.url || '/').split('?')[0])
+  if (req.method === 'POST' && url === '/api/ocr/image') {
+    req.resume()
+    res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' })
+    res.end(JSON.stringify({ text: ocrText, confidence: 92, mode: 'verify-stub' }))
+    return
+  }
   let file = path.join(dist, url === '/' ? 'index.html' : url)
   if (!fs.existsSync(file) || fs.statSync(file).isDirectory()) file = path.join(dist, 'index.html')
   res.writeHead(200, { 'Content-Type': MIME[path.extname(file)] || 'application/octet-stream' })

@@ -3,11 +3,12 @@ import { useEffect, useRef, useState } from 'react'
 /**
  * 没有原件可显示时的「重排纸」。
  *
- * 什么时候会走到这里：演示数据（demoCase 里手写的 blocks）、粘贴的文本、TXT。
- * 这些输入本来就没有版式，把文字重新排成一张纸反而比一坨纯文本好读，
- * 而且纸是我们自己排的，句子级高亮和编号能做得最准。
+ * 什么时候会走到这里：演示数据（demoCase 里手写的 blocks）、粘贴的文本、TXT，
+ * 以及**拍照上传的合同**——照片本身没法定位，用户要读的是识别出来的字。
+ * 这些输入本来就没有版式（或版式不如文字有用），把文字重新排成一张纸
+ * 反而比一坨纯文本好读，而且纸是我们自己排的，句子级高亮和编号能做得最准。
  *
- * 有原件的（PDF / Word / 图片）不走这里，见 OriginalDoc.jsx。
+ * 有原件的（PDF / Word）不走这里，见 OriginalDoc.jsx。
  */
 function PageBlock({ block, risks, onPickRisk }) {
   if (block.type === 'kicker') return <div className="kicker">{block.text}</div>
@@ -63,12 +64,17 @@ function PageBlock({ block, risks, onPickRisk }) {
   return <p className="para">{runs}</p>
 }
 
-export default function PaperDoc({ pages, risks, activeId, locateSignal, onPickRisk }) {
+export default function PaperDoc({ kind, pages, risks, activeId, locateSignal, onPickRisk }) {
   const scrollRef = useRef(null)
   const pageRefs = useRef({})
   const firstRun = useRef(true)
   const rafRef = useRef(0)
   const [page, setPage] = useState(1)
+
+  // 拍照上传的文字是识别出来的，标题就得这么叫——写「合同原文」会让人以为照片原样在下面
+  const isOcr = kind === 'image'
+  const label = isOcr ? '识别文字' : '合同原文'
+  const tail = isOcr ? '按条款重排' : '纯文本'
 
   useEffect(() => {
     if (firstRun.current) {
@@ -110,52 +116,68 @@ export default function PaperDoc({ pages, risks, activeId, locateSignal, onPickR
   }
 
   return (
-    <aside className="docpane" aria-label="合同原文">
+    <aside className="docpane" aria-label={isOcr ? '识别出的合同文字' : '合同原文'}>
       <div className="doc-tools">
-        <span className="m on">合同原文</span>
-        <span className="m">已标 {risks.length} 处</span>
+        <span className="m on">{label}</span>
+        {risks.length ? <span className="m">已标 {risks.length} 处</span> : null}
         <span className="r">
-          <span>
-            第 {page} / {pages.length} 页
-          </span>
-          <span>·</span>
-          <span>纯文本</span>
+          {pages.length ? (
+            <>
+              <span>
+                第 {page} / {pages.length} 页
+              </span>
+              <span>·</span>
+            </>
+          ) : null}
+          <span>{tail}</span>
         </span>
       </div>
 
       <div className="doc-main">
-        <div className="pagerail">
-          {pages.map((item) => (
-            <button
-              className={page === item.n ? 'on' : ''}
-              key={item.n}
-              type="button"
-              onClick={() => goPage(item.n)}
-              title={`第 ${item.n} 页`}
-            >
-              {item.n}
-            </button>
-          ))}
-        </div>
+        {pages.length === 0 ? (
+          <div className="doc-scroll">
+            <div className="warn-strip">
+              {isOcr
+                ? '这张照片没识别出可用的文字。换一张光线均匀、拍全四角的照片，或直接把合同原文粘贴进来。'
+                : '这份合同没有读到文字。重新上传一次，或直接把合同原文粘贴进来。'}
+            </div>
+          </div>
+        ) : (
+          <>
+            <div className="pagerail">
+              {pages.map((item) => (
+                <button
+                  className={page === item.n ? 'on' : ''}
+                  key={item.n}
+                  type="button"
+                  onClick={() => goPage(item.n)}
+                  title={`第 ${item.n} 页`}
+                >
+                  {item.n}
+                </button>
+              ))}
+            </div>
 
-        <div className="doc-scroll" ref={scrollRef} onScroll={handleScroll}>
-          <article className="paper">
-            {pages.map((item) => (
-              <div
-                className="page"
-                key={item.n}
-                ref={(node) => {
-                  pageRefs.current[item.n] = node
-                }}
-              >
-                {item.blocks.map((block, index) => (
-                  <PageBlock block={block} key={index} risks={risks} onPickRisk={onPickRisk} />
+            <div className="doc-scroll" ref={scrollRef} onScroll={handleScroll}>
+              <article className="paper">
+                {pages.map((item) => (
+                  <div
+                    className="page"
+                    key={item.n}
+                    ref={(node) => {
+                      pageRefs.current[item.n] = node
+                    }}
+                  >
+                    {item.blocks.map((block, index) => (
+                      <PageBlock block={block} key={index} risks={risks} onPickRisk={onPickRisk} />
+                    ))}
+                    <div className="pgft">— 第 {item.n} 页 / 共 {pages.length} 页 —</div>
+                  </div>
                 ))}
-                <div className="pgft">— 第 {item.n} 页 / 共 {pages.length} 页 —</div>
-              </div>
-            ))}
-          </article>
-        </div>
+              </article>
+            </div>
+          </>
+        )}
       </div>
     </aside>
   )

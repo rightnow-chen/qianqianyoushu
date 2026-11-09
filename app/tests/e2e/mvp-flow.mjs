@@ -17,6 +17,10 @@ assert.ok(fs.existsSync(path.join(dist, 'index.html')), '先跑 npm run build，
 assert.ok(fs.existsSync(sample), '缺真实合同样本')
 assert.ok(fs.existsSync(pdfSample), '缺 PDF 样本')
 
+// 拍照上传没有真 OCR 后端可用，用这份真实合同当「识别结果」——
+// 验的是界面怎么呈现，识别准不准交给 OCR 服务自己的测试。
+const OCR_STUB_TEXT = fs.readFileSync(sample, 'utf8')
+
 const MIME = {
   '.html': 'text/html; charset=utf-8',
   '.js': 'text/javascript; charset=utf-8',
@@ -30,6 +34,14 @@ const MIME = {
 
 const server = http.createServer((req, res) => {
   const url = decodeURIComponent((req.url || '/').split('?')[0])
+  // 拍照上传会 POST /api/ocr/image。e2e 不起后端，这里回一份固定文本，
+  // 只为了验「图片在结果页走重排文字、不摆照片」这条界面规则。
+  if (req.method === 'POST' && url === '/api/ocr/image') {
+    req.resume()
+    res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' })
+    res.end(JSON.stringify({ text: OCR_STUB_TEXT, confidence: 92, mode: 'e2e-stub' }))
+    return
+  }
   let file = path.join(dist, url === '/' ? 'index.html' : url)
   if (!fs.existsSync(file) || fs.statSync(file).isDirectory()) file = path.join(dist, 'index.html')
   res.writeHead(200, { 'Content-Type': MIME[path.extname(file)] || 'application/octet-stream' })
@@ -379,6 +391,39 @@ try {
   step('Word 结果页左栏是原件')
   await docxPage.close()
   await docxContext.close()
+
+  // 18. 拍照上传：结果页左栏只给排过版的文字，不摆照片。
+  //     照片既没法定位，也不帮人读合同——要读的是识别出来的字。
+  const imageSample = path.resolve(
+    here,
+    '../../../deliverables/test-kits/contract-review-test-kit-20261008/06_图片OCR合同.png',
+  )
+  assert.ok(fs.existsSync(imageSample), '缺图片 OCR 样本')
+  const imgContext = await browser.newContext({ viewport: { width: 1440, height: 900 } })
+  const imgPage = await imgContext.newPage()
+  await imgPage.goto(BASE, { waitUntil: 'networkidle' })
+  await imgPage.setInputFiles('input[type=file]', imageSample)
+  await imgPage.waitForFunction(() => location.hash.includes('upload'), null, { timeout: 40000 })
+  await imgPage.locator('button.btn.primary').first().click()
+  await imgPage.waitForFunction(() => location.hash.includes('confirm'), null, { timeout: 20000 })
+  await imgPage.locator('button.btn.primary').last().click()
+  await imgPage.waitForFunction(() => location.hash.includes('work'), null, { timeout: 40000 })
+  await imgPage.waitForSelector('.docpane .paper .page', { timeout: 30000 })
+
+  const imgPane = await imgPage.evaluate(() => ({
+    orig: document.querySelectorAll('.docpane.orig').length,
+    images: document.querySelectorAll('.docpane img').length,
+    papers: document.querySelectorAll('.paper .page').length,
+    marks: document.querySelectorAll('.paper .sn').length,
+    label: (document.querySelector('.docpane .doc-tools .m')?.textContent || '').trim(),
+  }))
+  assert.equal(imgPane.orig, 0, '拍照上传的结果页不该切成原件模式')
+  assert.equal(imgPane.images, 0, '左栏不该摆照片')
+  assert.ok(imgPane.papers >= 1, '拍照上传也要给出排好版的文字')
+  assert.equal(imgPane.label, '识别文字', `左栏标题应是「识别文字」，实际「${imgPane.label}」`)
+  step('拍照结果页只给排好版的文字')
+  await imgPage.close()
+  await imgContext.close()
 
   assert.deepEqual(errors, [], `页面报错：${errors.join(' | ')}`)
   console.log(`\nMVP 主路径 e2e 通过（${steps.length} 步）：`)
