@@ -8,6 +8,12 @@ const DEGRADE_COPY = {
     title: '这次没跑出结论',
     action: '换一份或重拍',
   },
+  // 字读到了，只是没有一句话对得上规则库。这跟「文件有问题」是两回事，
+  // 不能让人拿着一份正常合同去重拍。
+  'no-match': {
+    title: '读到了正文，但没命中已知风险条款',
+    action: '看待核实清单',
+  },
   partial: {
     title: '只读到条款，没定位到原句',
     action: '对照原文核对',
@@ -16,8 +22,6 @@ const DEGRADE_COPY = {
 
 export default function OverviewTab({
   risks,
-  amounts,
-  meta,
   counts,
   worst,
   verdict,
@@ -29,6 +33,7 @@ export default function OverviewTab({
   onReupload,
 }) {
   const pendingChecks = checks?.length ?? 0
+  const noMatch = degradation?.level === 'no-match'
 
   return (
     <div className="pane">
@@ -60,10 +65,15 @@ export default function OverviewTab({
 
       {risks.length === 0 ? (
         <div className="empty-state">
-          <div className="es-t">没有读到可以判断的条款</div>
+          <div className="es-t">{noMatch ? '这份合同没命中已知的风险条款' : '没有读到可以判断的条款'}</div>
           <div className="es-s">
-            可能文件只有几行，或者图片没识别清。你可以重传一份更完整的合同；如果合同本身没问题，也别忘了把那{' '}
-            {pendingChecks || 8} 件合同外的事问清楚。
+            {noMatch
+              ? `押金、退租、维修这三条最花钱，请对着左边原文自己过一遍；右边那 ${
+                  pendingChecks || 8
+                } 件合同外的事也一并问清楚。`
+              : `可能文件只有几行，或者图片没识别清。你可以重传一份更完整的合同；如果合同本身没问题，也别忘了把那 ${
+                  pendingChecks || 8
+                } 件合同外的事问清楚。`}
           </div>
           <div className="es-a">
             {onReupload && (
@@ -188,20 +198,6 @@ export default function OverviewTab({
           </div>
         </>
       )}
-
-      <div className="data-source">
-        <span>已逐句比对 {meta?.sentenceCount || '—'} 句</span>
-        <span>·</span>
-        <span>
-          法条库：民法典
-          {meta?.city && meta.city !== '待确认' ? ` / ${meta.city}住房租赁条例` : ' · 地方租赁条例待匹配'}
-        </span>
-        <span>·</span>
-        <span>
-          押金按押金的 {Math.round((amounts.depositDeduct / (amounts.deposit || 1)) * 100)}%
-          估算，实际以合同约定为准
-        </span>
-      </div>
     </div>
   )
 }

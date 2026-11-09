@@ -291,9 +291,94 @@ try {
   const workText = await pdfPage.evaluate(() => document.body.innerText.trim().length)
   assert.ok(workText > 200, `结果页不能是空白，实际只有 ${workText} 个字`)
   assert.equal(await pdfPage.locator('.preview-hd .seg button').count(), 0, '离开确认页后不该残留切换按钮')
+  step('PDF 确认页 → 开始审查不白屏')
+
+  // 16b. 结果页左栏显示的必须是**这份 PDF 本身**：canvas + 文字层。
+  //      以前这里是「把文本重新排成一张纸」，看起来像合同，其实没有一个像素来自原文件。
+  //      文字层是一页页搭的（canvas 更慢，之后才补），所以等「每页都有文字层」再断言。
+  await pdfPage.waitForFunction(
+    () => {
+      const pages = document.querySelectorAll('.orig-page')
+      return pages.length > 0 && pages.length === document.querySelectorAll('.orig-page .textLayer').length
+    },
+    null,
+    { timeout: 60000 },
+  )
+  const pdfPane = await pdfPage.evaluate(() => ({
+    orig: document.querySelectorAll('.docpane.orig').length,
+    pages: document.querySelectorAll('.orig-page').length,
+    canvases: document.querySelectorAll('.orig-page > canvas').length,
+    layers: document.querySelectorAll('.orig-page .textLayer').length,
+    spans: document.querySelectorAll('.orig-page .textLayer span').length,
+    papers: document.querySelectorAll('.paper .page').length,
+  }))
+  assert.equal(pdfPane.orig, 1, '结果页左栏应切成原件模式')
+  assert.ok(pdfPane.pages >= 1, 'PDF 至少渲染出一页')
+  assert.equal(pdfPane.pages, pdfPane.layers, `每页都要有文字层，页 ${pdfPane.pages} / 层 ${pdfPane.layers}`)
+  assert.ok(pdfPane.canvases >= 1, '第一页应该有画布')
+  assert.ok(pdfPane.spans > 20, `PDF 要有可定位的文字层，实际 ${pdfPane.spans} 个 span`)
+  assert.equal(pdfPane.papers, 0, '有原件时不该再显示重排的纸')
   await pdfPage.close()
   await pdfContext.close()
-  step('PDF 确认页 → 开始审查不白屏')
+  step('PDF 结果页左栏是原件 + 文字层')
+
+  // 17. 上传 Word：确认页左侧要把 docx 还原成真排版（表格、分页都还在），
+  //     而不是像以前那样拍平成一段段等宽文字——那看起来和「复制粘贴」没区别。
+  const docxSample = path.resolve(
+    here,
+    '../../../deliverables/test-kits/contract-review-advanced-kit-20261009/03_表格与补充协议_复杂Word.docx',
+  )
+  assert.ok(fs.existsSync(docxSample), '缺 Word 样本')
+  const docxContext = await browser.newContext({ viewport: { width: 1440, height: 900 } })
+  const docxPage = await docxContext.newPage()
+  await docxPage.goto(BASE, { waitUntil: 'networkidle' })
+  await docxPage.setInputFiles('input[type=file]', docxSample)
+  await docxPage.waitForFunction(() => location.hash.includes('upload'), null, { timeout: 30000 })
+  await docxPage.locator('button.btn.primary').first().click()
+  await docxPage.waitForSelector('.docx-host section.docx', { timeout: 30000 })
+  await docxPage.waitForTimeout(800)
+
+  const docxStats = await docxPage.evaluate(() => {
+    const host = document.querySelector('.docx-host')
+    const section = host?.querySelector('section.docx')
+    return {
+      pages: host ? host.querySelectorAll('section.docx').length : 0,
+      overflowX: host ? host.scrollWidth > host.clientWidth + 1 : true,
+      width: section ? section.offsetWidth : 0,
+      chars: section ? section.innerText.replace(/\s/g, '').length : 0,
+      tables: section ? section.querySelectorAll('table').length : 0,
+    }
+  })
+  assert.ok(docxStats.pages >= 1, 'Word 至少应还原出一页')
+  assert.ok(docxStats.width > 400, `Word 页面应是原始页面宽度，实际 ${docxStats.width}`)
+  assert.ok(!docxStats.overflowX, 'Word 页面不该横向溢出（超出部分要等比缩放）')
+  assert.ok(docxStats.chars > 100, `Word 页面要有正文，实际 ${docxStats.chars} 字`)
+  assert.ok(docxStats.tables >= 1, 'docx 里的表格必须还原成 <table>，不能拍平成文本')
+  assert.equal(await docxPage.locator('.mini-paper').count(), 0, 'Word 原件不该退化成拍平段落')
+  step('Word 确认页还原真排版')
+
+  // 17b. 同一个文件走到结果页：左栏还得是那份 Word，不能偷偷换回重排的纸
+  await docxPage.locator('button.btn.primary').last().click()
+  await docxPage.waitForFunction(() => location.hash.includes('work'), null, { timeout: 40000 })
+  await docxPage.waitForSelector('.orig-host section.docx', { timeout: 30000 })
+  await docxPage.waitForTimeout(600)
+  const wordPane = await docxPage.evaluate(() => {
+    const host = document.querySelector('.orig-host')
+    const section = host?.querySelector('section.docx')
+    return {
+      sections: host ? host.querySelectorAll('section.docx').length : 0,
+      overflowX: host ? host.scrollWidth > host.clientWidth + 2 : true,
+      chars: section ? section.innerText.replace(/\s/g, '').length : 0,
+      papers: document.querySelectorAll('.paper .page').length,
+    }
+  })
+  assert.ok(wordPane.sections >= 1, '结果页左栏要还原 Word 原件')
+  assert.ok(wordPane.chars > 100, `Word 原件要有正文，实际 ${wordPane.chars} 字`)
+  assert.ok(!wordPane.overflowX, 'Word 原件在左栏里要缩放到不横向溢出')
+  assert.equal(wordPane.papers, 0, '有原件时不该退回重排的纸')
+  step('Word 结果页左栏是原件')
+  await docxPage.close()
+  await docxContext.close()
 
   assert.deepEqual(errors, [], `页面报错：${errors.join(' | ')}`)
   console.log(`\nMVP 主路径 e2e 通过（${steps.length} 步）：`)

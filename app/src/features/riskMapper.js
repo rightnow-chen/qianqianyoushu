@@ -236,12 +236,23 @@ export function metaFromFacts(facts = {}) {
 }
 
 /** 降级判断：引擎没给出可用结论时，界面要能说清为什么，而不是显示一张空表。 */
-export function describeDegradation(findings = [], risks = []) {
+export function describeDegradation(findings = [], risks = [], { text = '' } = {}) {
   if (!findings.length) {
-    return { level: 'failed', message: '这次没读出有效条款，可能是扫描不清，建议重拍第 1 页或直接粘贴文字。' }
+    // 「一份字都没读到」和「读到了但没命中规则」是两件事。
+    // 以前一律说成「可能是扫描不清，建议重拍」，于是用户拿着一份 2,000 字的正常 PDF
+    // 被要求重拍——重传十遍结果也不会变，因为问题在规则库的覆盖面，不在文件。
+    const readable = String(text || '').replace(/\s+/g, '').length
+    if (readable >= 60) {
+      return {
+        level: 'no-match',
+        readable,
+        message: `正文读到了 ${readable} 个字，但没有一句话对得上当前这 9 类规则。这不代表合同没问题——只是这份合同的写法超出了规则库能覆盖的范围，建议对照左侧原文自己过一遍押金、退租和维修三条，再把待核实清单问清楚。`,
+      }
+    }
+    return { level: 'failed', readable, message: '这次没读出有效条款，可能是扫描不清，建议重拍第 1 页或直接粘贴文字。' }
   }
   if (!risks.length) {
-    return { level: 'partial', message: '读到了条款但没能定位到具体句子，结果仅供参考，请对照原文核对。' }
+    return { level: 'partial', readable: 0, message: '读到了条款但没能定位到具体句子，结果仅供参考，请对照原文核对。' }
   }
   const noSuggestion = risks.filter((risk) => !risk.hasSuggestion).length
   const noAmount = risks.filter((risk) => !risk.amountKey).length

@@ -117,9 +117,9 @@ await page.goto(`${BASE}/#work?demo=1&tab=ov`, { waitUntil: 'load' })
 await page.reload({ waitUntil: 'networkidle' })
 await page.waitForTimeout(1200)
 
-await check(5, '9 = 3+2+4，四处一致', async () => {
-  const filebar = await page.locator('.filebar').innerText()
-  const listed = num((filebar.match(/(\d+)\s*条风险/) || [])[1])
+await check(5, '9 = 3+2+4，三处一致', async () => {
+  // 顶部文件条上的「N 条风险 · M 项待核实」已删（跟 Tab 角标重复，且挤占了文件名），
+  // 风险总数现在只由「风险」Tab 角标给一处，另外两处是概览三列和底部行动条。
   const badge = num(await page.locator('.tab', { hasText: '风险' }).first().locator('.n').innerText())
   const cols = await page.evaluate(() =>
     Array.from(document.querySelectorAll('.sum-hd .c')).map((el) => parseInt(el.innerText, 10)),
@@ -128,10 +128,10 @@ await check(5, '9 = 3+2+4，四处一致', async () => {
     Array.from(document.querySelectorAll('.ab-counts .c b')).map((el) => parseInt(el.innerText, 10)),
   )
   const parts = `${cols.join('+')}`
-  if (listed !== 9 || badge !== 9) throw new Error(`文件条 ${listed} / 角标 ${badge}，应都是 9`)
+  if (badge !== 9) throw new Error(`角标 ${badge}，应为 9`)
   if (parts !== '3+2+4') throw new Error(`概览三列是 ${parts}，应为 3+2+4`)
   if (bar.join('+') !== '3+2+4') throw new Error(`行动条是 ${bar.join('+')}，应为 3+2+4`)
-  return `文件条 9 / 角标 9 / 概览 3+2+4 / 行动条 3+2+4`
+  return `角标 9 / 概览 3+2+4 / 行动条 3+2+4`
 })
 
 await check(6, '金额链 5,400+9,000+3,000=17,400，水电涨租不计入', async () => {

@@ -311,7 +311,7 @@ export default function App() {
           pages: currentMeta.filePages || 0,
           amounts: computeAmounts(currentMeta),
         })
-        const degradation = describeDegradation(findings, mapped)
+        const degradation = describeDegradation(findings, mapped, { text })
         setSession((prev) => ({ ...prev, findings, risks: mapped, degradation }))
         track('analyze_done', {
           seconds: Math.round((Date.now() - started) / 1000),
@@ -463,6 +463,7 @@ export default function App() {
         <WorkbenchScreen
           meta={meta}
           pages={pages}
+          file={session.rawFile}
           risks={risks}
           amounts={amounts}
           counts={counts}

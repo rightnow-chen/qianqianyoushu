@@ -40,7 +40,7 @@ export function previewNoteFor(kind, { pageCount = 0 } = {}) {
     return '这是你上传的原图。文字是从这张图识别出来的，识别有误的地方右边可以直接改。'
   }
   if (kind === 'word') {
-    return 'Word 的字体、页边距这类排版在浏览器里无法还原，这里按原文的标题和段落层级显示，文字内容与文件一致。'
+    return '这是你上传的 Word 原件，字体、缩进、分页都按原样还原，可以翻页对照；右边六个字段就是从这份文件里读出来的。'
   }
   return '文本文件没有版式，这里显示的是提取出来的正文全文。'
 }
@@ -86,6 +86,71 @@ export async function openPdfPreview(file) {
       context.fillRect(0, 0, viewport.width, viewport.height)
       await page.render({ canvasContext: context, viewport }).promise
       context.restore()
+    },
+    /**
+     * 把一页装进容器：先是空白画布 + 透明文本层，返回一个 draw() 用来补画面。
+     *
+     * 为什么拆成两步：一份 22 页的合同如果「画完一页再画下一页」，
+     * 要等五六秒才能看到全部文字，中间左边一直是白的。
+     * 文本层是纯 DOM，建起来快，所以先把所有页的文字层搭好——
+     * 这样定位、高亮、选中复制立刻可用，canvas 再一页一页慢慢补。
+     *
+     * 只有 canvas 不行：画得再像也只是张图，点哪儿都定位不了。
+     */
+    async preparePage(pageNumber, host, maxWidth = 720) {
+      const page = await pdf.getPage(pageNumber)
+      const base = page.getViewport({ scale: 1 })
+      const scale = Math.min(maxWidth / base.width, 3)
+      const viewport = page.getViewport({ scale })
+      const ratio = Math.min(window.devicePixelRatio || 1, 2)
+      const width = Math.floor(viewport.width)
+      const height = Math.floor(viewport.height)
+
+      host.textContent = ''
+      host.style.width = `${width}px`
+      host.style.height = `${height}px`
+      // pdf.js 的文本层靠这两个变量换算字号，少一个文字就会挤成一团
+      host.style.setProperty('--scale-factor', String(scale))
+      host.style.setProperty('--total-scale-factor', String(scale))
+
+      const canvas = document.createElement('canvas')
+      canvas.width = Math.floor(viewport.width * ratio)
+      canvas.height = Math.floor(viewport.height * ratio)
+      canvas.style.width = `${width}px`
+      canvas.style.height = `${height}px`
+      // 先铺白：深浅色主题下透明画布会透出容器底色，字就糊在灰里了
+      const context = canvas.getContext('2d')
+      context.fillStyle = '#ffffff'
+      context.fillRect(0, 0, canvas.width, canvas.height)
+      host.appendChild(canvas)
+
+      const textContent = await page.getTextContent()
+      const textHost = document.createElement('div')
+      textHost.className = 'textLayer'
+      host.appendChild(textHost)
+
+      const layer = new pdfjsLib.TextLayer({ textContentSource: textContent, container: textHost, viewport })
+      await layer.render()
+      // setLayerDimensions 用的是 CSS round()，万一内核不支持会算出 0 宽，兜个底
+      textHost.style.width = `${width}px`
+      textHost.style.height = `${height}px`
+
+      let drawn = false
+      return {
+        width,
+        height,
+        hasText: textContent.items.some((item) => item.str?.trim()),
+        async draw() {
+          if (drawn) return
+          drawn = true
+          context.save()
+          context.scale(ratio, ratio)
+          context.fillStyle = '#ffffff'
+          context.fillRect(0, 0, viewport.width, viewport.height)
+          await page.render({ canvasContext: context, viewport }).promise
+          context.restore()
+        },
+      }
     },
     /** 卸载时释放：销毁 loadingTask（proxy 本身没有 destroy）。失败不影响界面。 */
     destroy() {

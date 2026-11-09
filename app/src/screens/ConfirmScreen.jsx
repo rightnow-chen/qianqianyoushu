@@ -16,11 +16,11 @@ export default function ConfirmScreen({ meta, onChangeMeta, onNext, onBack, file
   const [mode, setMode] = useState('paper')
   const kind = previewKindOf({ fileName: meta.fileName, source: meta.source, mime: file?.type })
   // 只有拿到原始文件才能显示原件；演示数据没有文件，退化成全文
-  const hasOriginal = Boolean(file) && (kind === 'pdf' || kind === 'image')
+  const hasOriginal = Boolean(file) && (kind === 'pdf' || kind === 'image' || kind === 'word')
   // 只有拍照才有「识别」这回事：PDF / Word / TXT 的文字本来就是文件自带的，
   // 给它们放一个「识别全文」只会让人以为是识别出来的，还多一层没必要的点击。
   const canToggle = kind === 'image'
-  const heading = kind === 'image' ? '合同照片' : kind === 'pdf' ? '合同原件' : '原文预览'
+  const heading = kind === 'image' ? '合同照片' : kind === 'pdf' || kind === 'word' ? '合同原件' : '原文预览'
   // 不支持切换的来源一律按原件渲染，mode 残值不影响显示
   const activeMode = canToggle ? mode : 'paper'
   const note = useMemo(() => {

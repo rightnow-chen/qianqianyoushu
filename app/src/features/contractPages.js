@@ -18,7 +18,7 @@ function blockTypeOf(line, index) {
 }
 
 /** 把 risk.original 压成能在单行里找到的片段。 */
-function needleOf(risk) {
+export function sentenceNeedle(risk) {
   const raw = String(risk.original || '')
     .replace(/\s+/g, ' ')
     .trim()
@@ -32,7 +32,7 @@ function needleOf(risk) {
 function hitsInLine(line, risks, lineNo) {
   const hits = []
   risks.forEach((risk) => {
-    const needle = needleOf(risk)
+    const needle = sentenceNeedle(risk)
     if (!needle) return
     let index = line.indexOf(needle)
     let length = needle.length

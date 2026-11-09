@@ -33,6 +33,7 @@
     "@tesseract.js-data/eng": "^1.0.0",
     "cors": "^2.8.5",
     "docx": "^9.7.1",
+    "docx-preview": "^0.4.1",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "lucide-react": "^1.21.0",

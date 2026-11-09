@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { createImageUrl, openPdfPreview } from '../../features/filePreview.js'
+import { currentDocxPage, fitDocxToWidth, renderDocx, scrollToDocxPage } from '../../features/officePreview.js'
 import { layoutContractLines } from '../../features/previewText.js'
 
 /** PDF 原页渲染：一次解析，翻页复用；卸载时释放 pdf 文档。 */
@@ -132,11 +133,112 @@ function WordText({ structure, text }) {
   )
 }
 
+/**
+ * Word 原件：交给 docx-preview 还原成真排版（字体、缩进、表格、分页都在）。
+ * 渲染失败的极少数情况（加密、损坏、doc 存成 docx 扩展名）退回 WordText，
+ * 至少让人能看到字，而不是一块空白。
+ */
+function DocxPaper({ file, structure, text }) {
+  const hostRef = useRef(null)
+  const wrapperRef = useRef(null)
+  const [status, setStatus] = useState('loading')
+  const [pages, setPages] = useState(0)
+  const [page, setPage] = useState(1)
+
+  useEffect(() => {
+    const host = hostRef.current
+    if (!host || !file) return undefined
+    let cancelled = false
+    // 缩放在渲染后才知道页面多宽，宽度一变就得重算
+    let lastWidth = 0
+
+    const run = async () => {
+      try {
+        const handle = await renderDocx(host, file)
+        if (cancelled) {
+          handle.destroy()
+          return
+        }
+        wrapperRef.current = handle.wrapper
+        lastWidth = host.clientWidth
+        fitDocxToWidth(host, handle.wrapper)
+        setPages(handle.pageCount)
+        setStatus(handle.pageCount ? 'ready' : 'failed')
+      } catch {
+        if (!cancelled) setStatus('failed')
+      }
+    }
+
+    run()
+
+    let pending = false
+    const observer = new ResizeObserver(() => {
+      // 只认宽度变化：fit 会改 host 的高度，监听高度会自己触发自己
+      if (!host.clientWidth || host.clientWidth === lastWidth) return
+      lastWidth = host.clientWidth
+      pending = true
+      requestAnimationFrame(() => {
+        if (!pending) return
+        pending = false
+        if (wrapperRef.current) fitDocxToWidth(host, wrapperRef.current)
+      })
+    })
+    observer.observe(host)
+
+    return () => {
+      cancelled = true
+      observer.disconnect()
+      wrapperRef.current = null
+      host.innerHTML = ''
+    }
+  }, [file])
+
+  const handleScroll = () => {
+    const host = hostRef.current
+    if (!host || !wrapperRef.current || pages <= 1) return
+    const next = currentDocxPage(host, wrapperRef.current)
+    setPage((prev) => (prev === next ? prev : next))
+  }
+
+  if (status === 'failed') return <WordText structure={structure} text={text} />
+
+  return (
+    <div className="docx-preview">
+      {pages > 1 ? (
+        <div className="pdf-pager">
+          <button
+            className="btn xs"
+            type="button"
+            disabled={page <= 1}
+            onClick={() => scrollToDocxPage(hostRef.current, wrapperRef.current, Math.max(1, page - 1))}
+          >
+            ←
+          </button>
+          <span>
+            第 {page} / {pages} 页
+          </span>
+          <button
+            className="btn xs"
+            type="button"
+            disabled={page >= pages}
+            onClick={() => scrollToDocxPage(hostRef.current, wrapperRef.current, Math.min(pages, page + 1))}
+          >
+            →
+          </button>
+        </div>
+      ) : null}
+      <div className="docx-host" ref={hostRef} onScroll={handleScroll} />
+      {status === 'loading' ? <div className="docx-loading">正在还原 Word 排版…</div> : null}
+    </div>
+  )
+}
+
 export default function PaperPreview({ kind, file, text, structure, pageCount, mode }) {
   // 拍照才有「原件 / 识别文字」两档：第二档是 OCR 出来的字，排好给人核对
   if (mode === 'text') return <TextPaper text={text} emptyHint="这张照片没识别出文字，换一张更清晰的照片，或直接粘贴合同文字。" />
   if (kind === 'pdf' && file) return <PdfPages file={file} pageCount={pageCount} />
   if (kind === 'image' && file) return <ImagePreview file={file} />
+  if (kind === 'word' && file) return <DocxPaper file={file} structure={structure} text={text} />
   if (kind === 'word') return <WordText structure={structure} text={text} />
   return <TextPaper text={text} emptyHint="（这份文件里没有提取到文字）" />
 }

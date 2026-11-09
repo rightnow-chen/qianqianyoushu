@@ -6,7 +6,6 @@ import RiskTab from './workbench/RiskTab.jsx'
 import FixTab from './workbench/FixTab.jsx'
 import ScriptTab from './workbench/ScriptTab.jsx'
 import ChecklistTab from './workbench/ChecklistTab.jsx'
-import { formatMoney } from '../features/amountEngine.js'
 
 const TABS = [
   { key: 'ov', label: '概览' },
@@ -27,6 +26,7 @@ const PRIMARY = {
 export default function WorkbenchScreen({
   meta,
   pages,
+  file,
   risks,
   amounts,
   counts,
@@ -79,25 +79,6 @@ export default function WorkbenchScreen({
         <span className="fi">{meta.fileKind}</span>
         <span className="fn">{meta.fileName}</span>
         {isDemo && <span className="tag demo">演示数据</span>}
-        <div className="metarow">
-          <span>{meta.type}</span>
-          <span>{meta.city}</span>
-          <span>
-            月租 <b>¥{formatMoney(meta.rent)}</b>
-          </span>
-          <span>
-            租期 <b>{meta.months} 个月</b>
-          </span>
-          <span>
-            押金 <b>¥{formatMoney(meta.deposit)}</b>
-          </span>
-          <span>
-            审查尺度 <b>{meta.scale.replace(' · 逐句', '')}</b>
-          </span>
-          <span>
-            {risks.length} 条风险 · {pendingChecks} 项待核实
-          </span>
-        </div>
         <div className="filebar-acts">
           <button className="btn sm" type="button" onClick={onReupload}>
             重新上传
@@ -149,6 +130,8 @@ export default function WorkbenchScreen({
         <ContractPane
           pages={pages}
           risks={risks}
+          file={file}
+          meta={meta}
           activeId={activeId}
           locateSignal={locateSignal}
           onPickRisk={(riskId) => {
@@ -184,8 +167,6 @@ export default function WorkbenchScreen({
           {tab === 'ov' && (
             <OverviewTab
               risks={risks}
-              amounts={amounts}
-              meta={meta}
               counts={counts}
               worst={worst}
               verdict={verdict}

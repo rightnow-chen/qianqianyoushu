@@ -99,6 +99,14 @@ assert.deepEqual(countByLevel(mixed), { must: 1, check: 1, note: 1, total: 3 })
 
 // ---- 降级路径 ----
 assert.equal(describeDegradation([], []).level, 'failed', '零条款要走失败态')
+// 字读进来了、只是没一句话命中规则：不能说成「没读到」，否则用户会被要求重拍一份正常的合同
+const longText = '第三条 租金与月度应付款。乙方应在每月1日前支付当月款项。'.repeat(6)
+assert.equal(describeDegradation([], [], { text: longText }).level, 'no-match', '有正文但不命中应走「没命中规则」')
+assert.ok(
+  describeDegradation([], [], { text: longText }).readable > 60,
+  '「没命中规则」要报出实读字数，用来证明文件本身没问题',
+)
+assert.equal(describeDegradation([], [], { text: '太短' }).level, 'failed', '字数太少仍按读取失败处理')
 assert.equal(describeDegradation([{ id: 'x' }], []).level, 'partial', '有条款但没定位要走部分态')
 assert.ok(
   describeDegradation([{ id: 'x' }], [{ hasSuggestion: false, amountKey: null }]).noSuggestion === 1,

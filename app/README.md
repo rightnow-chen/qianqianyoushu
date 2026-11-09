@@ -107,11 +107,45 @@ npm run dev:full
 - `docs/ai-review-prompt.md`：大模型审查 Prompt 模板。
 - `docs/proposal.md`：项目提案资料。
 
+## 左侧显示的合同原件（确认页 + 结果页）
+
+| 来源 | 怎么显示 | 备注 |
+| --- | --- | --- |
+| PDF | pdf.js 渲染成 canvas，可翻页 | 必须用 legacy 构建，标准构建在旧内核里抛 `toHex is not a function` |
+| Word | docx-preview 还原真排版（字体 / 缩进 / 表格 / 分页） | 纯前端解析，不上传；栏宽小于 A4 时整页等比 `zoom` 缩放 |
+| 图片 | 原图 + OCR 文字两档 | 只有拍照才有「识别」这回事 |
+| TXT / 粘贴 | 按条款层级重排的纯文本 | 没有版式，不假装有 |
+
+Word 不用 Office Online / WPS WebOffice 的原因：那两套都要求文件有公网可访问的 HTTPS 地址（等于把合同先交给第三方），还要后端签名和商业授权。「不存储原文」是这个产品的底线，所以走纯前端渲染。代价是字体依赖本机（Windows 自带宋体/仿宋，macOS 会 fallback）。
+
+渲染失败的极少数情况（加密、损坏、`.doc` 改名成 `.docx`）会退回按标题/段落拍平的文本，至少让人能看到字。
+
+### 结果页左栏（`screens/workbench/OriginalDoc.jsx`）
+
+有原件就显示原件，没有才重排成纸（`PaperDoc.jsx`，只剩演示数据和纯文本走这条路）。
+
+PDF 走 `preparePage()`：先给每一页搭一个空白 canvas **和透明的文本层**，返回的 `draw()` 稍后补画面。分开的原因是一份 22 页的合同如果「画完一页再画下一页」，要等五六秒才有完整文字；文本层是纯 DOM，建起来快，所以先让定位/高亮/选中可用，canvas 再一页页补。**只有 canvas 的话，画得再像也只是张图，点哪儿都定位不了。**
+
+风险句的高亮用 **CSS Custom Highlight API**（`features/docHighlight.js`），不往 DOM 里插 `<span>`：PDF 文本层的 span 全是绝对定位的、docx 的表格分页也是库自己排的，插节点会把版式打乱。做法是把容器里的可见文字压成「无空白字符串 + 每个字符落在哪个文本节点的第几位」，匹配到之后映射回 `Range` 交给浏览器画。
+
+- `::highlight(risk-must / risk-check / risk-note)` 三档淡色底，`risk-active` 是当前这条（加深），样式在 `app.css`。
+- 点右侧「定位至原文」→ `scrollRangeIntoCenter()` 滚到视野正中。
+- 点原件上标过色的句子 → 取光标落点，看它落在哪个已登记的 `Range` 里，跳到那条风险；正在框选文字时不触发。
+- 扫描件（PDF 没有文字层）不做高亮，顶部标「扫描件 · 无文字层」，右侧照样有原句可对照。
+
 ## 验证
 
 ```bash
 npm run lint
 npm run build
-npm run test:ai
-npm run test:e2e
+npm run test:unit      # 13 组单测
+npm run test:e2e       # MVP 主路径 19 步（含 PDF / Word 在确认页与结果页两处都要是原件）
+npm run verify:mvp     # 12 项口径校验
+```
+
+临时看一眼某个文件的效果（先 `npm run build`）：
+
+```bash
+node scripts/verify/docx-preview-shot.mjs <某个.docx> [输出.png]
+node scripts/verify/upload-shot.mjs <任意合同文件> [前缀]   # 上传→质检→确认→审查，逐屏截图
 ```
