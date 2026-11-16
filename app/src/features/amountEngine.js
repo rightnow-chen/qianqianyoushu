@@ -134,10 +134,17 @@ export function computeVerdict(risks = [], amounts, options = {}) {
   }
 
   const top = must[0]
+  // catLabel 是给这句话用的名字：违约金归在租金大类里，但结论不能说成「租金调整」
+  const topName = top.catLabel || top.cat
   const topAmount = amountForRisk(top, amounts)
-  const topSentence = topAmount.missing
-    ? `其中${top.cat}条款的问题最需要在签约前落实，具体会损失多少取决于月租和押金——这两个数补上就能算。`
-    : `其中${top.cat}条款可能让你多损失 ${topAmount.text.replace(/[−+]/, '')}。`
+  // kind === 'none'：这条规则没有可定价的机制（比如违约金按逾期天数算）。
+  // 不能拿「—」去拼句子，也不能说成「待补」——补数字也算不出来。
+  const topSentence =
+    topAmount.kind === 'none'
+      ? `其中${topName}条款的问题最需要改掉，它没有固定金额，实际损失取决于真出事时怎么算。`
+      : topAmount.missing
+        ? `其中${topName}条款的问题最需要在签约前落实，具体会损失多少取决于月租和押金——这两个数补上就能算。`
+        : `其中${topName}条款可能让你多损失 ${topAmount.text.replace(/[−+]/, '')}。`
   return {
     key: 'hold',
     title: '关键问题确认后再决定',

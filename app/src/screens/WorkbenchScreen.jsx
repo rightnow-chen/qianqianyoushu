@@ -169,6 +169,9 @@ export default function WorkbenchScreen({
               risks={risks}
               counts={counts}
               worst={worst}
+              // 「算不出钱」有两种原因：没读到月租押金（能让用户去补），
+              // 或者条款本身没有固定金额（补也没用）。界面必须分开说。
+              hasAmounts={Boolean(amounts?.rent || amounts?.deposit)}
               verdict={verdict}
               checks={checks}
               degradation={degradation}

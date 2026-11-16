@@ -89,6 +89,19 @@ export function templateKeyOf(finding, cat) {
   return hit ? hit.key : cat
 }
 
+/**
+ * 结论句里用的名字，比九大分类更贴切。
+ *
+ * 「逾期违约金 5%/日」在分类上归租金（见上面 CAT_RULES 的注释），
+ * 但结论若写成「其中租金调整条款可能让你多损失…」，用户会以为说的是涨租，
+ * 和卡片标题「逾期违约金标准可能过高」对不上。分类本身不动，只改这句话的说法。
+ */
+export function catLabelOf(finding, cat) {
+  if (cat !== '租金调整') return cat
+  const id = String(finding.id || '')
+  return /late-fee|penalty|breach|default|overdue/.test(id) ? '违约金' : cat
+}
+
 /** 数值置信度 → 三档中文口径（PRD FR-10）。 */
 export function confidenceLabel(value) {
   const num = typeof value === 'number' ? value : 0.9
@@ -157,6 +170,7 @@ export function toRiskModel(findings = [], options = {}) {
       id: finding.id || `engine-${index + 1}`,
       level,
       cat,
+      catLabel: catLabelOf(finding, cat),
       severity: finding.level === 'high' ? '高' : finding.level === 'medium' ? '中' : '低',
       title: finding.title ? `${cat}：${finding.title}` : cat,
       amountKey,

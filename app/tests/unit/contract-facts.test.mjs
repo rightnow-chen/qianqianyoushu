@@ -76,4 +76,12 @@ const moneyMeta = metaFromFacts(moneyFacts)
 assert.equal(moneyMeta.rent, 4500)
 assert.equal(moneyMeta.deposit, 13500)
 
+// OCR / 扫描件会把千分位逗号读成点：图片测试包里的「2,800元」被识别成「2.800 元」。
+// 如果当成 2.8，用户在确认页看到的月租就是 2.8 元——比读不出来更糟，因为看不出错。
+const ocrMoneyFacts = extractContractFacts(`租 金 : 每 月 人 民 币 2.800 元 , 每 月 5 日 前 支 付 。
+押 金 : 人 民 币 2.800 元 , 退 租 交 房 后 30 个 工 作 日 退 还 。`)
+const ocrMoney = (key) => ocrMoneyFacts.amounts.find((item) => item.key === key)?.value
+assert.equal(ocrMoney('租金'), 2800, '「2.800 元」是千分位被读成点，应还原成 2800')
+assert.equal(ocrMoney('押金'), 2800, '押金同理，不能变成 2.8')
+
 console.log('contract-facts passed: clauses, locations, amounts, dates, terms and references')

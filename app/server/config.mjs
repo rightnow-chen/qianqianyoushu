@@ -11,12 +11,17 @@ export const distDir = path.join(rootDir, 'dist')
 export const indexHtmlPath = path.join(distDir, 'index.html')
 
 export const port = Number(process.env.PORT || process.env.AI_PROXY_PORT || 8787)
-export const allowedOrigins = new Set(
-  (process.env.AI_PROXY_ALLOWED_ORIGIN || 'http://localhost:5173')
+export const allowedOrigins = new Set([
+  ...(process.env.AI_PROXY_ALLOWED_ORIGIN || 'http://localhost:5173')
     .split(',')
     .map((origin) => origin.trim())
     .filter(Boolean),
-)
+  // 自己这个 origin 必须放行：`npm start` 下前端和接口同端口，
+  // vite 给 script/link 加了 crossorigin，浏览器会把这些静态请求也当成 CORS 请求，
+  // 不把自己列进去就会 500 —— 页面加载出来但样式和脚本全被拦掉。
+  `http://localhost:${port}`,
+  `http://127.0.0.1:${port}`,
+])
 export const requireTrustedOrigin = process.env.AI_PROXY_REQUIRE_ORIGIN === 'true' || process.env.NODE_ENV === 'production'
 export const accessToken = String(process.env.AI_PROXY_ACCESS_TOKEN || '').trim()
 

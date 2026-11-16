@@ -75,7 +75,10 @@ export function extractContractFacts(inputText) {
     const sentenceStart = Math.max(text.lastIndexOf('。', match.index - 1), text.lastIndexOf('；', match.index - 1), text.lastIndexOf('\n', match.index - 1)) + 1
     const context = text.slice(sentenceStart, match.index)
     const labels = [...context.matchAll(FACT_LABEL_RE)]
-    const digits = Number(match[0].replace(/[^\d.]/g, ''))
+    const numeric = match[0].replace(/[^\d.]/g, '')
+    // 千分位被读成点是常态：扫描件与 OCR 常把「2,800」输出成「2.800」。
+    // 只有「1~3 位 + 连续 3 位分组」才当千分位，否则 1.2 这种小数会被吃掉。
+    const digits = Number(/^\d{1,3}(?:\.\d{3})+$/.test(numeric) ? numeric.replace(/\./g, '') : numeric)
     // 「1.2 万元」要换算成 12000；百分比保持原值（5 就是 5%）
     const value = /万元/.test(match[0]) ? digits * 10000 : digits
     return {

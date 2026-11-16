@@ -71,6 +71,17 @@ const isMainModule = process.argv[1]
   && path.resolve(process.argv[1]) === path.resolve(fileURLToPath(import.meta.url))
 
 if (isMainModule) {
+  // 兜底：OCR 这类后台 worker 抛出的异步异常，调用栈已经不在任何请求里了，
+  // 不接住就是整个进程退出——用户看到的是「网站突然打不开」。
+  // 这里只记录不退出：请求内的错误都有各自的 try/catch，漏到这里的都是
+  // 「已经没人在等结果」的后台异常，让它带走服务没有任何好处。
+  process.on('unhandledRejection', (reason) => {
+    console.error('[ai-proxy] unhandledRejection:', reason instanceof Error ? reason.stack : reason)
+  })
+  process.on('uncaughtException', (error) => {
+    console.error('[ai-proxy] uncaughtException:', error?.stack || error)
+  })
+
   // Keep an explicit reference to the listener. Some Windows/npm launch
   // environments otherwise let the server be collected after startup.
   const server = app.listen(port, () => {

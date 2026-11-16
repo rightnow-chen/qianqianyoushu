@@ -131,4 +131,16 @@ assert.equal(zeroVerdict.key, 'hold')
 assert.ok(!zeroVerdict.desc.includes('¥0'), `结论里不能出现 ¥0：${zeroVerdict.desc}`)
 assert.ok(zeroVerdict.desc.includes('月租和押金'), '要说清是缺了哪两个数')
 
+// 条款本身没有可定价机制（违约金按逾期天数算）：既不能说「待补」，
+// 也不能把「—」拼进句子里。用户会以为补个数字就能算出来。
+const unpricedVerdict = computeVerdict(
+  [{ id: 'late-fee', level: 'must', cat: '租金调整', catLabel: '违约金', amountKey: null, title: '违约金过高' }],
+  base,
+  { checklistCount: 8 },
+)
+assert.equal(unpricedVerdict.key, 'hold')
+assert.ok(!unpricedVerdict.desc.includes('—'), `结论里不该出现破折号占位：${unpricedVerdict.desc}`)
+assert.ok(!unpricedVerdict.desc.includes('待补'), `补数字也算不出来，不能说待补：${unpricedVerdict.desc}`)
+assert.ok(unpricedVerdict.desc.includes('违约金'), '要用更贴切的名字，不能说成租金调整')
+
 console.log('amount-engine: 全部断言通过')

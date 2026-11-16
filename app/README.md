@@ -67,6 +67,21 @@ npm run dev:full
 - `HUNYUAN_API_KEY`：腾讯混元
 - `AI_PROXY_BASE_URL` / `AI_PROXY_MODEL`：可选强制覆盖项，一般保持空，让前端服务商预设自动匹配
 
+### 单端口模式：`npm start`
+
+`npm run build` 之后直接 `npm start`，一个端口（默认 8787）同时提供页面和接口，拍照 OCR、AI 审查都能用，不用再开 Vite：
+
+```bash
+npm run build
+npm start          # http://localhost:8787
+```
+
+两个坑已经踩过并修掉，改这块代码前先看一眼：
+
+- **CORS 必须放行自己的 origin。** vite 给 `script` / `link` 加了 `crossorigin`，浏览器会把静态资源请求也当成 CORS 请求。如果 `allowedOrigins` 里只有 `localhost:5173`，同端口访问时样式和脚本全被拦（页面白、控制台 500）。`server/config.mjs` 现在会自动把 `http://localhost:<port>` 和 `http://127.0.0.1:<port>` 加进去。
+- **OCR worker 的异步错误不能让它炸进程。** tesseract 的 worker 出错时会调用 `createWorker` 的 `errorHandler`；不传它，库会在 `process.nextTick` 里直接 throw，整个 Node 进程退出——症状是「识别成功一次，网站就再也打不开」。`recognizeImageOffline` 现在把 `errorHandler` 和 `terminate` 的异常都接住，`tests/unit/ocr-worker.test.mjs` 钉死。
+- `/api/ai/smoke` 是自检入口（不消耗额度）：返回 AI 与 OCR 两条链路的连通情况，排查「AI 用不了」先打它。
+
 ## 当前能力
 
 - 首页总览：展示项目定位、完整演示路线（含 90 秒快速路线）和审查流程教程，一键进入合同审查。

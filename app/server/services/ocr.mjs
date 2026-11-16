@@ -198,10 +198,15 @@ export async function recognizeImageOffline(buffer, {
   timeoutMs = ocrTimeoutMs,
 } = {}) {
   const langPath = await prepareLangPath()
+  // tesseract 的 worker 出错时会回调 options.errorHandler；不给它，
+  // createWorker 内部会在 process.nextTick 里直接 throw —— 整个 Node 进程退出。
+  // 实测：识别一张 IDAT 有多余数据块的 PNG，接口先正常返回 200，服务随后猝死。
+  const workerErrors = []
   const worker = await createWorkerImpl('chi_sim+eng', 1, {
     langPath,
     cachePath: path.join(rootDir, '.cache', 'tesseract'),
     gzip: true,
+    errorHandler: (error) => workerErrors.push(error),
   })
   let timeoutId = 0
 
@@ -212,13 +217,21 @@ export async function recognizeImageOffline(buffer, {
         timeoutId = setTimeout(() => reject(new Error('offline OCR timed out')), timeoutMs)
       }),
     ])
+    const text = result.data.text.trim()
+    // 一字没读出来时，把 worker 层面的错误带出来，否则只剩一句「结果过弱」查不到原因
+    if (!text && workerErrors.length) {
+      throw new Error(`offline OCR worker error: ${workerErrors[0]?.message || 'unknown'}`)
+    }
     return {
-      text: result.data.text.trim(),
+      text,
       confidence: Math.round(result.data.confidence || 0),
     }
   } finally {
     clearTimeout(timeoutId)
-    await worker.terminate()
+    // terminate 失败也不该把请求打成 500：识别结果已经拿到了
+    await worker.terminate().catch((error) => {
+      workerErrors.push(error)
+    })
   }
 }
 

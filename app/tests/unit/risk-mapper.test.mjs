@@ -61,6 +61,12 @@ assert.equal(medium.level, 'check', '中严重度 → 建议确认')
 const [low] = toRiskModel([{ ...base, id: 'lease-pet-additional-penalty', level: 'low', confidence: 0.9 }], { amounts })
 assert.equal(low.level, 'note', '低严重度 → 仅提醒')
 assert.equal(low.amountKey, null, '宠物类算不出金额时应为 null，不硬凑')
+assert.equal(low.catLabel, '宠物', '非租金类不要改名字')
+
+// 逾期违约金归在租金大类（CAT_RULES），但结论句不能说成「租金调整条款」
+const [lateFee] = toRiskModel([{ ...base, id: 'lease-late-fee-5-percent', level: 'high', confidence: 0.95 }], { amounts })
+assert.equal(lateFee.cat, '租金调整', '分类保持租金大类')
+assert.equal(lateFee.catLabel, '违约金', '结论句里应叫违约金，否则和卡片标题对不上')
 
 // ---- 九件套齐备性 ----
 for (const risk of [highConfirmed, medium, low]) {

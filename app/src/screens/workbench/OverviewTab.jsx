@@ -24,6 +24,7 @@ export default function OverviewTab({
   risks,
   counts,
   worst,
+  hasAmounts,
   verdict,
   checks,
   degradation,
@@ -34,6 +35,16 @@ export default function OverviewTab({
 }) {
   const pendingChecks = checks?.length ?? 0
   const noMatch = degradation?.level === 'no-match'
+  const mustCount = counts?.must ?? 0
+
+  // 「待补」只在真的缺数时出现。条款本身没有固定金额（违约金按逾期天数算）
+  // 时不摆「待补」——那句话会让用户以为回到上一步填个数字就能算出来。
+  const lossNote =
+    mustCount === 0
+      ? '这份合同没有必须修改的条款，不需要估算损失。'
+      : hasAmounts
+        ? '这几条没有固定金额可以折算（比如违约金按逾期天数计），实际损失取决于违约多久、扣多少，所以不在这里硬凑一个数。'
+        : '这份合同里没读到月租或押金金额，损失推算不出来。回到上一步把这几个数补上，这里的金额会立刻重算。'
 
   return (
     <div className="pane">
@@ -107,7 +118,7 @@ export default function OverviewTab({
                   {formatMoney(worst.total)}
                 </div>
               ) : (
-                <div className="loss-num tbd">待补</div>
+                <div className="loss-num tbd">{mustCount === 0 ? '—' : '待补'}</div>
               )}
             </div>
             <div className="loss-brk">
@@ -122,7 +133,7 @@ export default function OverviewTab({
                 <div className="loss-item">
                   <div className="bt">还没法算</div>
                   <div className="bn" style={{ whiteSpace: 'normal' }}>
-                    这份合同里没读到月租或押金金额，损失推算不出来。回到上一步把这几个数补上，这里的金额会立刻重算。
+                    {lossNote}
                   </div>
                 </div>
               )}
