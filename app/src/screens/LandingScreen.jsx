@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { Camera, Check, FolderOpen } from 'lucide-react'
+import { Check, FolderOpen } from 'lucide-react'
 
 const FACTS = [
   {
@@ -29,7 +29,7 @@ const FACTS = [
   },
 ]
 
-export default function LandingScreen({ onFile, onDemo, onPaste, onCamera }) {
+export default function LandingScreen({ onFile, onDemo, onPaste }) {
   const inputRef = useRef(null)
   const [drag, setDrag] = useState(false)
 
@@ -94,10 +94,6 @@ export default function LandingScreen({ onFile, onDemo, onPaste, onCamera }) {
               <FolderOpen size={14} aria-hidden="true" />
               选择文件
             </button>
-            <button className="btn" type="button" onClick={onCamera}>
-              <Camera size={14} aria-hidden="true" />
-              拍照上传
-            </button>
           </div>
           <div className="dz-alt">
             微信里收到的合同，也可以直接 <button type="button" onClick={onPaste}>粘贴文字</button>
@@ -131,7 +127,7 @@ export default function LandingScreen({ onFile, onDemo, onPaste, onCamera }) {
         </div>
 
         <div className="landing-foot">
-          没有电子版也可以拍照 —— 但照片越清楚识别越准，拍到反光、缺角会要求重拍。
+          没有电子版的话，可以先把合同拍成照片再上传 —— 照片越清楚识别越准，反光、缺角会被要求重传。
           <br />
           本结果由 AI 生成，不构成法律意见，可能存在遗漏 · 是否签约由你决定
         </div>

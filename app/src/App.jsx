@@ -399,14 +399,6 @@ export default function App() {
       {route.screen === 'landing' && (
         <LandingScreen
           onFile={handleFile}
-          onCamera={() => {
-            const input = document.createElement('input')
-            input.type = 'file'
-            input.accept = 'image/*'
-            input.capture = 'environment'
-            input.onchange = (event) => handleFile(event.target.files?.[0])
-            input.click()
-          }}
           onPaste={handlePaste}
           onDemo={loadDemo}
         />
