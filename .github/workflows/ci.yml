@@ -1,0 +1,73 @@
+name: ci
+
+# 只跑真实存在的门槛：lint → 单测 → 构建 → 主路径 e2e。
+# 旧的 miniapp-ci.yml 引用了 4 个 miniapp 脚本 + 1 个 subsidy 脚本 + 一个不存在的
+# miniapp/ 目录，且第一步在仓库根跑 npm ci（根目录没有 package.json），从未跑通过。
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+defaults:
+  run:
+    working-directory: app
+
+jobs:
+  verify:
+    name: lint / unit / build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Unit tests
+        run: npm run test:unit
+
+      - name: Build
+        run: npm run build
+
+      - name: Upload dist
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: app/dist
+          retention-days: 3
+
+  e2e:
+    name: e2e main path
+    runs-on: ubuntu-latest
+    needs: verify
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      # mvp-flow.mjs 会自起静态服务器，但要求 dist 已存在
+      - name: Build
+        run: npm run build
+
+      - name: E2E
+        run: npm run test:e2e

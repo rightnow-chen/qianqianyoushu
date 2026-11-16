@@ -28,7 +28,6 @@ export function registerHealthRoutes(app) {
         ? 'remote-zhipu-vision+offline-fallback'
         : rapidOcrEnabled ? 'offline-rapidocr+tesseract-fallback' : 'offline-tesseract',
       zhipuVisionConfigured: Boolean(zhipuVisionApiKey),
-      subsidyLiveUpdates: true,
     })
   })
 }

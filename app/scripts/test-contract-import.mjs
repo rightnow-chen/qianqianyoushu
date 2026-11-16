@@ -65,7 +65,6 @@ check('接口与页面：文档上传与图片 OCR 入口可用', async () => {
     'routes/miniapp-ai.mjs',
     'routes/ocr.mjs',
     'routes/rag.mjs',
-    'routes/subsidy.mjs',
   ].map((file) => readFile(new URL(`../server/${file}`, import.meta.url), 'utf8')))
   const serverSource = serverSources.join('\n')
   const pageSource = await readFile(new URL('../miniapp/src/pages/contract/index.jsx', import.meta.url), 'utf8')

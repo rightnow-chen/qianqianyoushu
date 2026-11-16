@@ -359,68 +359,6 @@ function buildLocalKnowledgeContext() {
     .join('\n')
 }
 
-function pickLocalKnowledgeForPrompt(prompt, activeTab) {
-  const query = `${prompt} ${workflowLabels[activeTab] || activeTab}`
-  const normalizedQuery = query.toLowerCase()
-  const rawTokens = normalizedQuery.match(/[\u4e00-\u9fa5]{2,}|[a-z0-9-]{2,}/gi) || []
-  const gramTokens = rawTokens.flatMap((token) => {
-    if (!/^[\u4e00-\u9fa5]+$/.test(token)) return [token]
-    const grams = []
-    for (let size = 2; size <= Math.min(4, token.length); size += 1) {
-      for (let index = 0; index <= token.length - size; index += 1) {
-        grams.push(token.slice(index, index + size))
-      }
-    }
-    return grams
-  })
-  const queryTokens = Array.from(new Set([...rawTokens, ...gramTokens]))
-
-  const matches = knowledgeBaseItems
-    .map((item) => {
-      const haystack = `${item.title} ${item.tag} ${item.text}`.toLowerCase()
-      const directScore = [item.title, item.tag].some((value) => normalizedQuery.includes(String(value).toLowerCase())) ? 8 : 0
-      const score = queryTokens.reduce((total, token) => (haystack.includes(token.toLowerCase()) ? total + 1 : total), directScore)
-      return { ...item, score }
-    })
-    .sort((a, b) => b.score - a.score)
-
-  const picked = matches.filter((item) => item.score > 0).slice(0, 3)
-  return picked.length ? picked : knowledgeBaseItems.slice(0, 3)
-}
-
-export function createLocalAiFallbackReply({ prompt, activeTab, findings, depositResult, ragItems }) {
-  const topFinding = findings[0]
-  const knowledge = (Array.isArray(ragItems) && ragItems.length ? ragItems : pickLocalKnowledgeForPrompt(prompt, activeTab)).slice(0, 3)
-
-  const riskLine = topFinding
-    ? `当前最值得先处理的是“${topFinding.title}”，证据片段是“${compactText(topFinding.evidence, 72)}”。`
-    : '当前页面没有明显高风险结论，但仍建议按材料、证据、沟通三个方向核对。'
-
-  const moduleAction = {
-    review: '先把合同里押金、维修、涨租、解除、入户和违约金条款逐条过一遍，优先修改会直接影响钱和居住安全的内容。',
-    evidence: '先补齐押金付款、费用结清、交接照片、维修票据、聊天记录和钥匙交还记录，再和房东确认扣款明细。',
-    checkin: '先拍墙面地板、门窗门锁、家具家电和水电燃气表读数，并把已有瑕疵发给房东或中介确认。',
-    subsidy: '先确认城市、学历、社保、无房、劳动合同和申报入口，政策结果以官方最新页面和经办部门口径为准。',
-    proposal: '先用首页四个入口演示完整链路：补贴匹配、租房审查、入住验房、退租证据包。',
-  }[activeTab] || '先明确当前问题属于补贴、合同、入住验房还是退租押金，再进入对应模块处理。'
-
-  return normalizeAiReplyText([
-    '结论：当前模型暂时不可用，我先按本地知识库和当前页面数据给你可执行建议。',
-    `重点风险：${riskLine}`,
-    `建议动作：${moduleAction}`,
-    `押金提醒：当前押金估算预计应退 ${formatMoney(depositResult.estimatedReturn)}。如对方要扣款，要求提供照片、维修清单、票据和扣款依据。`,
-    `依据：${knowledge
-      .map((item) => {
-        const source = item.source || item.sourceName || '签前有数内置知识库'
-        const scope = item.scope ? `，适用范围：${item.scope}` : ''
-        const updatedAt = item.updatedAt ? `，更新：${item.updatedAt}` : ''
-        return `${item.title}（${source}${scope}${updatedAt}）：${item.text}`
-      })
-      .join('；')}`,
-    '下一步：把对方要求、合同原文或扣款明细发给租房小助手，我会继续按证据和话术帮你拆解。',
-  ].join('\n'))
-}
-
 export function normalizeAiReplyText(text) {
   const sectionPattern = aiReplySections.join('|')
 

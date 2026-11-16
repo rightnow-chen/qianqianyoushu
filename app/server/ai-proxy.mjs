@@ -12,7 +12,6 @@ import { registerHealthRoutes } from './routes/health.mjs'
 import { registerMiniappAiRoutes } from './routes/miniapp-ai.mjs'
 import { registerOcrRoutes } from './routes/ocr.mjs'
 import { registerRagRoutes } from './routes/rag.mjs'
-import { registerSubsidyRoutes } from './routes/subsidy.mjs'
 
 // 向后兼容：脚本历史上直接从网关模块导入 OCR 能力，统一转发到服务层。
 export {
@@ -37,7 +36,6 @@ app.use(cors({
 app.use(express.json({ limit: '12mb' }))
 
 registerHealthRoutes(app)
-registerSubsidyRoutes(app)
 registerAuthRoutes(app)
 registerMiniappAiRoutes(app)
 registerRagRoutes(app)
