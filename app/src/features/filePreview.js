@@ -29,22 +29,6 @@ export function previewKindOf({ fileName = '', source = '', mime = '' } = {}) {
   return 'text'
 }
 
-/** 每种来源都要有一句实话：为什么这里不是「原件」。 */
-export function previewNoteFor(kind, { pageCount = 0 } = {}) {
-  if (kind === 'pdf') {
-    return pageCount > 1
-      ? `这是你上传的 PDF 原件，共 ${pageCount} 页，可以翻页对照。右边六个字段都是从这份文件里读出来的。`
-      : '这是你上传的 PDF 原件。右边六个字段都是从这份文件里读出来的。'
-  }
-  if (kind === 'image') {
-    return '这是你上传的原图。文字是从这张图识别出来的，识别有误的地方右边可以直接改。'
-  }
-  if (kind === 'word') {
-    return '这是你上传的 Word 原件，字体、缩进、分页都按原样还原，可以翻页对照；右边六个字段就是从这份文件里读出来的。'
-  }
-  return '文本文件没有版式，这里显示的是提取出来的正文全文。'
-}
-
 /**
  * 打开 PDF 并返回渲染句柄。同一个文件只解析一次，翻页时复用。
  * 用 legacy 构建的理由与 fileImport.js 相同：标准构建在旧内核里会直接抛异常。

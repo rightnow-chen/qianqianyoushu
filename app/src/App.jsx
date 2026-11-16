@@ -445,10 +445,7 @@ export default function App() {
       )}
 
       {route.screen === 'analyzing' && (
-        <AnalyzingScreen
-          onDone={() => go('work', { tab: 'ov' })}
-          onSkip={() => go('work', { tab: 'ov' })}
-        />
+        <AnalyzingScreen onDone={() => go('work', { tab: 'ov' })} />
       )}
 
       {route.screen === 'work' && (

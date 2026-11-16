@@ -1,10 +1,10 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { REVIEW_SCOPE, REVIEW_SCALES } from '../features/riskModel.js'
-import { previewKindOf, previewNoteFor } from '../features/filePreview.js'
+import { previewKindOf } from '../features/filePreview.js'
+import { CITY_PLACEHOLDER, PROVINCES, citiesOf, composeCity, isKnownProvince, parseCity } from '../features/cities.js'
 import PaperPreview from './confirm/PaperPreview.jsx'
 
 const TYPES = ['房屋租赁合同', '公寓租赁合同', '合租协议', '疑似非租赁合同']
-const CITIES = ['待确认', '北京 · 朝阳', '北京 · 海淀', '上海 · 浦东', '广州 · 天河', '深圳 · 南山', '武汉 · 洪山']
 
 /** 允许下拉里出现「合同里读到、但不在固定列表」的类型，否则 select 会显示空白。 */
 function optionsWith(current, options) {
@@ -15,22 +15,19 @@ function optionsWith(current, options) {
 export default function ConfirmScreen({ meta, onChangeMeta, onNext, onBack, file, text, structure }) {
   const [mode, setMode] = useState('paper')
   const kind = previewKindOf({ fileName: meta.fileName, source: meta.source, mime: file?.type })
-  // 只有拿到原始文件才能显示原件；演示数据没有文件，退化成全文
-  const hasOriginal = Boolean(file) && (kind === 'pdf' || kind === 'image' || kind === 'word')
   // 只有拍照才有「识别」这回事：PDF / Word / TXT 的文字本来就是文件自带的，
   // 给它们放一个「识别全文」只会让人以为是识别出来的，还多一层没必要的点击。
   const canToggle = kind === 'image'
   const heading = kind === 'image' ? '合同照片' : kind === 'pdf' || kind === 'word' ? '合同原件' : '原文预览'
   // 不支持切换的来源一律按原件渲染，mode 残值不影响显示
   const activeMode = canToggle ? mode : 'paper'
-  const note = useMemo(() => {
-    if (canToggle && mode === 'text') {
-      return '这是从照片里识别出来的文字，按条款重新排过版，方便你逐条核对；识别错的地方右边字段可以直接改。'
-    }
-    if (hasOriginal) return previewNoteFor(kind, { pageCount: meta.filePages })
-    if (kind === 'word') return previewNoteFor('word')
-    return '这是从文件里读出来的正文全文，右边的六个字段就是从这段文字里提取的。'
-  }, [canToggle, mode, hasOriginal, kind, meta.filePages])
+  // 城市存成「省 · 市」一个字符串，这里拆成两级下拉回显。
+  // 旧版本存过区级值（北京 · 朝阳），parseCity 拆出来的省在列表里找不到，
+  // 就让省下拉落回「待确认」，而不是把整格清空。
+  const picked = parseCity(meta.city)
+  const province = isKnownProvince(picked.province) ? picked.province : ''
+  const city = province ? picked.city : ''
+  const cityOptions = citiesOf(province)
   // 空白模板、扫描不清、格式怪异，都可能读不出数字。
   // 不说清就变成「识别错了」——用户以为是产品算错，其实是合同里没有或没读到。
   const missing = [
@@ -68,8 +65,6 @@ export default function ConfirmScreen({ meta, onChangeMeta, onNext, onBack, file
               pageCount={meta.filePages}
               mode={activeMode}
             />
-
-            <div className="preview-note">{note}</div>
           </div>
 
           <div>
@@ -88,13 +83,32 @@ export default function ConfirmScreen({ meta, onChangeMeta, onNext, onBack, file
                       ))}
                     </select>
                   </label>
-                  <label className="field">
+                  <label className="field field-city">
                     <span className="k">城市</span>
-                    <select value={meta.city} onChange={(event) => onChangeMeta({ city: event.target.value })}>
-                      {optionsWith(meta.city, CITIES).map((city) => (
-                        <option key={city}>{city}</option>
+                    <select
+                      value={province}
+                      onChange={(event) => onChangeMeta({ city: composeCity(event.target.value, '') })}
+                    >
+                      <option value="">{CITY_PLACEHOLDER}</option>
+                      {PROVINCES.map((item) => (
+                        <option key={item.name} value={item.name}>
+                          {item.name}
+                        </option>
                       ))}
                     </select>
+                    {cityOptions.length > 0 && (
+                      <select
+                        value={city}
+                        onChange={(event) => onChangeMeta({ city: composeCity(province, event.target.value) })}
+                      >
+                        <option value="">{province}全省</option>
+                        {cityOptions.map((item) => (
+                          <option key={item} value={item}>
+                            {item}
+                          </option>
+                        ))}
+                      </select>
+                    )}
                   </label>
                   <label className={meta.rent ? 'field' : 'field needs-value'}>
                     <span className="k">月租</span>
@@ -143,14 +157,7 @@ export default function ConfirmScreen({ meta, onChangeMeta, onNext, onBack, file
                   <div className="hint hint-warn" style={{ marginTop: 8 }}>
                     {missing.join('、')}没读出来，请手动填 —— 后面算金额要用到。
                   </div>
-                ) : (
-                  <div className="hint" style={{ marginTop: 8 }}>
-                    六个字段都读到了，可以对照左边原文核一遍；读错了直接在上面改。
-                  </div>
-                )}
-                <div className="hint" style={{ marginTop: 6 }}>
-                  城市只用来提示地区差异（如押金监管、水电价），不作为结论依据。
-                </div>
+                ) : null}
               </div>
             </div>
 
@@ -176,7 +183,7 @@ export default function ConfirmScreen({ meta, onChangeMeta, onNext, onBack, file
           <button className="btn" type="button" onClick={onBack}>
             ← 上一步
           </button>
-          <span className="hint">点击开始后约 30 秒出结果，可以先用「看已完成的部分」。</span>
+          <span className="hint">点击开始后约 30 秒出结果，中途不要关掉这个页面。</span>
           <button className="btn primary" type="button" onClick={onNext}>
             开始审查 →
           </button>

@@ -127,12 +127,17 @@ try {
   await page.waitForTimeout(200)
   step('字段编辑联动')
 
-  // 5. 开始审查
+  // 5. 开始审查。分析页现在只有进度条，没有「先看已完成的部分」这种提前跳出入口，
+  //    所以这里必须等它自己跑完（模拟进度约 5 秒 + 700ms 收尾），不能只睡固定时间。
   await page.locator('button', { hasText: '开始审查' }).first().click()
-  await page.waitForTimeout(900)
-  const skip = page.locator('button, a', { hasText: '先看已完成的部分' }).first()
-  if (await skip.count()) await skip.click()
-  await page.waitForTimeout(2200)
+  await page.waitForSelector('.a-step', { timeout: 15000 })
+  assert.equal(
+    await page.locator('button, a', { hasText: '先看已完成的部分' }).count(),
+    0,
+    '分析页不该再有「先看已完成的部分」这个提前跳出入口',
+  )
+  await page.waitForFunction(() => location.hash.startsWith('#work'), null, { timeout: 40000 })
+  await page.waitForTimeout(600)
   assert.ok((await page.evaluate(() => location.hash)).startsWith('#work'), '审查后应进工作台')
 
   const overview = await text()

@@ -81,10 +81,9 @@ await check(3, '质检异常可继续，结果页有说明', async () => {
   await cont.click()
   await page.waitForTimeout(500)
   await page.locator('button', { hasText: '开始审查' }).first().click()
-  await page.waitForTimeout(800)
-  const skip = page.locator('button, a', { hasText: '先看已完成的部分' }).first()
-  if (await skip.count()) await skip.click()
-  await page.waitForTimeout(2200)
+  // 分析页不再提供「先看已完成的部分」，只能等它自己跑完
+  await page.waitForFunction(() => location.hash.startsWith('#work'), null, { timeout: 40000 })
+  await page.waitForTimeout(600)
   const workText = await body()
   if (!/没跑出结论|只读到条款|没有读到可以判断的条款|不完整/.test(workText)) {
     throw new Error('结果页没有交代这次没跑好')

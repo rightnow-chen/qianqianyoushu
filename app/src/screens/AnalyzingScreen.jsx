@@ -10,7 +10,7 @@ const STEPS = [
 
 const PAGE_HINTS = ['正在读取第 1 页…', '正在读取第 2 页…', '正在读取第 3 页…', '正在比对第 4 页…']
 
-export default function AnalyzingScreen({ onDone, onSkip }) {
+export default function AnalyzingScreen({ onDone }) {
   const [pct, setPct] = useState(8)
   const doneRef = useRef(onDone)
 
@@ -96,12 +96,6 @@ export default function AnalyzingScreen({ onDone, onSkip }) {
                 </div>
               ))}
 
-              <div className="blue-note">
-                等的时候可以做点别的：
-                <button type="button" onClick={onSkip} style={{ color: 'var(--blue)' }}>
-                  先看已完成的部分 →
-                </button>
-              </div>
               <div className="hint" style={{ marginTop: 9 }}>
                 平均 28 秒；20 页以上会拆成多段逐段审查，不会卡住。
               </div>

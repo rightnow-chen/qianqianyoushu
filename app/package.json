@@ -25,7 +25,7 @@
     "test:contract-playbook-cases": "node tests/unit/contract-review-playbook-cases.test.mjs && node scripts/evaluate-contract-playbook-cases.mjs",
     "test:contract-facts": "node tests/unit/contract-facts.test.mjs",
     "test:real-contract-review": "node scripts/run-real-contract-review.mjs",
-    "test:legal-basis": "node tests/unit/legal-basis.test.mjs",
+    "test:legal-basis": "node tests/unit/legal-basis.test.mjs && node tests/unit/cities.test.mjs",
     "generate:contract-review-cases": "node scripts/generate-contract-review-cases.mjs"
   },
   "dependencies": {

@@ -9,7 +9,7 @@ export const DEMO_META = {
   fileKind: 'PDF',
   fileNote: '手机拍摄转 PDF · 无文字层',
   type: '房屋租赁合同',
-  city: '北京 · 朝阳',
+  city: '北京',
   rent: 4500,
   months: 12,
   deposit: 13500,
