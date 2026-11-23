@@ -32,7 +32,7 @@ export const miniappSessionTtlSeconds = Math.max(300, Math.min(Number(process.en
 
 export const upstreamTimeoutMs = Math.max(5_000, Math.min(Number(process.env.AI_PROXY_TIMEOUT_MS) || 45_000, 120_000))
 export const ocrTimeoutMs = Math.max(15_000, Math.min(Number(process.env.OCR_TIMEOUT_MS) || 90_000, 180_000))
-export const dailyQuota = Math.max(1, Number(process.env.AI_DAILY_QUOTA || 40))
+export const dailyQuota = Math.max(1, Number(process.env.AI_DAILY_QUOTA || 30))
 
 export const zhipuVisionApiKey = String(process.env.ZHIPU_API_KEY || process.env.BIGMODEL_API_KEY || '').trim()
 export const zhipuVisionModels = [...new Set([

@@ -59,7 +59,7 @@ function evaluateReply(reply, testCase) {
   return problems
 }
 
-// 单次采样（每次带独立 x-rental-safe-account，绕过 40 次/天额度限制，也不污染用户额度）
+// 单次采样（每次带独立 x-rental-safe-account，绕过每日额度限制，也不污染用户额度）
 // content 为空属于推理模型偶发长思考溢出，自动重试一次
 async function sampleOnce(messages) {
   const evalAccount = `advisor-eval-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`
