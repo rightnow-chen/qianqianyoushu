@@ -90,3 +90,7 @@ if (isMainModule) {
     process.exitCode = 1
   })
 }
+
+// Vercel Serverless Function 入口：被 import 时 isMainModule=false，不会 listen，
+// 直接把配置好的 Express app 交给 Vercel 处理 /api/* 请求。本地 npm start 不受影响。
+export default app

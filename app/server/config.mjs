@@ -16,6 +16,12 @@ export const allowedOrigins = new Set([
     .split(',')
     .map((origin) => origin.trim())
     .filter(Boolean),
+  // Vercel 部署时自动注入的域名（预览域名 + 生产域名），前端与 /api 同源。
+  // 这样 CORS 中间件和 trustedApiRequest 守卫都能放行，无需手动配白名单。
+  ...(['VERCEL_URL', 'VERCEL_PROJECT_PRODUCTION_URL']
+    .map((key) => process.env[key]?.trim())
+    .filter(Boolean)
+    .map((host) => `https://${host}`)),
   // 自己这个 origin 必须放行：`npm start` 下前端和接口同端口，
   // vite 给 script/link 加了 crossorigin，浏览器会把这些静态请求也当成 CORS 请求，
   // 不把自己列进去就会 500 —— 页面加载出来但样式和脚本全被拦掉。

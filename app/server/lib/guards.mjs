@@ -117,6 +117,27 @@ export function authenticateMiniappSession(request, response, next) {
   next()
 }
 
+/**
+ * 判断请求是否与 API 同源。
+ * 部署到 Vercel 时前端和 /api 共用一个域名，浏览器发出的请求 origin 就是该域名；
+ * 这类请求天然可信（不是第三方站点在调我们的接口），无需手动配进白名单。
+ * 用 x-forwarded-host（Vercel 等反代会设置）再回退 host，兼容有端口的本地地址。
+ */
+export function isSameOriginRequest(request) {
+  const origin = String(request.get('origin') || '').trim()
+  if (!origin) return false
+  let originHost = ''
+  try {
+    originHost = new URL(origin).host
+  } catch {
+    return false
+  }
+  const requestHost = String(
+    request.get('x-forwarded-host') || request.get('host') || '',
+  ).split(',')[0].trim()
+  return Boolean(requestHost) && originHost === requestHost
+}
+
 export function trustedApiRequest(request, response, next) {
   const miniappSession = verifyMiniappSessionToken(getBearerToken(request), miniappSessionSecret)
   if (miniappSession.ok) {
@@ -137,7 +158,7 @@ export function trustedApiRequest(request, response, next) {
   }
 
   const origin = String(request.get('origin') || '').trim()
-  if (origin && allowedOrigins.has(origin)) {
+  if ((origin && allowedOrigins.has(origin)) || isSameOriginRequest(request)) {
     next()
     return
   }
