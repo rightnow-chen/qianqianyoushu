@@ -2,6 +2,7 @@
 // 跑法：node tests/unit/contract-docx.test.mjs
 import assert from 'node:assert/strict'
 import { buildCommentDocxBlob, buildRevisionDocxBlob, composeRevision, locateQuote, planComments } from '../../src/features/contractDocx.js'
+import { resolveProfile, classifyLine } from '../../src/features/contractDocxLayout.js'
 
 const CONTRACT = `房屋租赁合同
 第一条　房屋基本情况
@@ -101,6 +102,20 @@ const RISKS = [
   )
 }
 
+// 6b. 只导出勾选的批注：selected 决定挂哪几条，没勾的不挂（用户点「添加批注」的语义）
+{
+  const plan = planComments(CONTRACT, RISKS, { selected: { r1: true } })
+  assert.equal(plan.anchors.length, 1, '只勾了一条就只挂一条批注')
+  assert.equal(plan.anchors[0].risk.id, 'r1')
+  const none = planComments(CONTRACT, RISKS, { selected: {} })
+  assert.equal(none.anchors.length, 0, '一条都没勾就不该有批注')
+  assert.equal(
+    plan.segments.map((item) => item.text).join(''),
+    CONTRACT,
+    '按勾选筛选后正文仍是原文',
+  )
+}
+
 // 7. 两条风险指向同一句时，批注只留一条，另一条进 missing（overlap）
 {
   const duplicated = [RISKS[0], { ...RISKS[1], id: 'dup', original: RISKS[0].original }]
@@ -140,4 +155,83 @@ const RISKS = [
   assert.ok(!revisionBody.includes('commentReference'), '修订版不该出现批注引用')
 }
 
-console.log('contract-docx: 全部断言通过（定位 2 / 修订 3 / 批注 2 / 产物 1）')
+// 9. 版式：按来源派生骨架
+{
+  assert.equal(resolveProfile({ fileKind: 'DOCX' }), 'preserve', 'Word 保留原件结构')
+  assert.equal(resolveProfile({ fileKind: 'PDF' }), 'preserve', 'PDF 保留原件结构')
+  assert.equal(resolveProfile({ fileKind: 'TXT' }), 'template', '文本套示范文本骨架')
+  assert.equal(resolveProfile({ fileKind: 'PNG' }), 'template', '图片 OCR 套示范文本骨架')
+  assert.equal(resolveProfile({ isDemo: true, fileKind: 'PDF' }), 'template', '演示数据一律展示规范骨架')
+  assert.equal(classifyLine('合同编号：CY-2026-1102'), 'contractNo')
+  assert.equal(classifyLine('房屋租赁合同'), 'title')
+  assert.equal(classifyLine('出租人（甲方）：李××'), 'party')
+  assert.equal(classifyLine('第一条　房屋基本情况'), 'heading')
+  assert.equal(classifyLine('甲方将房屋出租给乙方。'), 'body')
+}
+
+// 10. 两版排版一致：页边距 / 页眉页码 / 段样式同一套；页码字段齐全
+{
+  const JSZip = (await import('jszip')).default
+  const read = async (blob, name) => {
+    const zip = await JSZip.loadAsync(Buffer.from(await blob.arrayBuffer()))
+    return zip.file(name)?.async('string') || null
+  }
+  const commentDoc = await buildCommentDocxBlob({ text: CONTRACT, risks: RISKS, selected: { r1: true }, meta: { fileName: 'x.txt' } })
+  const revisionDoc = await buildRevisionDocxBlob({ text: CONTRACT, risks: RISKS, accepted: { r1: true }, meta: { fileName: 'x.txt' } })
+
+  const cBody = await read(commentDoc.blob, 'word/document.xml')
+  const rBody = await read(revisionDoc.blob, 'word/document.xml')
+  const cMargin = cBody.match(/<w:pgMar[^>]*\/>/)?.[0]
+  const rMargin = rBody.match(/<w:pgMar[^>]*\/>/)?.[0]
+  assert.ok(cMargin && rMargin, '两版都必须写页边距')
+  assert.equal(cMargin, rMargin, '批注版与修订版页边距必须一致')
+
+  const cFooter = await read(commentDoc.blob, 'word/footer1.xml')
+  const rFooter = await read(revisionDoc.blob, 'word/footer1.xml')
+  assert.ok(cFooter?.includes('PAGE') && cFooter.includes('NUMPAGES'), '页脚必须有「第 X 页 / 共 Y 页」字段')
+  assert.equal(cFooter, rFooter, '两版页脚页码必须一致')
+
+  const cHeader = await read(commentDoc.blob, 'word/header1.xml')
+  const rHeader = await read(revisionDoc.blob, 'word/header1.xml')
+  assert.ok(cHeader?.includes('批注版') && rHeader?.includes('修订版'), '页眉标注各自版本')
+  assert.equal(cHeader.replace('批注版', 'X'), rHeader.replace('修订版', 'X'), '两版页眉除版本名外必须一致')
+}
+
+// 11. 两种骨架：template 不重复标题（原文自带 title 行只出现一次）；preserve 保留原文编号、不套封面
+{
+  const JSZip = (await import('jszip')).default
+  const textsOf = async (blob) => {
+    const zip = await JSZip.loadAsync(Buffer.from(await blob.arrayBuffer()))
+    const xml = await zip.file('word/document.xml').async('string')
+    return [...xml.matchAll(/<w:t[^>]*>([^<]*)<\/w:t>/g)].map((m) => m[1])
+  }
+  // template（演示/文本/图片）：封面不重复写「房屋租赁合同」。
+  // CONTRACT 原文自带 1 行标题，导出后应恰好 1 次；封面只放版本标记，不额外造标题。
+  const tpl = await buildRevisionDocxBlob({
+    text: CONTRACT,
+    risks: RISKS,
+    accepted: { r1: true },
+    meta: { fileName: 'x.txt' },
+    profile: 'template',
+  })
+  const tt = await textsOf(tpl.blob)
+  assert.equal(tt.filter((t) => t === '房屋租赁合同').length, 1,
+    '标题只保留正文自带的 1 行，封面不得再重复一个')
+  assert.ok(tt.some((t) => t === '（修订版）'), 'template 封面用版本标记代替重复标题')
+
+  // preserve（Word/PDF）：保留原文自带的合同编号，标题不额外重复
+  const raw = '合同编号：HT-001\n房屋租赁合同\n第一条 房屋基本情况\n甲方将房屋出租给乙方。\n'
+  const pres = await buildRevisionDocxBlob({
+    text: raw,
+    risks: [{ id: 'x', level: 'note', cat: '其他', title: 't', original: '甲方将房屋出租给乙方。', suggestion: '改', consequence: 'c' }],
+    accepted: { x: true },
+    meta: { fileName: '原件.docx' },
+    profile: 'preserve',
+  })
+  const pt = await textsOf(pres.blob)
+  assert.ok(pt.includes('合同编号：HT-001'), 'preserve 必须保留原文自带的合同编号')
+  assert.equal(pt.filter((t) => t === '房屋租赁合同').length, 1, 'preserve 不套封面，标题只保留原文的 1 处')
+  assert.ok(pt.some((t) => t.includes('原件.docx')), 'preserve 用文件名作小标题，便于对照原件')
+}
+
+console.log('contract-docx: 全部断言通过（定位 2 / 修订 3 / 批注 2 / 产物 1 / 版式 2 / 骨架 1）')

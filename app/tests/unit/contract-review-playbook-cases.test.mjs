@@ -8,6 +8,10 @@ assert.deepEqual(ids, [
   'repair-duty',
   'entry-and-consent',
   'early-termination-loss',
+  'utilities-and-fees',
+  'sublease-and-cohabitation',
+  'attachments-and-inventory',
+  'pet-and-use-restrictions',
 ])
 
 for (const [playbookId, cases] of Object.entries(contractReviewPlaybookCases)) {

@@ -35,6 +35,7 @@ export default function WorkbenchScreen({
   checks,
   tab,
   degradation,
+  aiReview,
   isDemo,
   onTab,
   activeId,
@@ -43,9 +44,11 @@ export default function WorkbenchScreen({
   done,
   accepted,
   edited,
+  commented,
   onDone,
   onAccept,
   onSaveEdit,
+  onComment,
   onToggleCheck,
   onReupload,
   onExport,
@@ -143,8 +146,9 @@ export default function WorkbenchScreen({
         <main className="workspace">
           <div className="tabs" role="tablist">
             {TABS.map((item) => {
+              // 「修改」不挂角标：它挨着「风险 5 / 必须改 2」，再挂个 2 只是把同一个数说两遍。
               const badge =
-                item.key === 'risk' ? risks.length : item.key === 'fix' ? counts.must : item.key === 'check' ? pendingChecks : null
+                item.key === 'risk' ? risks.length : item.key === 'check' ? pendingChecks : null
               return (
                 <button
                   className={`tab ${tab === item.key ? 'on' : ''}`}
@@ -169,12 +173,10 @@ export default function WorkbenchScreen({
               risks={risks}
               counts={counts}
               worst={worst}
-              // 「算不出钱」有两种原因：没读到月租押金（能让用户去补），
-              // 或者条款本身没有固定金额（补也没用）。界面必须分开说。
-              hasAmounts={Boolean(amounts?.rent || amounts?.deposit)}
               verdict={verdict}
               checks={checks}
               degradation={degradation}
+              aiReview={aiReview}
               isDemo={isDemo}
               onTab={onTab}
               onOpenFix={openFix}
@@ -206,10 +208,12 @@ export default function WorkbenchScreen({
               edited={edited}
               accepted={accepted}
               done={done}
+              commented={commented}
               onSelect={onActive}
               onSaveEdit={onSaveEdit}
               onAccept={onAccept}
               onDone={onDone}
+              onComment={onComment}
               onLocate={(riskId) => onActive(riskId)}
               onTab={onTab}
               onToast={onToast}

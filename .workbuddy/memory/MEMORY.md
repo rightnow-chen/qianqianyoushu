@@ -1,67 +1,59 @@
 # 项目长期记忆 — 签前有数（毕业生租房签约决策助手）
 
-> 2026-10-26 起：用户已提供基于真实市场调研的修订版定位与需求验证报告，以下为现行有效版本。
+> 现行有效版本。详细过程见 `.workbuddy/memory/YYYY-MM-DD.md` 日志。
 
-## 产品定位（修订版，基于 91 份有效问卷 + 访谈验证）
-- 一句话定位：面向刚毕业、第一次租房的年轻人，在签约前几分钟内识别租房合同高风险条款和合同外待核实事项，给出修改建议和可发给房东/中介的沟通话术，帮助判断是否继续签约。
-- 产品名：签前有数
-- 核心用户：刚毕业、第一次异地租房的应届生（不按租房渠道划分用户）
-- MVP 闭环：合同拍照/上传/粘贴(含OCR) → 风险摘要(按严重度排序，押金/提前退租/维修/水电附加费优先) → 修改建议与沟通话术 → 待核实清单(合同主体/出租人身份/转租授权/口头承诺/合同外费用) → 修改后复查；预算与房源信息为可选补充。
-- 暂不进入 MVP：验房、退租证据包、出租人身份真伪核验、短租/二房东转租/隔断房专项、线上签约内嵌、微信小程序、商业化、地图通勤、房源匹配。
-- AI 定位：初筛与查漏补缺工具，不替代律师；每条结论回到合同原文并说明不确定信息；隐私脱敏 + 数据安全说明为 MVP 必要内容。
+## 一、产品定位（基于 91 份有效问卷 + 访谈）
+- 一句话：帮刚毕业、第一次租房的年轻人在**签约前几分钟**识别合同高风险条款与合同外待核实事项，给出修改建议 + 可发给房东/中介的话术，判断要不要继续签。
+- 核心用户：应届生、第一次异地租房（不按租房渠道划分）。
+- MVP 闭环：拍照/上传/粘贴（含 OCR）→ 风险摘要（押金/提前退租/维修/水电附加费优先）→ 修改建议与话术 → 待核实清单 → 修改后复查。
+- 不进 MVP：验房、退租证据包、身份真伪核验、二房东/隔断房专项、线上签约、小程序、商业化、地图通勤、房源匹配。
+- AI 定位：初筛与查漏补缺，不替代律师；每条结论回原文并说明不确定；隐私脱敏为必要内容。
 
-## 需求验证关键数据（91 份有效样本）
-- 支持：A1 合同问题覆盖 58.2% / A2 损失≥2000元 23.1% / A3 未认真看但遇问题 14.3% / B1 纸质或图片输入 70.3%(须OCR) / B2 愿改对方合同 34.1%(话术不强推) / B4 问题集中度 50.5%
-- 存疑：A4 AI使用 40/91=44%；原报告满意度均值 3.25 存在数据不自洽——分项人数合计仅 36 人（5×1+4×14+3×12+2×4+1×5），却用 40 作分母，按 36 人实算约 3.06，差额 4 人未进分项，均值被高估。竞品报告 v0.2 已据此标注"核对原始数据前不引用"。信任未充分验证。
-- 不支持：B3 中介vs非中介 -4.5pp（不应只面向中介用户）
-- 尚未验证：目标用户(应届生)选择仍属假设、预算/通勤/房源匹配、AI与律师一致性、采纳与付费行为。
+## 二、需求验证与竞品（只记结论，避免重复引用）
+- 支持：合同问题覆盖 58.2%／损失≥2000 元 23.1%／纸质或图片输入 70.3%（必须 OCR）／愿改对方合同 34.1%／问题集中度 50.5%。
+- **存疑**：AI 使用率 44%、满意度均值 3.25 —— 原报告分项人数合计仅 36 人却用 40 作分母，实算约 3.06，均值被高估。**核对原始数据前不引用**。
+- 不支持：中介 vs 非中介 -4.5pp（不能只面向中介用户）。
+- 差异化：20 项功能维度中「分场景话术／待核实清单／合同内外一致性核对」3 项国内竞品与通用大模型均未见成熟做法 → 打补缺位，不是做得更好。
+- 价格：单次审查撑不起商业化（TheLeaseCheck $9/份、通义 4 元/页）→ 免费初筛 + 增值付费，单次审查当获客入口。
+- 信任最短路径：LeaseSnipe「免注册 + 不存储」比免责声明有效 → 隐私脱敏 + 不存储做成默认能力。
+- 竞品报告：`桌面\签前有数_竞品分析报告_v0.2.docx`；定位：`桌面\产品定位_修订版.docx`；需求验证：`桌面\签约有数\发现需求验证需求\...docx`。
 
-## 竞品分析关键结论（v0.2，2026-10-27，桌面 `签前有数_竞品分析报告_v0.2.docx`）
-- 纳入标准：公众可正式获取并使用的产品；未上架的参赛作品/开源 Demo/个人原型不纳入。
-- 直接竞品：汇策云复议(微信小程序,租房功能与价格待核实)、木瓜合同宝(420亿法律语料,待核实)、得理AI(个人版488元/年,含律师对接,深)、通义法睿(体验版免费3份/月,基础版1000元/月,4元/页,深)、Pact等通用合同App(待核实)。
-- 间接竞品：贝壳省心租/自如(平台兜底:0押月付/483体系/二房东防诈)、智合AI、听脑AI。
-- 替代方案：问亲友学长、小红书知乎、通用大模型(DeepSeek/豆包/Kimi,最大替代)、政府示范文本(2025.9《住房租赁条例》)、律师咨询。
-- 最佳实践(海外)：TheLeaseCheck($9/份,0-100评分+谈判信)、LeaseSnipe(免费扫描+不存储+问房东问题分级)、ClearSign(英国,红旗+问房东问题两段式)、LeaseChat(芝大法学院,条款引用问答+所在地租客权利)。
-- 最大发现：20项功能维度中"分场景话术/待核实清单/合同内外一致性核对"3项在已纳入国内竞品和通用大模型公开资料均未见成熟做法，恰好有用户证据(访谈+B2)→差异化切入点是"补缺位"而非"做得更好"。
-- 三条迭代建议：①风险→修改→话术闭环(高,话术分礼貌版/协商版) ②待核实清单+合同内外一致性核对(高,填最大空白) ③确定性分级+转律师提示(中,得理已有真人律师转接,差异在逐条分级,须先验证准确性)。
-- 价格认知：单次审查撑不起商业化(TheLeaseCheck $9/份、通义4元/页)；"免费/低价初筛+增值付费"是主流，单次审查当获客入口。
-- 信任最短路径：LeaseSnipe"免注册+不存储"比免责声明更有效→隐私脱敏+不存储应做成默认能力。
-- 待实测：埋雷合同横测(M1-M8,评分维度10项)、稳定性测试、用户反馈均为空表待填；汇策云/木瓜租房功能须直接打开核实。
+## 三、事实源
+- **UI**：`桌面\签前有数_高保真原型.html`（V3，2311 行，5 屏 + 5 Tab）；旧构建快照 `archive/builds/`。
+- **需求**：`桌面\签前有数_PRD框架_v1.2.docx`（15 章；正文导出于 `docs/_prd_v12_dump.txt` 便于 grep）。
+- **代码**：`app/`（React + Vite + Express）。
+- 核心口径：9 条风险 = 3 必须改 + 2 建议确认 + 4 仅提醒；最坏合计 ¥17,400（**估值**，界面逐处标「估算」）；8 件待核实；对外 3 分钟 / 模型 28 秒；审查尺度严格·逐句 / 标准两档。
 
-## V0.1 之后仍要记的三件事
-- 金额是**估值**（押金×40% / 月租×2 / 维修 3,000），界面已逐处标「估算」，PRD 9.5 仍缺来源说明。
-- `utils/docxExport.js`、`contractOcrReview.js`、`imageTools.js` 未被引用，是 V0.2（修订版/批注版导出、离线 OCR）的地基，不要误删。
-- `tests/e2e/` 另 5 个 spec 针对旧流程，不作为门槛；`contractReview.js` 仍是 2,300 行单文件（规则库本体，暂不拆）。
+## 四、架构现状（2026-11-16）
+- 5 屏 + 5 Tab；`riskMapper.js` 把引擎的 high/medium/low 翻成「必须改/建议确认/仅提醒」+ 金额键 + 句子定位 + 两档话术 + 降级判断；语义只在输出层换算，不改引擎。
+- **审查链路已接成双引擎（2026-11-17 核实，旧记录"UI 只接规则侧"已过时）**：`App.jsx#runAnalysis` 现在两段跑——先 `analyzeContract`（规则秒出，立刻落地）→ 再 `reviewContractWithAi`（`aiReview.js`）异步补盲 → `mergeFindings(localFindings, aiFindings)`（本地全量保留、AI 只补覆盖不到的）→ 再次 `toRiskModel`。
+  - AI 那一路：`loadKnowledge` 走 `/api/rag/search`（本地混合检索，非向量库）取 6 条 → `createAiReviewPrompt`（两阶段 + 标准卡 + 合同事实索引）→ `/api/ai/chat`（temperature=0、maxTokens 6000、超时 90s）→ `parseAiReviewResponse`（finish_reason/JSON/schema/证据逐字核验，核验不过就丢弃）。
+  - 失败分层：规则抛错 → 整页空结果 + degradation.failed；AI 失败（超时/网络/格式）→ **保留规则结果**，只把 `aiReview.status='failed'` + 中文 message，绝不拿空数组冒充"没风险"。`runId` 防旧请求覆盖新上传结果。
+  - **AI finding 的法条继承（2026-11-23 两轮修完）**：`App.jsx` merge 前先 `enrichFindingsWithLegalBasis(aiFindings, localFindings)`——本地同句逐字匹配优先继承，落空则按标准卡查 `playbookLegal.js#PLAYBOOK_LEGAL_MAP`（9 张卡的法条复用卡内已核实的 `legalSources`，非 AI 现编），只补 legalLaw/legalBasis/legalUrl。**坑1**：不能用 `finding.playbookId || getPlaybookIdForFinding(f)` 短路——AI 常给幻觉/本地 id（非空但不在映射表），必须 `legalForPlaybook(id) || legalForPlaybook(getPlaybookIdForFinding(f))` 验证后回退。**坑2**：`getPlaybookIdForFinding` 必须把 evidence 一起看（`text=title+evidence`），AI 标题常泛化；特定卡（入户/违约多倍/宠物等）优先于泛卡（押金/费用），否则 evidence 里的「押金」会抢走违约卡。单测 `playbook-legal.test.mjs` #8/#9 钉死这两个回归。标准卡无「格式条款」卡，AI 给错 id 会错配（如「最终解释」补成押金法条），属粗粒度代价，已标「不当法律意见」。
+- 后端：`npm start` = `server/ai-proxy.mjs` 端口 8787，同端口提供 `dist` 与 `/api`；`vite preview` 无 `/api`，OCR 与 AI 都会失败。自检 `/api/ai/smoke`（不耗额度）。
+- 模型：`deepseek-v4-flash`（`constants/aiConfig.js`，另有 deepseek-chat / reasoner 可选）。
+- 测评资产：`scripts/test-contract-review-benchmark.mjs` 14 份合同 176/176 全中 —— **但测试集是自造变体，属过拟合，不代表真实召回**。真样本在 `deliverables/test-kits/contract-review-advanced-kit-20261009/`（01 正文 md / 02 同文 PDF）。
 
-## 关键文档位置
-- 修订版定位：`C:\Users\cxy32\Desktop\产品定位_修订版.docx`
-- 需求验证报告：`C:\Users\cxy32\Desktop\签约有数\发现需求验证需求\租房合同审查产品需求验证分析报告.docx`
-- 竞品分析报告：`C:\Users\cxy32\Desktop\签前有数_竞品分析报告_v0.2.docx`
-- workspace 内早期版本：`产品定位.docx`、`签前有数-产品1.0定位与MVP边界.md`、`租房合同审查产品需求验证分析报告.docx` 等（已被桌面修订版取代/更新）
+## 五、必须遵守的技术约定（踩过的坑）
+- **PDF 必须用 `pdfjs-dist/legacy/build/*`**：标准构建依赖 `Uint8Array.prototype.toHex`（Chrome 133+），旧内核报 `hashOriginal.toHex is not a function`。`contract-import.test.mjs` 5–7 组钉死，别为省体积改回。
+- **`PDFDocumentProxy` 无 `destroy()`**：释放 worker 用 `getDocument()` 返回的 `loadingTask.destroy()`。调错 → React 卸载抛 TypeError → 整页白屏。
+- **金额**：`AMOUNT_RE` 用 `\d[\d,]*`（合同写 `4,500 元`）；「万元」换算成元；读不到就是 0，确认页黄底要求手填，**不许用默认值假装读到**。`amountForRisk.missing` + `computeWorstCase.unpriced` 区分「真不亏」与「算不出」，禁止出现 `−¥0`。OCR 会把千分位读成点（`2,800`→`2.800`），已按千分位剥离。
+- **金额 0 的三种情形要分开说**：无必须改条款 → `—` +「不需要估算损失」；未读到月租/押金 →「待补」；条款无可定价机制（违约金按天）→ 说「没有固定金额，取决于真出事怎么算」。
+- **CSS 类名别用通用词**：风险卡片金额曾拼成 `rc-amt loss`，撞上概览大卡片的 `.loss`，`padding:12px 15px` + `border` + `flex` 全被带过来，带金额的卡片 40px→72px，看着像「必须改和建议确认宽度不一致」。等级类一律带前缀（`amt-loss/gain/zero`），概览那块已改名 `.loss-card`。
+- **静态服务器**：`.mjs` 必须返回 `text/javascript`，否则「上传 PDF 完全没反应」。
+- **单端口**：`server/config.mjs` 自动并入 `http://localhost:<port>`，否则 `npm start` 下静态资源被 CORS 拦（`MIME text/html` + 500）。
+- **tesseract worker 错误会炸进程**：必须传 `options.errorHandler` + `terminate().catch`；`ai-proxy.mjs` 有 `unhandledRejection`/`uncaughtException` 记日志不退出。`ocr-worker.test.mjs` 钉死。
+- **质检语义按来源分派**：识别率/反光/重拍/置信度**只对拍照 OCR 成立**；PDF/Word 说「自带文字层，不经过 OCR」；TXT 不编页数。`uploadQuality.js` + `upload-quality.test.mjs` 钉死。
+- **「识别」只属于拍照**：PDF/Word/TXT 不给「识别全文」按钮；图片第二档用 `previewText.js#layoutContractLines` 重排。
+- **结果页左栏**：`ContractPane` 是分派器（PDF=canvas+TextLayer、Word=docx-preview、图片=只给重排文字、纯文本=PaperDoc）。高亮用 **Custom Highlight API**（`docHighlight.js`），不插 DOM。
+- **文档导出**：`contractDocx.js` 修订版 = 直接替换 + 红色下划线 + 文末修改清单（docx@9.7 无 `w:ins/w:del` API，**不是** Word 修订痕迹）；批注版用原生批注，且**只导出用户勾选的**（`commented` 状态 → `planComments({selected})`；按钮在 FixTab，真记录状态不再是纯 toast）。
+- **导出版式（2026-11-19）**：版式唯一来源 `contractDocxLayout.js` —— 两版共用页边距/页眉页码/段落样式，保证排版一致。按来源分骨架：`resolveProfile` → demo/TXT/图片=`template`（参照住建+市场监管示范文本通用结构：合同编号/居中标题/甲乙方/签章栏/页码，**不宣称某地方法定版本**），DOC/DOCX/PDF=`preserve`（保留原文结构，不套模板）。封面只放版本标记，不重复写标题（原文 title 行渲染成大字）。诚实边界：PDF 无法逐像素还原 docx，Word 是提取后重建非原文件改。
+- **改源码后必须重建**：`test:e2e` 用 4311 静态服务读 `dist`，源码改了不 build 就是测旧代码（踩过）。`rm -rf dist && npm run build` 再跑。
+- **构建顺序**：`vite preview` 服务 `dist` 时 build 会失败。先停 preview → `rm -rf dist` → build → 再起。
+- **safe-delete 危险习惯**：shim 曾连带删掉 `deliverables/test-kits/` 下 16 个已跟踪文件。**每次 rm 后立刻 `git status --short`**，见到 ` D` 就 `git checkout -- <path>`。
+- **测试入口**：`npm run test:e2e` = `mvp-flow.mjs`（现在 20 步），**不是** playwright；旧 IA 在 `tests/e2e-legacy/`（`playwright.legacy.config.js`）。另有 `test:unit` / `verify:mvp` / `test:contract-review-benchmark` / `test:review-reliability`。
+- **产品决策**：城市参数不做（用户明确没能力）；法条核实按武汉口径。
 
-## 事实源与版本（2026-11-07 起）
-- **UI 事实源**：`C:\Users\cxy32\Desktop\签前有数_高保真原型.html`（V3，单文件 2,311 行，5 屏 landing/upload/confirm/analyzing/work + 5 Tab）。旧构建快照留在 `archive/builds/`。
-- **需求事实源**：`C:\Users\cxy32\Desktop\签前有数_PRD框架_v1.2.docx`（15 章；正文已导出 `docs/_prd_v12_dump.txt` 便于 grep）。
-- **目标**：MVP v0.1 = 5 屏 + 5 Tab 闭环（上传→质检→确认六字段→分析→概览/风险/修改/话术/待核实）。
-- **现状（2026-11-07 21:40 收口）**：MVP v0.1 已完成 IA 重装并接上真实引擎。5 屏 + 5 Tab 闭环；旧界面 40 文件移到 `archive/legacy-ia/`（tag `legacy-ia`）；`riskMapper.js` 把 `analyzeContract` 的 high/medium/low 翻成「必须改/建议确认/仅提醒」+ 金额键 + 句子级定位 + 两档话术 + 降级判断。验收：`tests/e2e/mvp-flow.mjs` 12 步、`scripts/verify/mvp-walkthrough.mjs` 12/12、9 个单测全绿、ESLint 零告警。计划与进度见 `docs/product/签前有数_MVP-v0.1_对齐与实施计划.md`，弃用清单见 `docs/tech/弃用清单_legacy-ia.md`。
-- 核心口径：9 条风险 = 3 必须改 + 2 建议确认 + 4 仅提醒；最坏合计 ¥17,400；8 件待核实（2 已确认）；对外 3 分钟 / 模型 28 秒；审查尺度严格·逐句 / 标准两档。
-- **2026-11-08 收尾（commit 6b9b14e）**：PRD 9.5 已补「金额来源/表述纪律/口径演进/追溯」四段（改前备份 `archive/prd-backup/`）；旧 IA 的 5 个 Playwright 用例移入 `app/tests/e2e-legacy/`（`playwright.legacy.config.js`），**`npm run test:e2e` 现在的含义是 mvp-flow.mjs 12 步，不再是 playwright test**；新增 `test:unit` / `test:e2e:legacy` / `verify:mvp` 三条 npm 入口。PRD docx 用 `.venv-html-to-docx` 的 python-docx 改，脚本无幂等保护，改完即删。
-- **2026-11-08 V0.2 首项（commit ea3d64f）**：合同 docx 导出做成，`app/src/features/contractDocx.js`（533 行）。修订版 = 已采纳的修改直接替换 + 红色下划线 + 文末修改清单（**不是** Word 修订痕迹，docx@9.7 没有 `w:ins/w:del` API）；批注版 = 正文不动 + 原生 Word 批注。定位忽略空白但输出原文切片。**e2e 现在是 14 步**（第 11/12 步真下载 + jszip 解包断言），单测 10 个。说明见 `docs/tech/导出实现说明_合同docx.md`。
-- **产品决策（2026-11-08）**：**城市参数不做**——用户明确「现在没有那个能力，后续迭代再看」。武汉只作为法条核实的口径提醒，不进规则库结构。V0.2 剩余：口头承诺录入、合同内外一致性核对、修改后复查。
-- **PDF 解析必须用 `pdfjs-dist/legacy/build/*`（2026-11-08 用户实测报错后定）**：pdfjs-dist@6.2 标准构建依赖 `Uint8Array.prototype.toHex`（Chrome 133+ 原生才有），旧内核（360/QQ/微信内置/旧 Edge）上传 PDF 直接报 `hashOriginal.toHex is not a function`。legacy 构建自带 polyfill，worker 1.6MB→2.4MB。改动被 `tests/unit/contract-import.test.mjs` 第 5–7 组钉死（源码 / node_modules / dist 三处），别为省体积改回去。同批还加了 `ContractImportError`（底层异常只进 console，UI 只出中文人话）与扫描件 PDF 拦截（正文 <30 字提示走拍照 OCR）。
-- **构建顺序坑**：`vite preview` 正在服务 `dist` 时 `vite build` 会失败（清 `dist/assets` 被 safe-delete shim 拦住）。先停 preview → `rm -rf dist` → build → 再起 preview。
-- **金额提取口径（2026-11-08 修）**：`AMOUNT_RE` 必须写成 `\d[\d,]*`（合同普遍写 `4,500 元`，用 `\d+` 会读成 500）；「万元」要换算成元。`metaFromFacts` 返回 rent/deposit/months，读不到就是 0，确认页会黄底高亮要求手填——不要用默认值假装读到了。
-- **确认页预览**：左侧预览必须来自 `session.rawFile`（PDF 渲染真实页面 / 图片原图 / Word 走 mammoth structure / TXT 全文），禁止再写死示例合同。判断依据在 `features/filePreview.js#previewKindOf`。
-- **「识别」只属于拍照（2026-11-08 用户要求）**：PDF / Word / TXT 一律不给「识别全文」按钮（文字是文件自带的）；只有图片有两档「照片 / 识别文字」，第二档用 `features/previewText.js#layoutContractLines` 按标题/条款/正文重排。文字排版要单测就放这个纯函数里，别写在 JSX。
-- **`PDFDocumentProxy` 没有 `destroy()`**：pdfjs 6 只有 `cleanup()`，释放 worker 要调 `getDocument()` 返回的 `loadingTask.destroy()`。调错会在 React 卸载阶段抛 TypeError → 整页白屏（用户实测「点识别全文」「点开始审查」都白）。e2e 第 16 步守门。
-- **金额 0 不等于「不会亏」**：`amountForRisk` 的 `missing` + `computeWorstCase` 的 `unpriced` 用来区分「真的不亏」和「算不出来」。押金/月租没读到时界面显示「待补」，禁止出现 `−¥0` 或「多损失 ¥0」。`amount-engine.test.mjs` 第 11 组钉死。
-- **静态服务器**：`.mjs` 必须返回 `text/javascript`（pdf.js worker 是 .mjs），漏了会表现为「上传 PDF 后完全没反应」。`tests/e2e/mvp-flow.mjs` 的 MIME 表已补，线上部署同样要查。
-- **质检页语义按来源分派（2026-11-08 commit 50c5179，产品规则）**：「识别率 / 反光 / 重拍 / 置信度」只对拍照 OCR 成立；PDF / Word 走「文字来源：自带文字层，逐字提取，不经过 OCR」+ 一段提取预览（用来发现多栏串行）；TXT 不编页数；逐页缩略图只在拍照或有坏页时显示。规则在 `src/features/uploadQuality.js`，被 `tests/unit/upload-quality.test.mjs` 钉死（PDF/纯文本两组断言不出现那四个词）。用户原话：「直接上传 PDF 为什么会有识别率，只有拍照才需要质检吧」。
-- **危险习惯**：WorkBuddy 的 safe-delete shim 曾连带删掉 `deliverables/test-kits/` 下 16 个已跟踪文件（非主动操作）。**每次 rm 之后立刻 `git status --short` 复查**，发现 ` D` 就 `git checkout -- <path>` 恢复。
-- **结果页左栏已换成真原件（2026-11-09，commit bc7a738）**：`ContractPane` 现在是分派器——`file` 存在且 `previewKindOf` 是 pdf/word 才走 `OriginalDoc`（PDF=canvas+TextLayer、Word=docx-preview）；**图片按用户要求只给重排文字**，不摆照片，纯文本/TXT/演示数据走 `PaperDoc`（旧的「重排成一张纸」逻辑原样搬过去，含逐条编号定位）。高亮不用插 DOM 节点，改 **Custom Highlight API**（`features/docHighlight.js`：`rangeForText` 做空白归一化后在文本节点上找 Range，逐级缩短 40/24/16 字兜跨页断句；`setHighlight('risk-must'|'risk-check'|'risk-note'|'risk-active')`，样式在 CSS 的 `::highlight(...)`）。点原件上的标色句子能反查回右侧那条风险（`caretRangeFromPoint` → `range.isPointInRange`，用户正在框选时不触发）。PDF 分两步画：`preparePage` 先建文本层（快、可定位），`draw()` 再逐页补 canvas，22 页合同不用干等。e2e 现在 **20 步**（17 PDF 结果页原件+文字层、19 Word 结果页原件、20 拍照结果页只有重排文字）。
-- **后端怎么起（2026-11-16）**：`npm start` = `node server/ai-proxy.mjs`，端口 8787，**同一个端口同时提供 `dist` 页面和 `/api`**，拍照 OCR、AI 审查都靠它；`vite preview` 只是静态托管 `dist`，没有任何 `/api`，拍照 OCR 与 AI 审查都会失败。自检打 `/api/ai/smoke`（不耗额度，返回 AI + OCR 两条链路）。`scripts/verify/live-ocr-flow.mjs` 用真后端走拍照四屏并截图。
-- **单端口访问必须放行自己的 origin（2026-11-16 修）**：vite 给 script/link 加了 `crossorigin`，浏览器把静态资源也当 CORS 请求；`allowedOrigins` 里只有 5173 时，`npm start` 下样式脚本全被拦（控制台 `MIME text/html` + 500）。`server/config.mjs` 现在自动并入 `http://localhost:<port>` / `http://127.0.0.1:<port>`。
-- **tesseract worker 的错误会炸掉整个进程（2026-11-16 修）**：`createWorker` 的 `options.errorHandler` 不传，库在 `process.nextTick` 里 throw → `libpng warning` 之后服务直接消失（症状：识别成功一次，网站再也打不开）。`recognizeImageOffline` 现在传 errorHandler + `terminate().catch` + 空结果抛原因；`ai-proxy.mjs` 另加 `unhandledRejection` / `uncaughtException` 记日志不退出。`tests/unit/ocr-worker.test.mjs` 钉死。
-- **`/api/ai/smoke` 的样本图曾是坏的（2026-11-16）**：手写字节的 1x1 PNG CRC 错了，leptonica 读不了，smoke 永远报 OCR false。已换成 zlib 生成的合法 PNG（base64 常量）。
-- **OCR 会把千分位读成点（2026-11-16 修）**：图片基准「2,800元」被识别成「2.800 元」，旧解析得 2.8。`contractFacts.js` 现在 `^\d{1,3}(?:\.\d{3})+$` 按千分位剥离，`1.2 万元` 不受影响。
-- **金额为 0 的三种情形要分开说（2026-11-16）**：①没有必须改的条款 → `—` + 「不需要估算损失」；②没读到月租/押金 → 「待补」+「补上就能算」；③条款本身没有可定价机制（违约金按逾期天数）→ 结论句不说「待补」也不拼 `—`，而说「没有固定金额，实际损失取决于真出事时怎么算」。`catLabelOf()` 让违约金类在结论里叫「违约金」而不是「租金调整」。
+## 六、待验证
+- AI 与律师结论一致性、采纳与付费行为、目标用户（应届生）选择仍属假设。
+- 合同审查准确率**没有真实合同标准答案集**，无法量化召回与误报；同一份合同两次 AI 输出条数差异大（历史 11 条 vs 2026-11-16 实测 5 条），稳定性未验证。

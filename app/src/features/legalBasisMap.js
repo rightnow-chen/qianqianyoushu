@@ -19,6 +19,9 @@ export const LAW_FULL_TEXT_URLS = {
   商品房屋租赁管理办法: 'https://www.gov.cn/zhengce/2022-01/25/content_5711968.htm',
   房地产经纪管理办法: 'https://www.gov.cn/zhengce/2022-01/25/content_5711966.htm',
   民事诉讼法: 'https://cicc.court.gov.cn/html/1/218/62/83/443.html',
+  // 电力法：中央政府网无稳定 HTML 全文页（国务院公报/政策库旧链接已 404），
+  // 用海丰县政府转载的 2018 修正全文（2026-11-18 实测 200、含第四十四条）。
+  电力法: 'http://www.gdhf.gov.cn/swhfkgxj/gkmlpt/content/0/636/mpost_636672.html',
 }
 
 // 已知法名按长度降序匹配，避免「商品房屋租赁管理办法」被短名截胡
@@ -35,7 +38,9 @@ export function resolveLegalUrl(law) {
   if (!lawName) return null
 
   const base = LAW_FULL_TEXT_URLS[lawName]
-  const article = label.match(/第[一二三四五六七八九十百零0-9]+条/)?.[0]
+  // 条号要覆盖「千」：民法典人格权编有「第一千零三十二条」这类条号，
+  // 漏了千就解析不出片段，退化成打开全文页顶部（看起来像又跳首页）。
+  const article = label.match(/第[一二三四五六七八九十百千万零〇0-9]+条/)?.[0]
   if (!article) return base
 
   return `${base}#:~:text=${encodeURIComponent(article)}`

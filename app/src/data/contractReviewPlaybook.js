@@ -106,12 +106,85 @@ export const contractReviewPlaybook = {
     action: '拆分押金、违约金和实际损失，要求明确计算口径、举证责任和减损边界。',
     legalSources: [{ ...officialSources.civilCodeLease, article: '第五百八十五条、第五百六十三条' }],
   },
+  'utilities-and-fees': {
+    id: 'utilities-and-fees',
+    title: '水电燃气与代收费用计价',
+    dimension: '费用',
+    severity: 'medium',
+    resultTypes: ['explicit_disadvantage', 'missing_term', 'needs_review'],
+    trigger: '水电燃气等费用按单方定价、包干加价或无上限代收，且未写明计价依据、分摊方式、抄表与核对机制，导致租客承担不透明或重复费用。',
+    counterSignals: [
+      '费用按供水、供电、燃气等实际账单或政府定价结算，并有抄表与分摊口径。',
+      '服务费、管理费等单独列明，未与押金或租金重复收取。',
+      '条款只约定按实际费用据实结算，没有单方加价或固定包干的不利后果。',
+    ],
+    requiredEvidence: ['费用种类', '计价依据或单价', '分摊与抄表方式', '是否存在代收加价', '与押金租金是否重复'],
+    examples: ['水电费按甲方公布价格收取且不得核对账单', '每月固定收取公共服务费但不说明用途与计算方式'],
+    nonExamples: ['水电燃气按市政账单据实分摊，租客可核对表数与缴费凭证'],
+    action: '要求写明各项费用的计价依据、抄表与分摊方式、凭证核对和不得重复收取。',
+    legalSources: [{ ...officialSources.civilCodeLease, article: '第七百零四条' }],
+  },
+  'sublease-and-cohabitation': {
+    id: 'sublease-and-cohabitation',
+    title: '转租与合租边界',
+    dimension: '居住权',
+    severity: 'medium',
+    resultTypes: ['explicit_disadvantage', 'missing_term', 'needs_review'],
+    trigger: '合同对转租、转借、合租或居住人数作出单方限制，未区分需同意的情形与默示同意，或对违规后果作笼统加重，影响租客正常居住安排。',
+    counterSignals: [
+      '条款明确转租须经出租人同意，并写明同意或拒绝的合理期限。',
+      '对共同居住人的约定限于合理范围，未禁止一切访客或亲属短期居住。',
+      '仅按法律一般规则约定转租需同意，没有叠加不合理罚则。',
+    ],
+    requiredEvidence: ['转租或合租的约定内容', '是否需出租人同意', '同意期限或默示同意', '违规后果', '居住人数限制'],
+    examples: ['任何情况下不得留宿他人，违者立即解约并没收押金', '转租须甲方书面同意但甲方无期限不予答复'],
+    nonExamples: ['转租须经甲方书面同意；甲方三十日内未答复视为同意，合理亲属短期探访不视为转租'],
+    action: '明确转租同意的期限与默示效果，区分长期转租与短期访客，去掉笼统加重的后果。',
+    legalSources: [{ ...officialSources.civilCodeLease, article: '第七百一十六条、第七百一十八条' }],
+  },
+  'attachments-and-inventory': {
+    id: 'attachments-and-inventory',
+    title: '附件、设施清单与返还标准',
+    dimension: '维修',
+    severity: 'medium',
+    resultTypes: ['explicit_disadvantage', 'missing_term', 'needs_review'],
+    trigger: '以附件、设施清单或交接单确定返还标准时，清单缺失、标准由单方认定，或把正常使用损耗写成须恢复全新，导致退租时被不合理扣款。',
+    counterSignals: [
+      '合同附交接清单，注明设施现状与已有损耗，返还标准按使用后的状态判断。',
+      '正常损耗免责，扣款须对应清单载明项目与实际损坏凭证。',
+      '条款仅要求妥善保管和按性质使用后的状态返还，没有单方认定或更换全新要求。',
+    ],
+    requiredEvidence: ['是否有附件或交接清单', '返还标准表述', '正常损耗如何处理', '验收与扣款依据', '验收主体'],
+    examples: ['退租须恢复全新状态，是否符合要求以甲方判断为准', '设施清单未列明现状，退租时另行按甲方标准索赔'],
+    nonExamples: ['按交接清单载明现状返还，正常使用损耗不扣款，争议项目凭照片与维修票据核对'],
+    action: '要求附交接清单并注明现状，明确返还按使用后状态、正常损耗免责、扣款须有凭证。',
+    legalSources: [{ ...officialSources.civilCodeLease, article: '第七百一十条、第七百一十四条、第七百三十三条' }],
+  },
+  'pet-and-use-restrictions': {
+    id: 'pet-and-use-restrictions',
+    title: '宠物与使用限制',
+    dimension: '居住权',
+    severity: 'low',
+    resultTypes: ['explicit_disadvantage', 'missing_term', 'needs_review'],
+    trigger: '合同对饲养宠物或其他生活使用方式设定笼统禁止、单方认定或高额罚则，与合理居住需求冲突，且未区分实际损害与抽象禁止。',
+    counterSignals: [
+      '宠物或使用限制属于双方约定的居住规则，且处罚与实际损害或恢复费用相称。',
+      '条款只作一般性约定，没有把正常生活使用直接认定为违约或没收押金。',
+      '涉及宠物造成损坏的，按实际损失与维修责任处理，而非一律禁止或固定重罚。',
+    ],
+    requiredEvidence: ['限制的具体内容', '违反的后果或罚则', '是否区分实际损害', '是否与押金或解约挂钩'],
+    examples: ['饲养任何宠物一经发现立即解约并没收全部押金', '不得进行任何影响他人的活动，具体由甲方随时认定'],
+    nonExamples: ['不得饲养大型宠物；如造成设施损坏，按实际损失赔偿并恢复原状'],
+    action: '提示这类限制主要靠双方约定：建议明确合理范围，罚则与实际损害相称，避免与押金或解约不当挂钩。',
+    legalSources: [{ ...officialSources.civilCodeLease, article: '第七百零九条' }],
+  },
 }
 
 export function getContractReviewPlaybookPrompt() {
   const cards = Object.values(contractReviewPlaybook).map((card) => [
     `- ${card.id}｜${card.title}｜触发：${card.trigger}`,
-    `  反例：${card.counterSignals.join('；')}`,
+    `  反例信号：${card.counterSignals.join('；')}`,
+    `  明确不报（已含这些保护/例外时，该卡判未命中，不得进 risks）：${card.nonExamples.join('；')}`,
     `  必须核对：${card.requiredEvidence.join('、')}`,
     `  依据：${card.legalSources.map((source) => `${source.title}${source.article ? `（${source.article}）` : ''}`).join('；')}`,
   ].join('\n')).join('\n')
@@ -122,10 +195,25 @@ export function getContractReviewPlaybookPrompt() {
 export function getPlaybookIdForFinding(finding = {}) {
   const dimension = String(finding.dimension || '')
   const title = String(finding.title || '')
-  if (/押金/.test(dimension) || /押金|扣款|返还/.test(title)) return 'deposit-settlement'
-  if (/维修/.test(dimension) || /维修|老化|损耗/.test(title)) return 'repair-duty'
-  if (/居住权/.test(dimension) || /入户|访客|换锁|腾退/.test(title)) return 'entry-and-consent'
-  if (/租期|租金/.test(dimension) || /续租|涨租|租金/.test(title)) return 'renewal-rent-change'
-  if (/解除|违约/.test(dimension) || /解约|违约|赔偿/.test(title)) return 'early-termination-loss'
+  // AI 补盲风险的 title 常写成「费用计算不合理」「违约金双倍计算」这类泛化短句，
+  // 单看 title 推断容易落空；evidence 是逐字原文，含押金/租金/违约等实词，一起看更稳。
+  const evidence = String(finding.evidence || '')
+  const text = `${title} ${evidence}`
+
+  // 附件/宠物/转租有专用卡，虽常被 AI 打上「维修」「居住权」泛标签，仍须优先按特定词命中。
+  if (/附件|设施清单|交接清单|恢复全新|恢复原状/.test(text)) return 'attachments-and-inventory'
+  if (/宠物|饲养/.test(text)) return 'pet-and-use-restrictions'
+  if (/转租|合租|居住人数/.test(text)) return 'sublease-and-cohabitation'
+  // 入户/换锁/腾退优先于泛「押金」「违约」：这些卡有专属法条，错配成押金卡会补错法条。
+  if (/居住权/.test(dimension) || /入户|进屋|进入房屋|换锁|腾退|带看|备用钥匙|访客/.test(text)) return 'entry-and-consent'
+  // 多倍占用费/逾期搬离/违约金叠加：归违约损失卡（民法典585/563），
+  // 而不是被 evidence 里的「押金」抢成押金卡。
+  if (/占用费|逾期搬离|逾期腾退|双倍|多倍|\d\s*倍房租|\d\s*倍租金/.test(text)
+    && /违约|占用|腾退|搬离|解约|赔偿/.test(text)) return 'early-termination-loss'
+  if (/押金|扣款|返还|保证金/.test(text) || /押金/.test(dimension)) return 'deposit-settlement'
+  if (/费用/.test(dimension) || /水电|燃气|服务费|管理费|代收|计价|收取费用|收费|杂费|费用计算/.test(text)) return 'utilities-and-fees'
+  if (/维修/.test(dimension) || /维修|老化|损耗|故障/.test(text)) return 'repair-duty'
+  if (/租期|租金/.test(dimension) || /续租|涨租|租金|调租/.test(text)) return 'renewal-rent-change'
+  if (/解除|违约/.test(dimension) || /解约|违约|赔偿|定金/.test(text)) return 'early-termination-loss'
   return null
 }

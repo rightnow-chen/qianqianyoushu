@@ -14,7 +14,11 @@ export function buildChatRequest(input, config) {
   if (messages.some((item) => !item.content.trim())) fail('审查请求内容不能为空', 400)
   return {
     model: config.model,
-    temperature: Math.max(0, Math.min(Number(input.temperature) || 0.2, 1)),
+    // 原来写 `Number(x) || 0.2`，传 0 会被 falsy 回退成 0.2 —— 审查任务根本锁不住温度。
+    // 显式判断 undefined，让 0 真正生效；不传时仍保持 0.2 的旧默认值。
+    temperature: input.temperature === undefined || input.temperature === null
+      ? 0.2
+      : Math.max(0, Math.min(Number(input.temperature) || 0, 1)),
     max_tokens: Math.max(256, Math.min(Number(input.maxTokens) || (review ? 6000 : 2200), review ? 8000 : 4000)),
     ...(review && config.provider === 'DeepSeek' ? { thinking: { type: 'disabled' } } : {}),
     messages,

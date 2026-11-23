@@ -195,7 +195,13 @@ try {
   if (await accept.count()) await accept.click()
   await page.waitForTimeout(300)
   assert.ok((await events()).includes('suggestion_accept') || (await text()).includes('建议改为'), '修改页应能接受修订')
-  step('修改页接受修订')
+  // 同时勾一条批注：批注版只导出勾选的，不勾就一个批注都没有
+  const addComment = page.locator('button', { hasText: '添加批注' }).first()
+  assert.ok(await addComment.count(), '修改页应有「添加批注」按钮')
+  await addComment.click()
+  await page.waitForTimeout(200)
+  assert.ok((await text()).includes('已加批注'), '点后按钮应变成「已加批注」')
+  step('修改页接受修订 + 勾选一条批注')
 
   // 9. 话术页：复制
   await page.locator('.tab', { hasText: '话术' }).first().click()
@@ -231,19 +237,46 @@ try {
   assert.ok(revisionBody.includes('红色下划线'), '修订版要说明标红含义')
   step('导出修订版 docx')
 
-  // 12. 导出批注版：原文不动，Word 原生批注挂上去
+  // 12. 导出批注版：只导出勾选的那一条，原文不动，Word 原生批注挂上去
   const commentBuf = await exportContract(page, '批注版')
   const commentsXml = await readDocxPart(commentBuf, 'word/comments.xml')
   const commentBody = await readDocxPart(commentBuf, 'word/document.xml')
   assert.ok(commentsXml?.includes('w:comment'), '批注版必须写出 comments.xml')
   assert.ok(commentBody?.includes('commentReference'), '批注版正文要挂批注引用')
-  step('导出批注版 docx')
+  // 只勾了一条：comments.xml 里应恰好一个批注，不能把全部风险都批上
+  const commentCount = (commentsXml.match(/<w:comment\s/g) || []).length
+  assert.equal(commentCount, 1, `只勾了一条批注，导出应有 1 条，实际 ${commentCount}`)
+  step('导出批注版 docx（只含勾选的 1 条）')
 
   // 13. 演示入口带标识
   await page.goto(`${BASE}/#work?demo=1&tab=ov`, { waitUntil: 'load' })
   await page.waitForTimeout(900)
   assert.ok((await text()).includes('演示数据'), '演示模式必须有「演示数据」标识')
   step('演示入口标识')
+
+  // 13b. 回归：演示结果页 →「重新上传」→ 传真实合同，不能被打回演示数据。
+  // 根因：go('landing') 只清了 hash，内存里的 route.demo 还是 true；随后真实上传把
+  // session.kind 改成 'real'，effect 又把它整份覆盖成 DEMO_RISKS，于是上传任何文件
+  // 都显示「朝阳区_租房合同.pdf」和示例结论，且 runAnalysis 被 !isDemo 跳过。
+  await page.locator('.filebar-acts button', { hasText: '重新上传' }).click()
+  await page.waitForTimeout(300)
+  assert.equal(await page.evaluate(() => location.hash), '', '重新上传应回到首页')
+  await page.setInputFiles('input[type=file]', sample)
+  await page.waitForFunction(() => location.hash.split('?')[0] === '#upload', null, { timeout: 10000 })
+  const reuploadName = path.basename(sample)
+  const uploadText = await text()
+  assert.ok(uploadText.includes(reuploadName), `上传后应显示真实文件名 ${reuploadName}`)
+  assert.ok(!uploadText.includes('朝阳区_租房合同.pdf'), '上传后不该残留演示文件名')
+  await page.locator('button.btn.primary').first().click()
+  await page.waitForTimeout(300)
+  await page.locator('button', { hasText: '开始审查' }).first().click()
+  await page.waitForFunction(() => location.hash.startsWith('#work'), null, { timeout: 40000 })
+  await page.waitForTimeout(800)
+  const afterReupload = await text()
+  assert.ok(!afterReupload.includes('演示数据'), '真实上传的结果页不该标「演示数据」')
+  assert.ok(afterReupload.includes(reuploadName), '结果页文件名应是真实上传的那份')
+  assert.ok((await events()).includes('analyze_done'), '真实上传必须跑过 analyze_done（demo 态会跳过）')
+  step('演示后重新上传不回退到示例数据')
 
   // 14. 手机形态：390 宽不出横向滚动
   const mobile = await context.newPage()

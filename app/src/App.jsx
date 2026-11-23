@@ -18,7 +18,8 @@ import {
 } from './data/demoCase.js'
 import { computeAmounts, computeVerdict, computeWorstCase } from './features/amountEngine.js'
 import { countByLevel } from './features/riskModel.js'
-import { analyzeContract } from './features/contractReview.js'
+import { analyzeContract, enrichFindingsWithLegalBasis, mergeFindings } from './features/contractReview.js'
+import { reviewContractWithAi } from './features/aiReview.js'
 import { extractContractFacts } from './features/contractFacts.js'
 import { describeDegradation, metaFromFacts, toRiskModel } from './features/riskMapper.js'
 import { buildContractPages, estimatePages } from './features/contractPages.js'
@@ -29,6 +30,7 @@ import {
   qualityForFile,
 } from './features/uploadQuality.js'
 import { buildCommentDocxBlob, buildRevisionDocxBlob } from './features/contractDocx.js'
+import { resolveProfile } from './features/contractDocxLayout.js'
 import { buildPlainText, buildReportHtml } from './features/reportText.js'
 import { track } from './features/track.js'
 import { downloadBlob } from './utils/docxExport.js'
@@ -78,6 +80,9 @@ const EMPTY_SESSION = {
   risks: [],
   findings: [],
   degradation: null,
+  // AI 深度审查状态：null（没跑）| running | done | failed。
+  // 规则结果永远先落地，这个字段只描述「AI 那一路补到了哪」。
+  aiReview: null,
 }
 
 export default function App() {
@@ -86,12 +91,16 @@ export default function App() {
   const [done, setDone] = useState({})
   const [accepted, setAccepted] = useState({})
   const [edited, setEdited] = useState({})
+  // 批注版只导出用户勾选的条款：key=riskId，value=true。不勾就不导出批注。
+  const [commented, setCommented] = useState({})
   const [checks, setChecks] = useState(DEMO_CHECKS)
   const [privacyOpen, setPrivacyOpen] = useState(false)
   const [toastMessage, setToastMessage] = useState('')
   const [locateSignal, setLocateSignal] = useState(0)
   const [busy, setBusy] = useState(false)
   const toastTimer = useRef(null)
+  // 每次开跑递增；AI 结果回来时比对，防止旧请求覆盖用户重新上传后的结果
+  const analysisRunRef = useRef(0)
 
   const isDemo = session.kind === 'demo'
   const meta = session.meta
@@ -113,6 +122,10 @@ export default function App() {
   const go = useCallback((screen, extra = {}) => {
     setRoute((prev) => {
       const next = { ...prev, ...extra, screen }
+      // 离开结果页就等于退出演示态。否则内存里的 demo=1 会残留
+      // （landing 的 hash 虽被清空，route state 没跟着清），下一次
+      // 真实上传会被下面的 effect 整份打回演示数据。
+      if (screen !== 'work') next.demo = false
       const hash = routeToHash(next)
       if (window.location.hash !== hash) {
         window.history.replaceState(null, '', `${window.location.pathname}${hash}`)
@@ -128,15 +141,20 @@ export default function App() {
   }, [])
 
   // 直接开 ?demo=1：装载演示数据，不用重新走一遍上传。
-  // 依赖里必须带 route.demo：否则在同一会话里从真实合同跳到演示链接，界面会沿用真实结果。
+  // 只跟 route.demo 走，不把 session.kind 放进依赖：用户上传真实文件时 kind 会从
+  // 'empty'/'demo' 变成 'real'，若跟着它重跑，就会把刚读出来的合同整份覆盖掉。
   useEffect(() => {
-    if (route.demo && session.kind !== 'demo') {
-      setSession({ ...EMPTY_SESSION, kind: 'demo', fileName: DEMO_META.fileName, risks: DEMO_RISKS })
+    if (route.demo) {
+      setSession((prev) =>
+        prev.kind === 'demo'
+          ? prev
+          : { ...EMPTY_SESSION, kind: 'demo', fileName: DEMO_META.fileName, risks: DEMO_RISKS },
+      )
       setChecks(DEMO_CHECKS)
-    } else if (!route.demo && session.kind === 'demo') {
-      setSession(EMPTY_SESSION)
+    } else {
+      setSession((prev) => (prev.kind === 'demo' ? EMPTY_SESSION : prev))
     }
-  }, [route.demo, session.kind])
+  }, [route.demo])
 
   const amounts = useMemo(() => computeAmounts(meta), [meta])
   const counts = useMemo(() => countByLevel(risks), [risks])
@@ -222,6 +240,7 @@ export default function App() {
         setDone({})
         setAccepted({})
         setEdited({})
+        setCommented({})
         setChecks(DEMO_CHECKS.map((item) => ({ ...item, done: false })))
         track('upload_success', { name: file.name, size: file.size, source: result.source })
         toast(`已读出「${file.name}」· ${result.source || '文本'}，检查一下识别结果`)
@@ -291,43 +310,104 @@ export default function App() {
     go('work', { tab: 'ov', demo: true })
   }, [go])
 
-  /** 进分析页就开跑：动画不等模型，模型也不挡动画。 */
+  /** 进分析页就开跑：动画不等模型，模型也不挡动画。
+   *  规则结果秒出，AI 审查异步补规则覆盖不到的写法；AI 那一路失败就停在规则结果，
+   *  绝不能拿空数组冒充「这份合同没风险」。 */
   const runAnalysis = useCallback(() => {
     const full = session.fileText
     const text = full.length > MAX_ANALYZE_CHARS ? full.slice(0, MAX_ANALYZE_CHARS) : full
     const currentMeta = session.meta
     if (!text) return
-    window.setTimeout(() => {
+    const runId = ++analysisRunRef.current
+    const profile = {
+      contractType: 'lease',
+      partyRole: 'partyB',
+      reviewDepth: currentMeta.scale === '标准' ? 'business' : 'strict',
+    }
+
+    window.setTimeout(async () => {
       const started = Date.now()
+      let localFindings = []
       try {
-        const depth = currentMeta.scale === '标准' ? 'business' : 'strict'
-        const findings = analyzeContract(text, {
-          contractType: 'lease',
-          partyRole: 'partyB',
-          reviewDepth: depth,
-        })
-        const mapped = toRiskModel(findings, {
-          contractText: text,
-          pages: currentMeta.filePages || 0,
-          amounts: computeAmounts(currentMeta),
-        })
-        const degradation = describeDegradation(findings, mapped, { text })
-        setSession((prev) => ({ ...prev, findings, risks: mapped, degradation }))
-        track('analyze_done', {
-          seconds: Math.round((Date.now() - started) / 1000),
-          count: mapped.length,
-          truncated: full.length > MAX_ANALYZE_CHARS,
-        })
+        localFindings = analyzeContract(text, profile)
       } catch (error) {
+        if (runId !== analysisRunRef.current) return
         setSession((prev) => ({
           ...prev,
           risks: [],
           findings: [],
+          aiReview: null,
           degradation: {
             level: 'failed',
             message: error?.message || '分析没跑完，请重试或换一份合同',
           },
         }))
+        return
+      }
+
+      // 第一段：规则结果立刻落地，界面不等模型
+      const localRisks = toRiskModel(localFindings, {
+        contractText: text,
+        pages: currentMeta.filePages || 0,
+        amounts: computeAmounts(currentMeta),
+      })
+      if (runId === analysisRunRef.current) {
+        setSession((prev) => ({
+          ...prev,
+          findings: localFindings,
+          risks: localRisks,
+          degradation: describeDegradation(localFindings, localRisks, { text }),
+          aiReview: { status: 'running', count: 0, message: '' },
+        }))
+      }
+      track('analyze_done', {
+        seconds: Math.round((Date.now() - started) / 1000),
+        count: localRisks.length,
+        truncated: full.length > MAX_ANALYZE_CHARS,
+        stage: 'rules',
+      })
+
+      // 第二段：AI 补盲区，回来就地合并进同一份结果
+      try {
+        const { findings: aiFindings } = await reviewContractWithAi({
+          text,
+          localFindings,
+          profile,
+        })
+        if (runId !== analysisRunRef.current) return
+        // AI 补盲的风险若与本地某条证据指向同一句，继承本地已核实法条，
+        // 避免它显示「未匹配到具体法条」——法条是本地规则算的，不是 AI 现编的。
+        const enrichedAi = enrichFindingsWithLegalBasis(aiFindings, localFindings)
+        const merged = enrichedAi.length ? mergeFindings(localFindings, enrichedAi) : localFindings
+        const mergedRisks = toRiskModel(merged, {
+          contractText: text,
+          pages: currentMeta.filePages || 0,
+          amounts: computeAmounts(currentMeta),
+        })
+        setSession((prev) => ({
+          ...prev,
+          findings: merged,
+          risks: mergedRisks,
+          degradation: describeDegradation(merged, mergedRisks, { text }),
+          aiReview: { status: 'done', count: aiFindings.length, added: merged.length - localFindings.length, message: '' },
+        }))
+        track('analyze_done', {
+          seconds: Math.round((Date.now() - started) / 1000),
+          count: mergedRisks.length,
+          aiCount: aiFindings.length,
+          stage: 'ai',
+        })
+      } catch (error) {
+        if (runId !== analysisRunRef.current) return
+        setSession((prev) => ({
+          ...prev,
+          aiReview: {
+            status: 'failed',
+            count: 0,
+            message: error?.message || 'AI 深度审查没跑完，下面是规则初筛的结果。',
+          },
+        }))
+        track('analyze_ai_failed', { reason: String(error?.message || '').slice(0, 80) })
       }
     }, 60)
   }, [session.fileText, session.meta])
@@ -357,15 +437,22 @@ export default function App() {
         toast('还没采纳任何修改：到「修改」页点「接受建议并添加修订」，再回来导出')
         return
       }
+      // 批注版同样只导出用户勾选的条款，不能在用户没选择时偷偷给全部风险加批注。
+      if (kind === 'comment' && Object.keys(commented).length === 0) {
+        toast('还没勾选批注：到「修改」页点「添加批注」选好要批注的条款，再回来导出')
+        return
+      }
       const base = String(meta.fileName || '合同').replace(/\.[^.]+$/, '')
       const label = kind === 'revision' ? '修订版' : '批注版'
       const filename = `${base}_${label}_${new Date().toISOString().slice(0, 10)}.docx`
       setBusy(true)
       try {
+        // 版式骨架按来源决定：演示/文本/图片套示范文本骨架；真实 Word/PDF 保留原件结构。
+        const profile = resolveProfile({ isDemo, fileKind: meta?.fileKind })
         const result =
           kind === 'revision'
-            ? await buildRevisionDocxBlob({ text: contractText, risks, accepted, edited, meta })
-            : await buildCommentDocxBlob({ text: contractText, risks, accepted, meta })
+            ? await buildRevisionDocxBlob({ text: contractText, risks, accepted, edited, meta, profile })
+            : await buildCommentDocxBlob({ text: contractText, risks, accepted, meta, selected: commented, profile })
         downloadBlob(result.blob, filename)
         if (kind === 'revision') {
           const skipped = result.composed.changes.filter((item) => !item.applied).length
@@ -460,6 +547,7 @@ export default function App() {
           verdict={verdict}
           checks={checks}
           degradation={session.degradation}
+          aiReview={session.aiReview}
           isDemo={isDemo}
           tab={route.tab}
           onTab={(tab) => go('work', { tab })}
@@ -469,9 +557,14 @@ export default function App() {
           done={done}
           accepted={accepted}
           edited={edited}
+          commented={commented}
           onDone={(riskId) => {
             setDone((prev) => ({ ...prev, [riskId]: !prev[riskId] }))
             toast(done[riskId] ? '已取消「已处理」' : '已标记为处理')
+          }}
+          onComment={(riskId) => {
+            setCommented((prev) => ({ ...prev, [riskId]: !prev[riskId] }))
+            toast(commented[riskId] ? '已取消批注：导出批注版时不再包含这条' : '已加批注：导出批注版时只导出勾选的条款')
           }}
           onAccept={(riskId) => {
             setAccepted((prev) => ({ ...prev, [riskId]: true }))

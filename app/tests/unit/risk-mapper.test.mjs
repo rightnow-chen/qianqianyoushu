@@ -5,6 +5,7 @@ import assert from 'node:assert/strict'
 import {
   parseArticle,
   categoryOf,
+  amountKeyOf,
   confidenceLabel,
   toRiskModel,
   sortRisks,
@@ -57,6 +58,15 @@ assert.equal(highInferred.level, 'check', '高严重度但 AI 推断 → 降级�
 
 const [medium] = toRiskModel([{ ...base, id: 'lease-auto-renewal-rent-up', level: 'medium', confidence: 0.9 }], { amounts })
 assert.equal(medium.level, 'check', '中严重度 → 建议确认')
+
+// findingType 必须真正传到档位换算层（缺陷库评测驱动，2026-11-17）
+// 无 findingType 维持 check；有明确不利机制则抬为 must；needs_review 不抬
+const [mediumExplicit] = toRiskModel([{ ...base, id: 'ai-risk-1', level: 'medium', confidence: 0.9, findingType: 'explicit_disadvantage' }], { amounts })
+assert.equal(mediumExplicit.level, 'must', '明确不利机制+中严重度 → 必须改（链路须传 findingType）')
+const [mediumMissing] = toRiskModel([{ ...base, id: 'ai-risk-2', level: 'medium', confidence: 0.9, findingType: 'missing_term' }], { amounts })
+assert.equal(mediumMissing.level, 'must', '缺失关键条款+中严重度 → 必须改')
+const [mediumReview] = toRiskModel([{ ...base, id: 'ai-risk-3', level: 'medium', confidence: 0.9, findingType: 'needs_review' }], { amounts })
+assert.equal(mediumReview.level, 'check', '待核对+中严重度 → 仍为建议确认，不抬档')
 
 const [low] = toRiskModel([{ ...base, id: 'lease-pet-additional-penalty', level: 'low', confidence: 0.9 }], { amounts })
 assert.equal(low.level, 'note', '低严重度 → 仅提醒')
@@ -131,5 +141,35 @@ const worst = computeWorstCase(
 )
 assert.equal(worst.items.length, 2, '两条风险同挂违约金时只算一次')
 assert.equal(worst.total, 12000, '9,000（违约金）+ 3,000（维修）= 12,000，非必须改的不计入')
+
+// ---- AI 审查结果也要能定价 ----
+// AI 给的 id 是 risk-1 这种编号，按 id 的正则一个都认不出来，
+// 结果是「6 条风险但最坏合计显示待补」——明明能算的钱被算成了算不出来。
+assert.equal(
+  amountKeyOf({ id: 'risk-3', findingType: 'explicit_disadvantage', title: '乙方提前退租承担一个月租金补偿且甲方可另主张空置损失差额' }),
+  'termination',
+  'AI 的提前退租必须挂上退租违约金',
+)
+assert.equal(
+  amountKeyOf({ id: 'risk-2', findingType: 'explicit_disadvantage', title: '押金可扣除合理检测费用且无凭证和异议机制' }),
+  'depositDeduct',
+  'AI 的押金扣款要挂上押金扣款',
+)
+assert.equal(
+  amountKeyOf({ id: 'risk-4', findingType: 'needs_review', title: '乙方承担每次报修前500元以内上门检查及易耗材料费' }),
+  'repair',
+  'AI 的维修费用要挂上维修估值',
+)
+assert.equal(
+  amountKeyOf({ id: 'risk-5', findingType: 'explicit_disadvantage', title: '甲方提前12小时通知后乙方4小时内未提替代时间即视为同意入户' }),
+  null,
+  '入户不能定价，不许为了凑合计硬挂金额',
+)
+// 规则引擎那 9 条行为必须不变：它认不出 id 就说明这条本来就不该定价。
+assert.equal(
+  amountKeyOf({ id: 'lease-deposit-return-delay', title: '押金退还周期过长' }),
+  null,
+  '规则引擎的风险不参与标题兜底，押金退还慢不是会被扣掉的钱',
+)
 
 console.log('risk-mapper: 全部断言通过')

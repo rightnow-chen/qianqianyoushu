@@ -24,10 +24,10 @@ export default function OverviewTab({
   risks,
   counts,
   worst,
-  hasAmounts,
   verdict,
   checks,
   degradation,
+  aiReview,
   isDemo,
   onTab,
   onOpenFix,
@@ -35,16 +35,10 @@ export default function OverviewTab({
 }) {
   const pendingChecks = checks?.length ?? 0
   const noMatch = degradation?.level === 'no-match'
-  const mustCount = counts?.must ?? 0
-
-  // 「待补」只在真的缺数时出现。条款本身没有固定金额（违约金按逾期天数算）
-  // 时不摆「待补」——那句话会让用户以为回到上一步填个数字就能算出来。
-  const lossNote =
-    mustCount === 0
-      ? '这份合同没有必须修改的条款，不需要估算损失。'
-      : hasAmounts
-        ? '这几条没有固定金额可以折算（比如违约金按逾期天数计），实际损失取决于违约多久、扣多少，所以不在这里硬凑一个数。'
-        : '这份合同里没读到月租或押金金额，损失推算不出来。回到上一步把这几个数补上，这里的金额会立刻重算。'
+  // AI 还在跑的时候，「没命中风险条款」这句话是暂时的、会变的，
+  // 不能让它独占屏幕，否则用户看到 0 条就以为审查结束了。
+  const aiRunning = aiReview?.status === 'running'
+  const aiFailed = aiReview?.status === 'failed'
 
   return (
     <div className="pane">
@@ -55,7 +49,21 @@ export default function OverviewTab({
         </div>
       )}
 
-      {degradation && degradation.level !== 'ok' && (
+      {aiRunning && (
+        <div className="banner partial">
+          <b>AI 正在逐条核对原文</b>
+          规则初筛已经出结果了，AI 正在按押金、退租、维修、入户、涨租这些维度再看一遍。结果回来会自动补到下面，不用重新上传。
+        </div>
+      )}
+
+      {aiFailed && (
+        <div className="banner partial">
+          <b>AI 深度审查没跑完</b>
+          {aiReview?.message || '这次只跑完了规则初筛。'} 下面这份结果只覆盖写法标准的那几条，隐蔽写法可能没被识别，建议对照左侧原文自己过一遍。
+        </div>
+      )}
+
+      {degradation && degradation.level !== 'ok' && !aiRunning && (
         <div className={`banner ${degradation.level}`}>
           <b>{DEGRADE_COPY[degradation.level]?.title || '结果不完整'}</b>
           {degradation.message}
@@ -75,28 +83,39 @@ export default function OverviewTab({
       )}
 
       {risks.length === 0 ? (
-        <div className="empty-state">
-          <div className="es-t">{noMatch ? '这份合同没命中已知的风险条款' : '没有读到可以判断的条款'}</div>
-          <div className="es-s">
-            {noMatch
-              ? `押金、退租、维修这三条最花钱，请对着左边原文自己过一遍；右边那 ${
-                  pendingChecks || 8
-                } 件合同外的事也一并问清楚。`
-              : `可能文件只有几行，或者图片没识别清。你可以重传一份更完整的合同；如果合同本身没问题，也别忘了把那 ${
-                  pendingChecks || 8
-                } 件合同外的事问清楚。`}
+        aiRunning ? (
+          // AI 还在跑时只留一句轻提示。上面那条 banner 已经说清了在做什么，
+          // 再摆一整块「规则初筛没对上」的插画式空状态，等于给一个临时状态盖结论。
+          <div className="ai-wait">
+            <span className="aw-dot" aria-hidden="true" />
+            通常十几秒，先别关页面
           </div>
-          <div className="es-a">
-            {onReupload && (
-              <button className="btn sm primary" type="button" onClick={onReupload}>
-                重新上传合同
+        ) : (
+          <div className="empty-state">
+            <div className="es-t">
+              {noMatch ? '这份合同没命中已知的风险条款' : '没有读到可以判断的条款'}
+            </div>
+            <div className="es-s">
+              {noMatch
+                ? `押金、退租、维修这三条最花钱，请对着左边原文自己过一遍；右边那 ${
+                    pendingChecks || 8
+                  } 件合同外的事也一并问清楚。`
+                : `可能文件只有几行，或者图片没识别清。你可以重传一份更完整的合同；如果合同本身没问题，也别忘了把那 ${
+                    pendingChecks || 8
+                  } 件合同外的事问清楚。`}
+            </div>
+            <div className="es-a">
+              {onReupload && (
+                <button className="btn sm primary" type="button" onClick={onReupload}>
+                  重新上传合同
+                </button>
+              )}
+              <button className="btn sm" type="button" onClick={() => onTab('check')}>
+                先看待核实清单
               </button>
-            )}
-            <button className="btn sm" type="button" onClick={() => onTab('check')}>
-              先看待核实清单
-            </button>
+            </div>
           </div>
-        </div>
+        )
       ) : (
         <>
           <div className="verdict">
@@ -109,36 +128,28 @@ export default function OverviewTab({
             <div className="v-desc">{verdict.desc}</div>
           </div>
 
-          <div className="loss">
-            <div className="loss-main">
-              <div className="lbl">最坏情况合计损失（估算）</div>
-              {worst.total > 0 ? (
+          {/* 算不出合计就整块不出现。写「待补」等于把「这条本来就没有固定金额」
+              说成「还差你补个数字」，是两种不同的结论，不该用同一块界面表达。 */}
+          {worst.total > 0 && (
+            <div className="loss-card">
+              <div className="loss-main">
+                <div className="lbl">最坏情况合计损失（估算）</div>
                 <div className="loss-num">
                   <small>¥</small>
                   {formatMoney(worst.total)}
                 </div>
-              ) : (
-                <div className="loss-num tbd">{mustCount === 0 ? '—' : '待补'}</div>
-              )}
-            </div>
-            <div className="loss-brk">
-              {worst.items.map((item) => (
-                <div className="loss-item" key={item.riskId}>
-                  <div className="bt">{item.label}</div>
-                  <div className="bv">¥{formatMoney(item.value)}</div>
-                  <div className="bn">{item.note} · 估算</div>
-                </div>
-              ))}
-              {worst.total === 0 && (
-                <div className="loss-item">
-                  <div className="bt">还没法算</div>
-                  <div className="bn" style={{ whiteSpace: 'normal' }}>
-                    {lossNote}
+              </div>
+              <div className="loss-brk">
+                {worst.items.map((item) => (
+                  <div className="loss-item" key={item.riskId}>
+                    <div className="bt">{item.label}</div>
+                    <div className="bv">¥{formatMoney(item.value)}</div>
+                    <div className="bn">{item.note} · 估算</div>
                   </div>
-                </div>
-              )}
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           <div className="sum3">
             {LEVEL_ORDER.map((level) => {

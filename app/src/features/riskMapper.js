@@ -35,6 +35,17 @@ const AMOUNT_BY_ID = [
   { re: /renewal|rent-up|hike/, key: 'rentHike' },
 ]
 
+// AI 审查给出的 id 是 risk-1、ai-risk-3 这类无语义编号，上面那套按 id 的正则全都认不出来，
+// 结果就是「6 条风险但最坏合计显示待补」——明明是能算的钱却算不出来。
+// 这里退到「标准卡 id + 标题」再认一次，只认能真正定价的三类（押金扣款/退租违约金/维修），
+// 水电差价和涨租上限属于 gain，不进最坏合计，就不在这里硬挂，免得明细里多出语义不对的行。
+// 顺序即优先级：「提前退租押金不退」本质是退租责任，不该被算成押金扣款。
+const AMOUNT_BY_HINT = [
+  { re: /提前退租|提前解约|提前解除|解约补偿|退租补偿|空置损失|early-termination/, key: 'termination' },
+  { re: /押金|保证金|扣款|扣减|没收|deposit/, key: 'depositDeduct' },
+  { re: /维修|报修|修复|上门检查|repair/, key: 'repair' },
+]
+
 // 话术按「这条到底在争什么」选模板，不按类别选。
 // 「逾期违约金 5%/日」归在租金类，但话术不能说成「续租涨租」，否则用户照着念会跑偏。
 const TEMPLATE_BY_ID = [
@@ -79,7 +90,14 @@ export function categoryOf(finding) {
 export function amountKeyOf(finding) {
   const id = String(finding.id || '')
   const hit = AMOUNT_BY_ID.find((rule) => rule.re.test(id))
-  return hit ? hit.key : null
+  if (hit) return hit.key
+  // 只有 AI 审查出来的风险才走标题兜底（findingType 是 normalizeAiFindings 必填字段）。
+  // 规则引擎的 id 是语义化的，它认不出就说明这条本来就不该定价——
+  // 比如「押金退还周期过长」是对时间的不满，不是会被扣掉的钱，不能算成押金扣款。
+  if (!finding.findingType) return null
+  const hint = `${finding.playbookId || ''} ${finding.title || ''}`
+  const byHint = AMOUNT_BY_HINT.find((rule) => rule.re.test(hint))
+  return byHint ? byHint.key : null
 }
 
 /** 话术模板：先按规则家族选，选不到再退回类别。 */
@@ -160,7 +178,7 @@ export function toRiskModel(findings = [], options = {}) {
   const risks = findings.map((finding, index) => {
     const cat = categoryOf(finding)
     const confidence = confidenceLabel(finding.confidence)
-    const level = levelFromSeverity(finding.level, confidence.key)
+    const level = levelFromSeverity(finding.level, confidence.key, finding.findingType)
     const location = locationOf(finding, { lineCount, pages, clauseIndex })
     const amountKey = amountKeyOf(finding)
     const suggestion = (finding.replacement || finding.suggestion || '').trim()

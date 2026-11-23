@@ -4,6 +4,7 @@ import { contractTypeOptions, partyRoleOptions, reviewDepthOptions } from '../co
 import { getPlaybookIdForFinding } from '../data/contractReviewPlaybook.js'
 import { knowledgeBaseItems } from '../data/knowledgeBase.js'
 import { LEGAL_BASIS_MAP, resolveLegalUrl } from './legalBasisMap.js'
+import { legalForPlaybook } from './playbookLegal.js'
 import { stripMarkdownMarkers } from '../utils/text.js'
 
 const riskRules = [
@@ -436,14 +437,29 @@ function canLinkLegalBasis(aiFinding, localFinding) {
 export function enrichFindingsWithLegalBasis(aiFindings, localFindings) {
   const local = Array.isArray(localFindings) ? localFindings : []
   return (Array.isArray(aiFindings) ? aiFindings : []).map((finding) => {
+    // 优先：AI 风险与本地某条证据指向同一句时，继承本地已核实法条（最精确）。
     const matched = local.find((candidate) => canLinkLegalBasis(finding, candidate))
-    if (!matched || (!matched.legalLaw && !matched.legalUrl)) return finding
-    return {
-      ...finding,
-      legalBasis: matched.legalBasis || finding.legalBasis,
-      legalLaw: matched.legalLaw || finding.legalLaw,
-      legalUrl: matched.legalUrl || finding.legalUrl,
+    if (matched && (matched.legalLaw || matched.legalUrl)) {
+      return {
+        ...finding,
+        legalBasis: matched.legalBasis || finding.legalBasis,
+        legalLaw: matched.legalLaw || finding.legalLaw,
+        legalUrl: matched.legalUrl || finding.legalUrl,
+      }
     }
+    // 兜底：AI 补盲的本就是本地没有的条款，逐字匹配必然落空。
+    // 用模型输出时带的标准卡 id 查卡→法条映射（法条已逐条核实，见 playbookLegal.js）。
+    // 只补法条字段，不动标题/证据/等级——结论仍由 AI 负责，法条由人工核实表提供。
+    if (!finding.legalLaw) {
+      // 模型给的 playbookId 可能缺失、幻觉或本地 finding id——不能只看它非空就信。
+      // 先查它是否真在映射表里；查不到再退回按维度/标题/证据推断的卡。
+      // （旧代码 `finding.playbookId || getPlaybookIdForFinding()` 会被幻觉 id 短路，
+      //   明明能推断出卡却因这个假 id 查表落空，导致「未匹配到具体法条」。）
+      const byCard = legalForPlaybook(finding.playbookId)
+        || legalForPlaybook(getPlaybookIdForFinding(finding))
+      if (byCard) return { ...finding, ...byCard }
+    }
+    return finding
   })
 }
 

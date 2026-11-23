@@ -3,6 +3,7 @@ import { Check } from 'lucide-react'
 import { buildDiff } from '../../features/diff.js'
 import { levelLabel } from '../../features/riskModel.js'
 import EmptyPane from './EmptyPane.jsx'
+import LawLine from './LawLine.jsx'
 
 export default function FixTab({
   risks,
@@ -10,10 +11,12 @@ export default function FixTab({
   edited,
   accepted,
   done,
+  commented,
   onSelect,
   onSaveEdit,
   onAccept,
   onDone,
+  onComment,
   onLocate,
   onTab,
   onToast,
@@ -36,7 +39,6 @@ export default function FixTab({
   const current = edited[risk.id] ?? risk.suggestion
   const userEdited = Boolean(edited[risk.id])
   const diff = userEdited ? null : buildDiff(risk.original, current)
-  const sameCategory = risks.filter((item) => item.cat === risk.cat && item.id !== risk.id)
   const queue = risks.filter((item) => item.level === 'must' && !done[item.id] && item.id !== risk.id)
 
   const startEdit = () => {
@@ -83,14 +85,7 @@ export default function FixTab({
           <div className="fix-label">风险结论</div>
           <div className="fix-title">{risk.title}</div>
           <div className="fix-why">{risk.why}</div>
-          <div className="lawline">
-            <span>法律依据</span>
-            <b>{risk.law.name}</b>
-            <span>{risk.law.version} · {risk.law.scope}</span>
-            <button type="button" onClick={() => window.open(risk.law.url, '_blank', 'noopener')}>
-              法条原文 ↗
-            </button>
-          </div>
+          <LawLine law={risk.law} />
         </div>
 
         <div className="fix-sec">
@@ -179,16 +174,15 @@ export default function FixTab({
 
         <div className="fix-ft">
           <button className={`done-btn ${done[risk.id] ? 'on' : ''}`} type="button" onClick={() => onDone(risk.id)}>
-            <Check size={13} aria-hidden="true" />
             <span>{done[risk.id] ? '已处理' : '标记已处理'}</span>
           </button>
           <span className="sp" />
           <button
-            className="btn sm"
+            className={`btn sm ${commented?.[risk.id] ? 'primary' : ''}`}
             type="button"
-            onClick={() => onToast('导出「批注版」时，这条会作为 Word 批注挂在这句话上')}
+            onClick={() => onComment(risk.id)}
           >
-            添加批注
+            {commented?.[risk.id] ? '✓ 已加批注' : '添加批注'}
           </button>
           <button
             className={`btn primary ${accepted[risk.id] ? '' : ''}`}
@@ -199,17 +193,6 @@ export default function FixTab({
           </button>
         </div>
       </div>
-
-      {sameCategory.length > 0 && (
-        <div className="related">
-          同属「{risk.cat}」的还有 {sameCategory.length} 条：
-          {sameCategory.map((item) => (
-            <button className="queue-item" key={item.id} type="button" onClick={() => onSelect(item.id)}>
-              · {item.title}
-            </button>
-          ))}
-        </div>
-      )}
 
       {queue.length > 0 && (
         <div className="queue">

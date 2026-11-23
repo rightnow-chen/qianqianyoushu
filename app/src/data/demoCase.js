@@ -1,6 +1,12 @@
 // 演示合同与 9 条风险：V0.1 的演示数据源（?demo=1 时使用）。
 // 数据与真实用户数据严格分离，界面须标「演示数据」。
 // 所有金额不写死，由 amountKey 交给 amountEngine 从月租/押金/租期算出。
+import { resolveLegalUrl } from '../features/legalBasisMap.js'
+
+// 法条原文链接和真实审查共用一套派生逻辑（权威全文页 + 条文高亮片段）。
+// 以前这里 9 处全写死 flk.npc.gov.cn 首页，点开只到数据库首页、看不到原文。
+// 解析不出权威链接的（如「合同自由约定」「无强制性规定」）留空，前端隐藏按钮。
+const lawUrl = (name) => resolveLegalUrl(name) || ''
 
 export const DEMO_META = {
   fileName: '朝阳区_租房合同.pdf',
@@ -256,7 +262,7 @@ export const DEMO_RISKS = [
       name: '《民法典》第七百一十条',
       version: '2021 施行',
       scope: '北京 · 全国性法律',
-      url: 'https://flk.npc.gov.cn/',
+      url: lawUrl('《民法典》第七百一十条'),
     },
     scripts: {
       polite:
@@ -297,7 +303,7 @@ export const DEMO_RISKS = [
       name: '《民法典》第五百八十五条',
       version: '2021 施行',
       scope: '北京 · 全国性法律',
-      url: 'https://flk.npc.gov.cn/',
+      url: lawUrl('《民法典》第五百八十五条'),
     },
     scripts: {
       polite:
@@ -338,7 +344,7 @@ export const DEMO_RISKS = [
       name: '《电力法》第四十四条',
       version: '2018 修正',
       scope: '北京 · 全国性法律',
-      url: 'https://flk.npc.gov.cn/',
+      url: lawUrl('《电力法》第四十四条'),
     },
     scripts: {
       polite:
@@ -375,7 +381,7 @@ export const DEMO_RISKS = [
       name: '《民法典》第七百一十二条',
       version: '2021 施行',
       scope: '北京 · 全国性法律',
-      url: 'https://flk.npc.gov.cn/',
+      url: lawUrl('《民法典》第七百一十二条'),
     },
     scripts: {
       polite:
@@ -411,7 +417,7 @@ export const DEMO_RISKS = [
       name: '合同自由约定',
       version: '无强制性规定',
       scope: '关键在是否有实际上调机制',
-      url: 'https://flk.npc.gov.cn/',
+      url: lawUrl('合同自由约定'),
     },
     scripts: {
       polite:
@@ -447,7 +453,7 @@ export const DEMO_RISKS = [
       name: '《民法典》第一千零三十二条',
       version: '2021 施行',
       scope: '北京 · 隐私权',
-      url: 'https://flk.npc.gov.cn/',
+      url: lawUrl('《民法典》第一千零三十二条'),
     },
     scripts: {
       polite:
@@ -479,7 +485,7 @@ export const DEMO_RISKS = [
       name: '《民法典》第七百一十六条',
       version: '2021 施行',
       scope: '北京 · 承租人经同意可转租',
-      url: 'https://flk.npc.gov.cn/',
+      url: lawUrl('《民法典》第七百一十六条'),
     },
     scripts: {
       polite:
@@ -510,7 +516,7 @@ export const DEMO_RISKS = [
       name: '无强制性规定',
       version: '行业惯例 7–30 日',
       scope: '建议写入逾期责任',
-      url: 'https://flk.npc.gov.cn/',
+      url: lawUrl('无强制性规定'),
     },
     scripts: {
       polite:
@@ -541,7 +547,7 @@ export const DEMO_RISKS = [
       name: '《民法典》第七百一十条',
       version: '2021 施行',
       scope: '北京 · 损耗责任',
-      url: 'https://flk.npc.gov.cn/',
+      url: lawUrl('《民法典》第七百一十条'),
     },
     scripts: {
       polite:

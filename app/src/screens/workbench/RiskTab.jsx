@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { ChevronDown, ChevronUp } from 'lucide-react'
 import { amountForRisk } from '../../features/amountEngine.js'
 import { levelLabel } from '../../features/riskModel.js'
+import LawLine from './LawLine.jsx'
 
 export default function RiskTab({ risks, amounts, done, meta, onOpenFix, onTab, onLocate, onDone, onTrack }) {
   const [filter, setFilter] = useState('all')
@@ -95,10 +96,16 @@ export default function RiskTab({ risks, amounts, done, meta, onOpenFix, onTab, 
                 {index}. {risk.title}
               </span>
               {done[risk.id] && <span className="tag line">已处理</span>}
-              <span className={`rc-amt ${amount.kind}`}>
-                {amount.text}
-                {amount.kind !== 'none' && <i className="est">估算</i>}
-              </span>
+              {/* 没有可定价机制的风险（自动续租、入户带看）不摆「—」占位——那个破折号
+                  既不是金额也不是状态，只会让人误以为金额算丢了。金额列直接留空。 */}
+              {/* 类名必须带 amt- 前缀：裸用 .loss 会撞上概览页「最坏合计」大卡片的 .loss，
+                  把 padding 12/15、border、flex 全套到金额文字上，卡片高度就岔开了。 */}
+              {amount.kind !== 'none' && (
+                <span className={`rc-amt amt-${amount.kind}`}>
+                  {amount.text}
+                  <i className="est">估算</i>
+                </span>
+              )}
               {expanded ? (
                 <ChevronUp size={13} aria-hidden="true" color="#9AA4B2" />
               ) : (
@@ -144,15 +151,7 @@ export default function RiskTab({ risks, amounts, done, meta, onOpenFix, onTab, 
                   <div className="quote new">{risk.suggestion}</div>
                 </div>
 
-                <div className="lawline">
-                  <span>法律依据</span>
-                  <b>{risk.law.name}</b>
-                  <span>· {risk.law.version}</span>
-                  <span>· {risk.law.scope}</span>
-                  <button type="button" onClick={() => window.open(risk.law.url, '_blank', 'noopener')}>
-                    法条原文 ↗
-                  </button>
-                </div>
+                <LawLine law={risk.law} />
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 9 }}>
                   <button className="btn sm" type="button" onClick={() => onOpenFix(risk.id)}>
@@ -167,7 +166,7 @@ export default function RiskTab({ risks, amounts, done, meta, onOpenFix, onTab, 
                     type="button"
                     onClick={() => onDone(risk.id)}
                   >
-                    {done[risk.id] ? '✓ 已处理' : '标记已处理'}
+                    {done[risk.id] ? '已处理' : '标记已处理'}
                   </button>
                 </div>
               </div>

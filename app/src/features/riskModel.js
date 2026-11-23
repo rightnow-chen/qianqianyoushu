@@ -34,14 +34,53 @@ export const REVIEW_SCALES = [
 ]
 
 // 引擎严重度 → 产品三级。（PRD FR-10：必须改 + 需确认 的组合说明规则不确定，降级为建议确认）
-export function levelFromSeverity(severity, confidence) {
+//
+// findingType 参与定档（2026-11-17，缺陷库评测驱动）：
+// AI 把"有具体不利机制"的风险(explicit_disadvantage/missing_term)的 severity 填成 medium 时，
+// 不能让它被映射成 check——用户在签字前需要看到这类风险的真实分量。
+// 依据：45 条缺陷库实测里，模型判 high 的 21 条全部是 must；判 medium 且属这两类的，
+// A 档(法规明确)3 条期望 must、另 2 条 B 档(产品阈值灰区)期望 check。
+// 规则选择抬档：净修 3 条真错，接受 2 条灰区被抬（B 档本不进主评分，且其标注口径本就有争议）。
+// needs_review 保持原映射——它表达"待核对"，实测期望 check/note 都有，不能一刀切。
+// 第三参数可选：不传时行为与旧版完全一致（规则引擎无 findingType，不受影响）。
+export function levelFromSeverity(severity, confidence, findingType) {
   if (severity === 'high') return confidence === 'inferred' ? 'check' : 'must'
-  if (severity === 'medium') return 'check'
+  if (severity === 'medium') {
+    const confirmedDisadvantage = findingType === 'explicit_disadvantage' || findingType === 'missing_term'
+    return confirmedDisadvantage ? 'must' : 'check'
+  }
   return 'note'
 }
 
 export function levelLabel(level) {
   return LEVELS[level]?.label || '仅提醒'
+}
+
+/**
+ * 法条显示归一：真实审查与演示数据用了两套 law 结构，界面只认这一处输出。
+ *   真实（riskMapper）：{ name, basis, url, verified }
+ *   演示（demoCase）  ：{ name, version, scope, url }
+ * 早前组件直接读 version/scope，真实合同里这俩字段不存在，渲染成「法律依据 ·· 」。
+ *
+ * 返回 { headline, detail, url }：
+ *   headline —— 法条简称；没有就诚实标「未匹配到具体法条」，绝不编造条号。
+ *   detail   —— 依据描述（真实用 basis，演示用 version·scope 兜底）。
+ */
+export function lawDisplay(law) {
+  const source = law || {}
+  const name = String(source.name || '').trim()
+  const basis = String(source.basis || '').trim()
+  const version = String(source.version || '').trim()
+  const scope = String(source.scope || '').trim()
+  const url = String(source.url || '').trim()
+
+  const meta = [version, scope].filter(Boolean).join(' · ')
+  return {
+    headline: name || '未匹配到具体法条',
+    // 依据描述优先用真实链路的 basis；演示数据没有 basis 时用 version·scope 兜底。
+    detail: basis || meta || '',
+    url,
+  }
 }
 
 export function countByLevel(risks = []) {
