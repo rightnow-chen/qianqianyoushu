@@ -5,8 +5,8 @@ from docx.enum.table import WD_TABLE_ALIGNMENT, WD_CELL_VERTICAL_ALIGNMENT
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 
-src=r'G:\zu-xiao-shen-main\需求分析与需求验证方法论.docx'
-out=r'G:\zu-xiao-shen-main\需求分析与需求验证方法论_优化排版.docx'
+src=r'G:\qianqianyoushu\需求分析与需求验证方法论.docx'
+out=r'G:\qianqianyoushu\需求分析与需求验证方法论_优化排版.docx'
 d=Document(src)
 s=d.sections[0]; s.top_margin=Inches(.8); s.bottom_margin=Inches(.72); s.left_margin=Inches(.9); s.right_margin=Inches(.9)
 styles=d.styles

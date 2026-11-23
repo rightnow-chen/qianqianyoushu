@@ -5,7 +5,7 @@ from docx.enum.table import WD_TABLE_ALIGNMENT
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 
-OUT = r'G:\\zu-xiao-shen-main\\签前有数_MVP及需求优先级分析报告.docx'
+OUT = r'G:\\qianqianyoushu\\签前有数_MVP及需求优先级分析报告.docx'
 def shade(c, fill):
     tcPr=c._tc.get_or_add_tcPr(); shd=OxmlElement('w:shd'); shd.set(qn('w:fill'),fill); tcPr.append(shd)
 def settext(c, text, bold=False, color=None, size=9):

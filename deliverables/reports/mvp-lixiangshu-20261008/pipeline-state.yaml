@@ -6,7 +6,7 @@ updated_at: 2026-10-08T19:35:00+08:00
 entry_type: full_pipeline
 stage_chain: [1, 2, 3]
 
-output_docx_path: "G:\\zu-xiao-shen-main\\output\\mvp-lixiangshu-20261008\\stage3\\签约有数MVP立项书.docx"
+output_docx_path: "G:\\qianqianyoushu\\output\\mvp-lixiangshu-20261008\\stage3\\签约有数MVP立项书.docx"
 output_docx_user_specified: false
 
 current_stage: 3

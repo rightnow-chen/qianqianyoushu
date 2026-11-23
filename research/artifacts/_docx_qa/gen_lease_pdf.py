@@ -142,6 +142,6 @@ pdf.cell(0, 6, "Alex Rivera", new_x="LMARGIN", new_y="NEXT")
 pdf.cell(0, 6, "______________________________________", new_x="LMARGIN", new_y="NEXT")
 pdf.cell(0, 6, "Jordan Rivera", new_x="LMARGIN", new_y="NEXT")
 
-out = r"G:\zu-xiao-shen-main\sample-rental-lease-agreement.pdf"
+out = r"G:\qianqianyoushu\sample-rental-lease-agreement.pdf"
 pdf.output(out)
 print("PDF written:", out)

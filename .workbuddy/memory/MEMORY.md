@@ -50,6 +50,7 @@
 - **导出版式（2026-11-19）**：版式唯一来源 `contractDocxLayout.js` —— 两版共用页边距/页眉页码/段落样式，保证排版一致。按来源分骨架：`resolveProfile` → demo/TXT/图片=`template`（参照住建+市场监管示范文本通用结构：合同编号/居中标题/甲乙方/签章栏/页码，**不宣称某地方法定版本**），DOC/DOCX/PDF=`preserve`（保留原文结构，不套模板）。封面只放版本标记，不重复写标题（原文 title 行渲染成大字）。诚实边界：PDF 无法逐像素还原 docx，Word 是提取后重建非原文件改。
 - **改源码后必须重建**：`test:e2e` 用 4311 静态服务读 `dist`，源码改了不 build 就是测旧代码（踩过）。`rm -rf dist && npm run build` 再跑。
 - **构建顺序**：`vite preview` 服务 `dist` 时 build 会失败。先停 preview → `rm -rf dist` → build → 再起。
+- **`npm start`（8787）正在跑时别 `rm -rf dist`（2026-11-23 踩过）**：它会瞬间读 `dist/index.html`，目录没了就抛 `ENOENT ... dist/index.html` 直接退出进程（不只是 404）。重建前先停 8787 → `rm -rf dist` → build → 重新 `npm start`（后台起）。若已崩，重启后验证 `curl localhost:8787` = 200 + `/api/ai/smoke` 两个 success。
 - **safe-delete 危险习惯**：shim 曾连带删掉 `deliverables/test-kits/` 下 16 个已跟踪文件。**每次 rm 后立刻 `git status --short`**，见到 ` D` 就 `git checkout -- <path>`。
 - **测试入口**：`npm run test:e2e` = `mvp-flow.mjs`（现在 20 步），**不是** playwright；旧 IA 在 `tests/e2e-legacy/`（`playwright.legacy.config.js`）。另有 `test:unit` / `verify:mvp` / `test:contract-review-benchmark` / `test:review-reliability`。
 - **产品决策**：城市参数不做（用户明确没能力）；法条核实按武汉口径。

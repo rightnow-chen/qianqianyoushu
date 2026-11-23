@@ -6,7 +6,7 @@ updated_at: 2026-10-08T19:40:00+08:00
 entry_type: full_pipeline
 stage_chain: [1, 2, 3]
 
-output_docx_path: "G:\\zu-xiao-shen-main\\output\\mianshi-dabian-20261008\\stage3\\签约有数面试答辩手册.docx"
+output_docx_path: "G:\\qianqianyoushu\\output\\mianshi-dabian-20261008\\stage3\\签约有数面试答辩手册.docx"
 output_docx_user_specified: false
 
 current_stage: 3

@@ -7,7 +7,7 @@ from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 
 sys.stdout.reconfigure(encoding='utf-8')
-root = Path('G:/zu-xiao-shen-main')
+root = Path('G:/qianqianyoushu')
 target = root / '租小审_PRD开发任务拆解.docx'
 backup = root / 'prd_docx_qa/租小审_PRD开发任务拆解_修订前.docx'
 if not backup.exists():
@@ -75,7 +75,7 @@ changes = {
 111: '输入变化立即标记结果过期；取消、清除、编辑或切换演示后，旧响应不能写回当前状态。',
 112: '刷新仅恢复白名单中的结构化输入；原文、引用报告和草稿不持久保存；清除后不恢复且不影响旧模块数据。',
 113: '375px 与 390px 手机宽度无横向溢出；三类演示、真实流程和失败路径可运行，演示不覆盖真实草稿。',
-115: '文档依据：graduation-rental-decision-light-prd.docx 与 产品定位.docx。实现参考：zu-xiao-shen-main/ 目录中的 Web、小程序和服务端代码。本版细化规则优先用于本次 Web MVP；原始定位文档保持不变。',
+115: '文档依据：graduation-rental-decision-light-prd.docx 与 产品定位.docx。实现参考：qianqianyoushu/ 目录中的 Web、小程序和服务端代码。本版细化规则优先用于本次 Web MVP；原始定位文档保持不变。',
 }
 
 titles = {
@@ -92,7 +92,7 @@ def before(anchor,text,style='Normal'):
     return anchor.insert_paragraph_before(text,style)
 
 before(ps[7], '实施边界：P0 为免登录、单套房源、文本输入和签约前闭环；文件导入、报告导出、历史记录、多房源比较为 P1。小程序、验房、退租、补贴、地图、交易和房源真实性判断不进入本次开发范围。旧模块仅保留兼容入口。')
-before(ps[7], '路径约定：代码根目录为 G:\\zu-xiao-shen-main\\zu-xiao-shen-main；新业务逻辑放在 src/features/rentalDecision/，页面组件放在 src/components/rentalDecision/。本文任务编号在正文沿用 FE-01 等形式，标题中的空格形式与其一一对应。')
+before(ps[7], '路径约定：代码根目录为 G:\\qianqianyoushu\\qianqianyoushu；新业务逻辑放在 src/features/rentalDecision/，页面组件放在 src/components/rentalDecision/。本文任务编号在正文沿用 FE-01 等形式，标题中的空格形式与其一一对应。')
 
 before(ps[101], '五 部署与用户验证', 'Heading 1')
 before(ps[101], 'OPS 01 在线部署与交付检查', 'Heading 2')

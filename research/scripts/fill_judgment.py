@@ -1,7 +1,7 @@
 from docx import Document
 from shutil import copyfile
 src=r'C:\Users\cxy32\Desktop\签约有数\发现需求验证需求\租房合同需求验证问卷统计结果（原版）.docx'
-out=r'G:\zu-xiao-shen-main\租房合同需求验证问卷统计结果_已填判断表.docx'
+out=r'G:\qianqianyoushu\租房合同需求验证问卷统计结果_已填判断表.docx'
 copyfile(src,out)
 d=Document(out)
 t=d.tables[2]

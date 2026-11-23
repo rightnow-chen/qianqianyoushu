@@ -4,7 +4,7 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.enum.table import WD_TABLE_ALIGNMENT
 from docx.oxml.ns import qn
 
-out=r'G:\zu-xiao-shen-main\租房合同审查产品需求验证分析报告.docx'
+out=r'G:\qianqianyoushu\租房合同审查产品需求验证分析报告.docx'
 d=Document(); s=d.sections[0]; s.top_margin=Inches(.7); s.bottom_margin=Inches(.7); s.left_margin=Inches(.8); s.right_margin=Inches(.8)
 for name in ['Normal','Title','Heading 1','Heading 2']:
     st=d.styles[name]; st.font.name='Microsoft YaHei'; st._element.rPr.rFonts.set(qn('w:eastAsia'),'微软雅黑')

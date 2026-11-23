@@ -6,7 +6,7 @@ from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from docx.enum.section import WD_SECTION
 
-OUT = r"G:\zu-xiao-shen-main\需求分析与需求验证方法论.docx"
+OUT = r"G:\qianqianyoushu\需求分析与需求验证方法论.docx"
 doc = Document()
 sec = doc.sections[0]
 sec.top_margin = Inches(0.65); sec.bottom_margin = Inches(0.65)
