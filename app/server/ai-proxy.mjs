@@ -4,7 +4,7 @@ import multer from 'multer'
 import { existsSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { allowedOrigins, distDir, indexHtmlPath, port } from './config.mjs'
+import { distDir, indexHtmlPath, port } from './config.mjs'
 import { registerAiRoutes } from './routes/ai.mjs'
 import { registerAuthRoutes } from './routes/auth.mjs'
 import { registerContractRoutes } from './routes/contract.mjs'
@@ -26,11 +26,13 @@ const app = express()
 
 app.use(cors({
   origin(origin, callback) {
-    if (!origin || allowedOrigins.has(origin)) {
-      callback(null, true)
-      return
-    }
-    callback(new Error('CORS origin is not allowed'))
+    // CORS 响应头不是安全边界，真正的安全门禁在各路由的 trustedApiRequest
+    // （它做同源判断 + 白名单，见 guards.mjs）。这里放行所有来源，是为了兼容
+    // 部署平台动态分配的域名（如 CloudBase 的 *.tcloudbaseapp.com、Vercel 的
+    // *.vercel.app）——这些域名部署前无法写进静态白名单，硬拦会导致明明同源
+    // 的前端请求也拿不到响应头。恶意站点即使拿到 CORS 头，请求仍会被
+    // trustedApiRequest 以 403 拒绝。
+    callback(null, true)
   },
 }))
 app.use(express.json({ limit: '12mb' }))

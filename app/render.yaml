@@ -26,7 +26,7 @@ services:
       - key: MINIAPP_SESSION_TTL_SECONDS
         value: "7200"
       - key: AI_DAILY_QUOTA
-        value: "20"
+        value: "30"
       - key: UPSTASH_REDIS_REST_URL
         sync: false
       - key: UPSTASH_REDIS_REST_TOKEN

@@ -21,3 +21,9 @@ Thumbs.db
 
 # 本地登录凭据（gh CLI 设备码登录产生的配置，含 token 引用，绝不入库）
 .workbuddy/gh-config/
+
+# CloudBase 函数打包生成物（由 scripts/deploy/pack-cloudbase.mjs 从 server/ 同步，勿手改）
+app/cloudfunctions/api/server/
+app/cloudfunctions/api/package.json
+# 上传用的函数 ZIP（含 server 代码快照，每次改代码需重新生成，不入库）
+deliverables/api.zip
