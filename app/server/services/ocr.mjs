@@ -3,7 +3,6 @@ import crypto from 'node:crypto'
 import { copyFile, mkdir, unlink, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { promisify } from 'node:util'
-import { createWorker } from 'tesseract.js'
 import {
   ocrTimeoutMs,
   rapidOcrEnabled,
@@ -30,7 +29,13 @@ async function prepareTesseractLangPath() {
   ]
 
   await mkdir(langPath, { recursive: true })
-  await Promise.all(languageFiles.map((item) => copyFile(item.from, item.to)))
+  try {
+    await Promise.all(languageFiles.map((item) => copyFile(item.from, item.to)))
+  } catch (error) {
+    // 云端（CloudBase）为避开 tesseract 的 postinstall 脚本不装这些语言包，
+    // 这里给出可执行的替代方案，而不是裸的 ENOENT。
+    throw new Error('本地 OCR 语言包不可用（云端环境已禁用），请改用粘贴文字或上传 PDF/Word')
+  }
   return langPath
 }
 
@@ -192,22 +197,50 @@ export async function recognizeImageWithRapidOcr(buffer, {
   }
 }
 
+// tesseract.js 带 postinstall 脚本，云端（CloudBase）在线装依赖时会因安全策略拒绝执行而报错。
+// 因此不顶层静态 import，改为用到时才动态加载：本地开发装了就照常用，云端没装时抛出清晰错误，
+// 由上层 recognizeImageWithFallback 捕获并降级（提示改用粘贴文字 / PDF / Word）。
+async function defaultCreateWorker(...args) {
+  let mod
+  try {
+    mod = await import('tesseract.js')
+  } catch (error) {
+    throw new Error('本地 OCR 引擎未安装（云端环境已禁用），请改用粘贴文字或上传 PDF/Word')
+  }
+  return mod.createWorker(...args)
+}
+
+const OCR_UNAVAILABLE_MSG = '本地 OCR 引擎不可用（云端环境已禁用），请改用粘贴文字或上传 PDF/Word'
+
 export async function recognizeImageOffline(buffer, {
-  createWorkerImpl = createWorker,
+  createWorkerImpl = defaultCreateWorker,
   prepareLangPath = prepareTesseractLangPath,
   timeoutMs = ocrTimeoutMs,
 } = {}) {
-  const langPath = await prepareLangPath()
+  let langPath
+  try {
+    langPath = await prepareLangPath()
+  } catch {
+    // 云端没装语言包/只读文件系统等，统一给可执行提示，不漏裸 ENOENT
+    throw new Error(OCR_UNAVAILABLE_MSG)
+  }
   // tesseract 的 worker 出错时会回调 options.errorHandler；不给它，
   // createWorker 内部会在 process.nextTick 里直接 throw —— 整个 Node 进程退出。
   // 实测：识别一张 IDAT 有多余数据块的 PNG，接口先正常返回 200，服务随后猝死。
   const workerErrors = []
-  const worker = await createWorkerImpl('chi_sim+eng', 1, {
-    langPath,
-    cachePath: path.join(rootDir, '.cache', 'tesseract'),
-    gzip: true,
-    errorHandler: (error) => workerErrors.push(error),
-  })
+  let worker
+  try {
+    worker = await createWorkerImpl('chi_sim+eng', 1, {
+      langPath,
+      cachePath: path.join(rootDir, '.cache', 'tesseract'),
+      gzip: true,
+      errorHandler: (error) => workerErrors.push(error),
+    })
+  } catch (error) {
+    // 已经是友好提示就透传，否则统一转换（云端动态 import 失败会到这里）
+    if (/改用粘贴文字|不可用/.test(error?.message || '')) throw error
+    throw new Error(OCR_UNAVAILABLE_MSG)
+  }
   let timeoutId = 0
 
   try {

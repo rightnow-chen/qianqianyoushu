@@ -52,10 +52,14 @@ node scripts/deploy/pack-cloudbase.mjs
 
 ## 3. 创建 CloudBase 环境
 
+> **动手前先看这两条**（2026-11-24 查证，避免白跑）：
+> - **必须实名认证**：腾讯云要求实名才能用云资源。用微信扫码登录后按提示做实名（填姓名+身份证，或支付宝刷脸），几分钟通过。这一步没做，后面全卡住。
+> - **计费选「按量计费」**：有免费额度，你这个低频用量基本不花钱。有的页面会推「免费版/个人版」要兑换码（去「腾讯云 CloudBase」公众号领），嫌麻烦就直接选按量计费，效果一样。
+
 1. 打开 https://console.cloud.tencent.com/tcb
-2. 用微信/QQ 扫码登录（支付宝实名也行）
-3. 新建环境 → 计费方式选 **按量计费 / FREE 档** → 环境名随意（如 `qianqianyoushu`）
-4. 记下**环境 ID**（形如 `qianqianyoushu-1gxxxxxx`），后面处处要用
+2. 用微信/QQ 扫码登录（先完成实名认证）
+3. 新建环境 → 计费方式选 **按量计费** → 环境名随意（如 `qianqianyoushu`）→ 地域随便选（如上海/广州）
+4. 建好后，在环境列表/概览页找到并**记下环境 ID**（形如 `qianqianyoushu-1gxxxxxx`），后面处处要用。左侧菜单「环境管理」点环境名也能看到。
 
 ---
 
@@ -71,7 +75,8 @@ node scripts/deploy/pack-cloudbase.mjs
 8. 上传：把 `app/cloudfunctions/api/` 整个目录压缩成 `api.zip`，**ZIP 根目录直接是这几个文件**（不是套一层 api/ 文件夹），上传
 9. 点 **保存并安装依赖** —— 控制台会读 package.json 自动 npm install
 
-> **注意**：CloudBase 在线安装依赖已禁用 install 脚本。我们的 10 个依赖都是纯 JS（express/cors/dotenv/multer/mammoth/pdfjs-dist/docx/tesseract.js + 两个语言包），不含 preinstall/postinstall，正常能装。
+> **注意（重要，已踩坑修复）**：CloudBase 在线安装依赖会禁用 install 脚本，含 `postinstall` 的包会导致部署失败。**已从函数依赖里移除 `tesseract.js` 及两个语言包**（它们有 postinstall），现在只剩 7 个纯 JS 依赖（express/cors/dotenv/multer/mammoth/pdfjs-dist/docx），可正常在线安装。
+> 代价：云端拍照 OCR 不可用——上传图片会收到「本地 OCR 引擎不可用，请改用粘贴文字或上传 PDF/Word」的清晰提示，不会崩。本地开发和服务端 OCR 逻辑不受影响（改成动态加载了）。
 > 万一某个依赖装失败：退路是本地在 `cloudfunctions/api/` 里跑 `npm install`，把 `node_modules` 一起打进 ZIP 上传，部署时选「**不安装依赖**」。
 
 ### 配环境变量（在函数详情 → 配置 → 环境变量）

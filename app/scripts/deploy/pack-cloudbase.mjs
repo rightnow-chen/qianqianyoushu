@@ -14,6 +14,11 @@ const serverDst = path.join(fnDir, 'server')
 
 // 只在函数里真正用到的生产依赖。前端/构建/测试依赖不进函数，减小体积、加快冷启动。
 const rootPkg = JSON.parse(readFileSync(path.join(appRoot, 'package.json'), 'utf8'))
+// 注意：不打包 tesseract.js 及 @tesseract.js-data 语言包。
+// 原因：tesseract.js 带 postinstall 脚本，CloudBase 在线装依赖时因安全策略拒绝执行脚本而报错，
+// 会让整个函数部署失败。服务端 OCR 在云端本就跑不完整（要写 .cache + Python RapidOCR），
+// 且用户已决定云端识别先不做；services/ocr.mjs 已改为动态 import + 优雅降级，缺这些包时
+// 拍照上传会收到「请改用粘贴文字或上传 PDF/Word」的清晰提示。本地开发不受影响。
 const fnDeps = [
   'cors',
   'dotenv',
@@ -22,9 +27,6 @@ const fnDeps = [
   'mammoth',
   'pdfjs-dist',
   'docx',
-  'tesseract.js',
-  '@tesseract.js-data/chi_sim',
-  '@tesseract.js-data/eng',
 ]
 const pickedDeps = {}
 for (const name of fnDeps) {
